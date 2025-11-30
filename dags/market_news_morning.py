@@ -25,12 +25,12 @@ default_args = {
 }
 
 with DAG(
-    dag_id="daily_news_fetch",
+    dag_id="market_news_morning",
     default_args=default_args,
-    schedule_interval="0 7 * * *",  # 7 AM Daily
+    schedule_interval="0 7 * * 1-5",  # 7 AM Mon-Fri
     start_date=datetime(2024, 1, 1),
     catchup=False,
-    tags=["news", "clickhouse"],
+    tags=["news", "clickhouse", "morning-brief"],
 ) as dag:
 
     @task
@@ -45,8 +45,9 @@ with DAG(
 
         if news_data:
             final_df = pd.concat(news_data)
-            # Convert timestamp to string or ensure it's compatible if needed,
-            # but ClickHouse connect handles datetime objects usually.
+            # Convert Timestamp objects to strings for JSON serialization
+            if "publish_date" in final_df.columns:
+                final_df["publish_date"] = final_df["publish_date"].astype(str)
             return final_df.to_dict("records")
         return []
 
@@ -79,6 +80,13 @@ with DAG(
         ]
         tuples = []
         for row in data:
+            # Convert publish_date back to datetime object
+            if row.get("publish_date"):
+                # Handle potential different formats or just standard ISO
+                try:
+                    row["publish_date"] = pd.to_datetime(row["publish_date"])
+                except Exception:
+                    pass
             tuples.append([row.get(c) for c in cols])
 
         client.insert("market_dwh.fact_news", tuples, column_names=cols)
