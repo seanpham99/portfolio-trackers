@@ -129,6 +129,10 @@ def manual_load(start_date, end_date, price_only=False, ratios_only=False):
                 "volume",
                 "ticker",
                 "source",
+                "ma_50",
+                "ma_200",
+                "rsi_14",
+                "daily_return",
             ]
             price_tuples = []
             for row in prices:

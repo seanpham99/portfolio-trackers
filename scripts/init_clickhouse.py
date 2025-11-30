@@ -35,6 +35,11 @@ def init_db():
         low Float64,
         close Float64,
         volume UInt64,
+        -- ENRICHED COLUMNS (Calculated by you)
+        ma_50 Float64 DEFAULT 0,
+        ma_200 Float64 DEFAULT 0,
+        rsi_14 Float64 DEFAULT 0,
+        daily_return Float64 DEFAULT 0,
         source String DEFAULT 'vnstock',
         ingested_at DateTime DEFAULT now()
     ) 

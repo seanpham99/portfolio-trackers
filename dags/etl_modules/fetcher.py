@@ -1,5 +1,6 @@
 import yfinance as yf
 import pandas as pd
+import pandas_ta as ta
 import logging
 
 # Try to import vnstock, if fails, we will rely on yfinance
@@ -136,6 +137,38 @@ def fetch_stock_price(symbol, start_date, end_date):
         float
     )
     df["volume"] = df["volume"].astype(int)
+
+    # 3. ENRICHMENT STEP (The "Pro" Way)
+    if not df.empty:
+        # 1. Setup: pandas_ta prefers a DatetimeIndex
+        df["trading_date"] = pd.to_datetime(df["trading_date"])
+        df.set_index("trading_date", inplace=True)
+        df.sort_index(inplace=True)
+
+        # 2. Calculate Indicators (Using pandas_ta for everything)
+        try:
+            df["ma_50"] = ta.sma(df["close"], length=50)
+            df["ma_200"] = ta.sma(df["close"], length=200)
+            df["rsi_14"] = ta.rsi(df["close"], length=14)
+            df["daily_return"] = df["close"].pct_change() * 100
+        except Exception as e:
+            logging.error(f"Error calculating indicators: {e}")
+
+        # 3. Handling Missing Data (Crucial for Dashboard Visuals)
+        # Don't fill MA with 0! It looks like a price crash.
+        # Strategy: Backfill the first available MA to the start, or leave NaN.
+        # For this DWH, let's backfill so the line looks continuous.
+        df["ma_50"] = df["ma_50"].bfill()
+        df["ma_200"] = df["ma_200"].bfill()
+        df["rsi_14"] = df["rsi_14"].bfill()
+
+        # 4. Cleanup: Reset index so 'trading_date' is a column again for ClickHouse
+        df.reset_index(inplace=True)
+        df["trading_date"] = df["trading_date"].dt.date
+
+        # Fill remaining technical NaNs (if any) with 0 only as a last resort
+        cols_to_fix = ["ma_50", "ma_200", "rsi_14", "daily_return"]
+        df[cols_to_fix] = df[cols_to_fix].fillna(0)
 
     return df
 

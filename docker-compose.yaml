@@ -12,6 +12,8 @@ x-airflow-common:
     CLICKHOUSE_PORT: 8123
     CLICKHOUSE_USER: default
     CLICKHOUSE_PASSWORD: ''
+    # Fix for pandas_ta/numba caching issue
+    NUMBA_CACHE_DIR: /tmp
   volumes:
     - ./dags:/opt/airflow/dags
     - ./logs:/opt/airflow/logs
