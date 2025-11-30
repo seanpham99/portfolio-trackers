@@ -71,6 +71,58 @@ def init_db():
     ORDER BY symbol
     """)
 
+    # 5. Fact Table: Dividends
+    client.command("""
+    CREATE TABLE IF NOT EXISTS market_dwh.fact_dividends (
+        ticker String,
+        exercise_date Date,
+        cash_year UInt16,
+        cash_dividend_percentage Float64,
+        stock_dividend_percentage Float64,
+        issue_method String,
+        ingested_at DateTime DEFAULT now()
+    )
+    ENGINE = ReplacingMergeTree(ingested_at)
+    ORDER BY (ticker, exercise_date)
+    """)
+
+    # 6. Fact Table: Income Statement (Key Metrics)
+    client.command("""
+    CREATE TABLE IF NOT EXISTS market_dwh.fact_income_statement (
+        ticker String,
+        fiscal_date Date,
+        year UInt16,
+        quarter UInt8,
+        revenue Float64,
+        cost_of_goods_sold Float64,
+        gross_profit Float64,
+        operating_profit Float64,
+        net_profit_post_tax Float64,
+        ingested_at DateTime DEFAULT now()
+    )
+    ENGINE = ReplacingMergeTree(ingested_at)
+    ORDER BY (ticker, year, quarter)
+    """)
+
+    # 7. Fact Table: News
+    client.command("""
+    CREATE TABLE IF NOT EXISTS market_dwh.fact_news (
+        ticker String,
+        publish_date DateTime,
+        title String,
+        source String,
+        price_at_publish Float64,
+        price_change Float64,
+        price_change_ratio Float64,
+        rsi Float64,
+        rs Float64,
+        news_id UInt64,
+        ingested_at DateTime DEFAULT now()
+    )
+    ENGINE = ReplacingMergeTree(ingested_at)
+    ORDER BY (ticker, publish_date, news_id)
+    """)
+
     print("ClickHouse Schema Initialized.")
 
     # 5. Enrich Data: Fetch Company List from vnstock

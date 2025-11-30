@@ -4,12 +4,12 @@ import logging
 
 # Try to import vnstock, if fails, we will rely on yfinance
 try:
-    from vnstock import Quote, Finance
+    from vnstock import Quote, Finance, Company
 
     VNSTOCK_AVAILABLE = True
 except ImportError:
     logging.warning(
-        "Could not import 'Quote' or 'Finance' from 'vnstock'. Will use yfinance as fallback."
+        "Could not import 'Quote', 'Finance', or 'Company' from 'vnstock'. Will use yfinance as fallback where possible."
     )
     VNSTOCK_AVAILABLE = False
 
@@ -246,4 +246,226 @@ def fetch_balance_sheet(symbol):
         return df
     except Exception as e:
         logging.error(f"Error fetching BS for {symbol}: {e}")
+        return pd.DataFrame()
+
+
+def fetch_dividends(symbol):
+    if not VNSTOCK_AVAILABLE:
+        return pd.DataFrame()
+
+    try:
+        # Use Company class
+        company = Company(symbol=symbol, source="TCBS")
+
+        try:
+            df = company.dividends()
+        except AttributeError:
+            logging.warning(f"company.dividends not found for {symbol}")
+            return pd.DataFrame()
+
+        if df is None or df.empty:
+            return pd.DataFrame()
+
+        # Columns from API: exercise_date, cash_year, cash_dividend_percentage, issue_method
+        # ClickHouse expects: ticker, exercise_date, cash_year, cash_dividend_percentage, stock_dividend_percentage, issue_method
+
+        df["ticker"] = symbol
+
+        # Ensure correct types
+        if "exercise_date" in df.columns:
+            df["exercise_date"] = pd.to_datetime(df["exercise_date"]).dt.date
+
+        if "cash_year" in df.columns:
+            df["cash_year"] = df["cash_year"].astype(int)
+
+        if "cash_dividend_percentage" in df.columns:
+            df["cash_dividend_percentage"] = df["cash_dividend_percentage"].astype(
+                float
+            )
+
+        # Add missing columns expected by ClickHouse
+        if "stock_dividend_percentage" not in df.columns:
+            df["stock_dividend_percentage"] = 0.0
+
+        required_cols = [
+            "ticker",
+            "exercise_date",
+            "cash_year",
+            "cash_dividend_percentage",
+            "stock_dividend_percentage",
+            "issue_method",
+        ]
+
+        # Ensure all required columns exist
+        for col in required_cols:
+            if col not in df.columns:
+                df[col] = None
+
+        return df[required_cols]
+
+    except Exception as e:
+        logging.warning(f"Error fetching dividends for {symbol}: {e}")
+        return pd.DataFrame()
+
+
+def fetch_income_stmt(symbol):
+    if not VNSTOCK_AVAILABLE:
+        return pd.DataFrame()
+
+    try:
+        # Use Finance class
+        finance = Finance(symbol=symbol, source="VCI")
+
+        # Fetch data with confirmed parameters
+        try:
+            df = finance.income_statement(period="quarter", lang="en", dropna=True)
+        except AttributeError:
+            logging.warning(f"finance.income_statement not found for {symbol}")
+            return pd.DataFrame()
+
+        if df is None or df.empty:
+            return pd.DataFrame()
+
+        # The data is returned with periods as rows and metrics as columns.
+        # Columns include: ticker, yearReport, lengthReport, Net Sales, Cost of Sales, etc.
+
+        # Standardize columns
+        # Map specific columns to our schema
+        mapping = {
+            "Net Sales": "revenue",
+            "Cost of Sales": "cost_of_goods_sold",
+            "Gross Profit": "gross_profit",
+            "Operating Profit/Loss": "operating_profit",
+            "Net Profit For the Year": "net_profit_post_tax",
+        }
+
+        # Rename columns
+        df.rename(columns=mapping, inplace=True)
+
+        # Select required columns
+        required_metrics = [
+            "revenue",
+            "cost_of_goods_sold",
+            "gross_profit",
+            "operating_profit",
+            "net_profit_post_tax",
+        ]
+
+        # Check if required columns exist
+        available_metrics = [m for m in required_metrics if m in df.columns]
+
+        if not available_metrics:
+            logging.warning(
+                f"No matching metrics found for {symbol} in income statement"
+            )
+            return pd.DataFrame()
+
+        df_final = df.copy()
+
+        # Ensure ticker is present (it usually is, but just in case)
+        if "ticker" not in df_final.columns:
+            df_final["ticker"] = symbol
+
+        # Parse period from yearReport and lengthReport
+        if "yearReport" in df_final.columns and "lengthReport" in df_final.columns:
+            df_final["year"] = df_final["yearReport"]
+            df_final["quarter"] = df_final["lengthReport"]
+
+            # Construct fiscal_date
+            def make_date(row):
+                try:
+                    y = int(row["year"])
+                    q = int(row["quarter"])
+                    if q == 1:
+                        return f"{y}-03-31"
+                    if q == 2:
+                        return f"{y}-06-30"
+                    if q == 3:
+                        return f"{y}-09-30"
+                    if q == 4:
+                        return f"{y}-12-31"
+                except (ValueError, TypeError):
+                    pass
+                return None
+
+            df_final["fiscal_date"] = df_final.apply(make_date, axis=1)
+        df_final.dropna(subset=["year", "quarter", "fiscal_date"], inplace=True)
+
+        final_cols = ["ticker", "fiscal_date", "year", "quarter"] + available_metrics
+
+        # Ensure all required metrics exist (fill with 0 or None if missing, though we checked available_metrics)
+        for col in required_metrics:
+            if col not in df_final.columns:
+                df_final[col] = None
+
+        return df_final[final_cols]
+
+    except Exception as e:
+        logging.warning(f"Error fetching income stmt for {symbol}: {e}")
+        return pd.DataFrame()
+
+
+def fetch_news(symbol):
+    if not VNSTOCK_AVAILABLE:
+        return pd.DataFrame()
+
+    try:
+        # Use Company class
+        company = Company(symbol=symbol, source="TCBS")
+
+        # usage: company.news(page_size=50)
+        # Note: Check if method is 'news' or 'company_news'
+        try:
+            df = company.news(page_size=50)
+        except AttributeError:
+            logging.warning(f"company.news not found for {symbol}")
+            return pd.DataFrame()
+
+        if df is None or df.empty:
+            return pd.DataFrame()
+
+        # Standardize columns
+        df["ticker"] = symbol
+
+        # Map columns
+        # id -> news_id
+        # publish_date -> publish_date (ensure datetime)
+        # price -> price_at_publish
+
+        df.rename(columns={"id": "news_id", "price": "price_at_publish"}, inplace=True)
+
+        # Ensure publish_date is datetime
+        if "publish_date" in df.columns:
+            df["publish_date"] = pd.to_datetime(df["publish_date"])
+
+        # Select columns
+        required_cols = [
+            "ticker",
+            "publish_date",
+            "title",
+            "source",
+            "price_at_publish",
+            "price_change",
+            "price_change_ratio",
+            "rsi",
+            "rs",
+            "news_id",
+        ]
+
+        # Fill missing
+        for col in required_cols:
+            if col not in df.columns:
+                df[col] = None
+
+        # Ensure types
+        df["news_id"] = df["news_id"].astype(int)
+        df["price_at_publish"] = df["price_at_publish"].astype(float)
+        df["price_change"] = df["price_change"].astype(float)
+        df["price_change_ratio"] = df["price_change_ratio"].astype(float)
+        df["rsi"] = df["rsi"].astype(float)
+        df["rs"] = df["rs"].astype(float)
+
+        return df[required_cols]
+    except Exception as e:
+        logging.warning(f"Error fetching news for {symbol}: {e}")
         return pd.DataFrame()

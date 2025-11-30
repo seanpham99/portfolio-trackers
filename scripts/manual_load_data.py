@@ -8,7 +8,13 @@ import logging
 # Add project root to path to import dags.etl_modules
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from dags.etl_modules.fetcher import fetch_stock_price, fetch_financial_ratios
+from dags.etl_modules.fetcher import (
+    fetch_stock_price,
+    fetch_financial_ratios,
+    fetch_dividends,
+    fetch_income_stmt,
+    fetch_news,
+)
 
 try:
     from vnstock import Listing
@@ -36,18 +42,32 @@ def manual_load(start_date, end_date, price_only=False, ratios_only=False):
     # Determine what to fetch
     fetch_price = True
     fetch_ratios = True
+    fetch_divs = True
+    fetch_income = True
+    fetch_news_flag = True
 
     if price_only:
         fetch_ratios = False
+        fetch_divs = False
+        fetch_income = False
+        fetch_news_flag = False
         logging.info("Mode: Price Only")
     elif ratios_only:
         fetch_price = False
+        fetch_divs = False
+        fetch_income = False
+        fetch_news_flag = False
         logging.info("Mode: Ratios Only")
     else:
-        logging.info("Mode: Full Load (Price + Ratios)")
+        logging.info(
+            "Mode: Full Load (Price + Ratios + Dividends + Income Stmt + News)"
+        )
 
     price_data = []
     ratio_data = []
+    div_data = []
+    income_data = []
+    news_data = []
 
     for ticker in STOCKS:
         # 1. Fetch Price
@@ -61,6 +81,24 @@ def manual_load(start_date, end_date, price_only=False, ratios_only=False):
             df_ratio = fetch_financial_ratios(ticker)
             if not df_ratio.empty:
                 ratio_data.append(df_ratio)
+
+        # 3. Fetch Dividends
+        if fetch_divs:
+            df_div = fetch_dividends(ticker)
+            if not df_div.empty:
+                div_data.append(df_div)
+
+        # 4. Fetch Income Statement
+        if fetch_income:
+            df_inc = fetch_income_stmt(ticker)
+            if not df_inc.empty:
+                income_data.append(df_inc)
+
+        # 5. Fetch News
+        if fetch_news_flag:
+            df_news = fetch_news(ticker)
+            if not df_news.empty:
+                news_data.append(df_news)
 
     # Connect to ClickHouse
     logging.info(f"Connecting to ClickHouse at {CLICKHOUSE_HOST}:{CLICKHOUSE_PORT}...")
@@ -141,6 +179,106 @@ def manual_load(start_date, end_date, price_only=False, ratios_only=False):
             logging.info("Optimized fact_financial_ratios.")
         else:
             logging.warning("No financial ratio data fetched.")
+
+    # Load Dividends
+    if fetch_divs:
+        if div_data:
+            final_div_df = pd.concat(div_data)
+            # Ensure date format is correct
+            final_div_df["exercise_date"] = pd.to_datetime(
+                final_div_df["exercise_date"]
+            ).dt.date
+
+            div_records = final_div_df.to_dict("records")
+            logging.info(f"Inserting {len(div_records)} dividend rows...")
+
+            div_cols = [
+                "ticker",
+                "exercise_date",
+                "cash_year",
+                "cash_dividend_percentage",
+                "stock_dividend_percentage",
+                "issue_method",
+            ]
+            div_tuples = []
+            for row in div_records:
+                div_tuples.append([row.get(col) for col in div_cols])
+
+            client.insert(
+                "market_dwh.fact_dividends", div_tuples, column_names=div_cols
+            )
+            logging.info("Dividend insertion complete.")
+            client.command("OPTIMIZE TABLE market_dwh.fact_dividends FINAL")
+        else:
+            logging.warning("No dividend data fetched.")
+
+    # Load Income Statement
+    if fetch_income:
+        if income_data:
+            final_inc_df = pd.concat(income_data)
+            final_inc_df["fiscal_date"] = pd.to_datetime(
+                final_inc_df["fiscal_date"]
+            ).dt.date
+
+            inc_records = final_inc_df.to_dict("records")
+            logging.info(f"Inserting {len(inc_records)} income statement rows...")
+
+            inc_cols = [
+                "ticker",
+                "fiscal_date",
+                "year",
+                "quarter",
+                "revenue",
+                "cost_of_goods_sold",
+                "gross_profit",
+                "operating_profit",
+                "net_profit_post_tax",
+            ]
+            inc_tuples = []
+            for row in inc_records:
+                inc_tuples.append([row.get(col, 0.0) for col in inc_cols])
+
+            client.insert(
+                "market_dwh.fact_income_statement", inc_tuples, column_names=inc_cols
+            )
+            logging.info("Income statement insertion complete.")
+            client.command("OPTIMIZE TABLE market_dwh.fact_income_statement FINAL")
+        else:
+            logging.warning("No income statement data fetched.")
+
+    # Load News
+    if fetch_news_flag:
+        if news_data:
+            final_news_df = pd.concat(news_data)
+            # Ensure publish_date is datetime
+            final_news_df["publish_date"] = pd.to_datetime(
+                final_news_df["publish_date"]
+            )
+
+            news_records = final_news_df.to_dict("records")
+            logging.info(f"Inserting {len(news_records)} news rows...")
+
+            news_cols = [
+                "ticker",
+                "publish_date",
+                "title",
+                "source",
+                "price_at_publish",
+                "price_change",
+                "price_change_ratio",
+                "rsi",
+                "rs",
+                "news_id",
+            ]
+            news_tuples = []
+            for row in news_records:
+                news_tuples.append([row.get(col) for col in news_cols])
+
+            client.insert("market_dwh.fact_news", news_tuples, column_names=news_cols)
+            logging.info("News insertion complete.")
+            client.command("OPTIMIZE TABLE market_dwh.fact_news FINAL")
+        else:
+            logging.warning("No news data fetched.")
 
 
 def update_company_dimension(client):

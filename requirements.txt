@@ -6,7 +6,6 @@ websockets
 apache-airflow-providers-postgres
 yfinance
 pandas
-matplotlib
 numpy
 sqlalchemy
 psycopg2-binary
