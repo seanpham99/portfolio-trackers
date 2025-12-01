@@ -22,77 +22,87 @@ def clean_decimal_cols(df, cols):
 
 
 def fetch_stock_price(symbol, start_date, end_date):
-    """
-    Fetches stock prices. Handles NaN cleanup for ClickHouse Decimal compatibility.
-    """
     logging.info(f"Attempting fetch for {symbol}...")
     df = pd.DataFrame()
-
     try:
-        logging.info(f"Fetching {symbol} via VNSTOCK...")
         quote = Quote(symbol=symbol, source="vci")
         df = quote.history(start=start_date, end=end_date, interval="D")
-
         if df is None or df.empty:
-            raise ValueError("Empty data from vnstock")
+            raise ValueError("Empty data")
 
         df.columns = [c.lower() for c in df.columns]
-        rename_map = {"time": "trading_date", "date": "trading_date"}
-        df.rename(columns=rename_map, inplace=True)
+        df.rename(
+            columns={"time": "trading_date", "date": "trading_date"}, inplace=True
+        )
 
         required_cols = ["trading_date", "open", "high", "low", "close", "volume"]
-        if not all(col in df.columns for col in required_cols):
-            raise ValueError("Invalid columns from vnstock")
-
-        df = df[required_cols]
+        df = df[[c for c in required_cols if c in df.columns]]
         df["ticker"] = symbol
         df["source"] = "vnstock"
-
     except Exception as e:
-        logging.warning(f"VNSTOCK failed for {symbol} ({e}).")
-        df = pd.DataFrame()
+        logging.warning(f"VNSTOCK failed for {symbol}: {e}")
+        return pd.DataFrame()
 
     if df.empty:
         return df
 
-    # Type Conversion & Cleanup
+    # Type Conversion
     if not pd.api.types.is_datetime64_any_dtype(df["trading_date"]):
         df["trading_date"] = pd.to_datetime(df["trading_date"])
     df["trading_date"] = df["trading_date"].dt.date
 
-    # Clean Price Columns for Decimal Types
-    # If these have NaNs, ClickHouse will crash
-    decimal_cols = ["open", "high", "low", "close"]
-    df = clean_decimal_cols(df, decimal_cols)
-
-    # Volume is Int
+    # Clean for Decimal
+    df = clean_decimal_cols(df, ["open", "high", "low", "close"])
     df["volume"] = df["volume"].fillna(0).astype(int)
 
+    # Technical Indicators
     try:
-        # Temp Index for calculations
         df["calc_date"] = pd.to_datetime(df["trading_date"])
         df.set_index("calc_date", inplace=True)
         df.sort_index(inplace=True)
 
-        # Calculate
         df["ma_50"] = ta.sma(df["close"], length=50)
         df["ma_200"] = ta.sma(df["close"], length=200)
         df["rsi_14"] = ta.rsi(df["close"], length=14)
         df["daily_return"] = df["close"].pct_change() * 100
 
-        # Backfill first, then fill remaining NaNs with 0
-        # This prevents "crash to zero" lines on charts
-        df["ma_50"] = df["ma_50"].bfill().fillna(0)
-        df["ma_200"] = df["ma_200"].bfill().fillna(0)
-        df["rsi_14"] = df["rsi_14"].bfill().fillna(0)
-        df["daily_return"] = df["daily_return"].fillna(0)
+        # MACD (New)
+        macd = ta.macd(df["close"], fast=12, slow=26, signal=9)
+        if macd is not None:
+            # pandas_ta returns columns like MACD_12_26_9, MACDh_..., MACDs_...
+            # We rename them to our simple schema
+            df["macd"] = macd.iloc[:, 0]  # MACD Line
+            df["macd_hist"] = macd.iloc[:, 1]  # Histogram
+            df["macd_signal"] = macd.iloc[:, 2]  # Signal Line
+
+        # Backfill & FillNa
+        cols_to_fill = [
+            "ma_50",
+            "ma_200",
+            "rsi_14",
+            "daily_return",
+            "macd",
+            "macd_signal",
+            "macd_hist",
+        ]
+        for c in cols_to_fill:
+            if c in df.columns:
+                df[c] = df[c].bfill().fillna(0)
+            else:
+                df[c] = 0.0
 
         df.reset_index(drop=True, inplace=True)
-
     except Exception as e:
-        logging.error(f"Error calculating indicators for {symbol}: {e}", exc_info=True)
-        # Ensure columns exist even if calc failed
-        for c in ["ma_50", "ma_200", "rsi_14", "daily_return"]:
+        logging.error(f"Error indicators {symbol}: {e}")
+        for c in [
+            "ma_50",
+            "ma_200",
+            "rsi_14",
+            "daily_return",
+            "macd",
+            "macd_signal",
+            "macd_hist",
+        ]:
             df[c] = 0.0
 
     return df
@@ -103,16 +113,13 @@ def fetch_financial_ratios(symbol):
     try:
         finance = Finance(symbol=symbol, source="VCI")
         df = finance.ratio(period="quarter", lang="en", dropna=True)
-
         if df is None or df.empty:
             return pd.DataFrame()
 
-        # 2. FLATTEN THE MULTI-INDEX COLUMNS
-        # Your columns look like: ('Meta', 'ticker'), ('Chỉ tiêu...', 'P/E')
-        # We join them to make single strings: "Meta_ticker", "Chỉ tiêu định giá_P/E"
-        df.columns = ["_".join(map(str, col)).strip() for col in df.columns.values]  #
+        # 1. Flatten MultiIndex Columns
+        if isinstance(df.columns, pd.MultiIndex):
+            df.columns = ["_".join(map(str, col)).strip() for col in df.columns.values]
 
-        # 3. HELPER: Find column by partial match (because "Chỉ tiêu..." is long and might change)
         col_list = df.columns.tolist()
 
         def get_col(keyword):
@@ -121,50 +128,42 @@ def fetch_financial_ratios(symbol):
                     return c
             return None
 
-        # 4. MAP TO CLICKHOUSE SCHEMA
+        # 2. Map Columns - Start with the source dataframe
+        year_col = get_col("yearReport")
+        quarter_col = get_col("lengthReport")
+        if not year_col or not quarter_col:
+            return pd.DataFrame()
+
         out_df = pd.DataFrame()
-        out_df["ticker"] = df[get_col("ticker")]  # Maps to 'Meta_ticker'
+        out_df["year"] = df[year_col].fillna(0).astype(int)
+        out_df["quarter"] = df[quarter_col].fillna(0).astype(int)
 
-        # Meta Fields
-        out_df["year"] = df[get_col("yearReport")].astype(int)
-        out_df["quarter"] = df[get_col("lengthReport")].astype(int)
+        # Mapping Dictionary: {Target: Source_Keyword}
+        metric_map = {
+            "pe_ratio": "P/E",
+            "pb_ratio": "P/B",
+            "ps_ratio": "P/S",
+            "p_cashflow_ratio": "P/Cash Flow",
+            "eps": "EPS",
+            "bvps": "BVPS",
+            "market_cap": "Market Capital",
+            "roe": "ROE",
+            "roa": "ROA",
+            "roic": "ROIC",
+            "net_profit_margin": "Net Profit Margin",
+            "debt_to_equity": "Debt/Equity",
+            "financial_leverage": "Financial Leverage",
+            "dividend_yield": "Dividend yield",
+        }
 
-        # Valuation
-        out_df["pe_ratio"] = df[get_col("P/E")]
-        out_df["pb_ratio"] = df[get_col("P/B")]
-        out_df["ps_ratio"] = df[get_col("P/S")]
-        out_df["p_cashflow_ratio"] = df[get_col("P/Cash Flow")]
-        out_df["eps"] = df[get_col("EPS")]
-        out_df["bvps"] = df[get_col("BVPS")]
-        out_df["market_cap"] = df[get_col("Market Capital")]  #
+        for target, keyword in metric_map.items():
+            src_col = get_col(keyword)
+            out_df[target] = df[src_col] if src_col else 0.0
 
-        # Efficiency
-        out_df["roe"] = df[get_col("ROE")]
-        out_df["roa"] = df[get_col("ROA")]
-        out_df["roic"] = df[get_col("ROIC")]  #
-        out_df["net_profit_margin"] = df[get_col("Net Profit Margin")]
-
-        # Health
-        out_df["debt_to_equity"] = df[get_col("Debt/Equity")]
-        out_df["financial_leverage"] = df[get_col("Financial Leverage")]
-        out_df["dividend_yield"] = df[get_col("Dividend yield")]
-
-        # 5. Clean Decimal/NaN issues
-        # Exclude metadata columns from cleaning to prevent int -> float conversion
-        meta_cols = ["ticker", "year", "quarter", "fiscal_date"]
-        metric_cols = [c for c in out_df.columns if c not in meta_cols]
-        out_df = clean_decimal_cols(out_df, metric_cols)
-
-        # 6. Generate Fiscal Date (Quarter End)
+        # 3. Generate Date
         def get_quarter_end(row):
-            try:
-                # Robust casting: handle float, int, or string float "2025.0"
-                y = int(float(row["year"]))
-                q = int(float(row["quarter"]))
-            except (ValueError, TypeError) as e:
-                # logging.warning(f"Date parse error for {row.get('ticker')}: {e}")
-                return None
-
+            y = int(row["year"])  # Ensure year is int
+            q = int(row["quarter"])  # Ensure quarter is int
             if q == 1:
                 return pd.Timestamp(f"{y}-03-31").date()
             if q == 2:
@@ -176,11 +175,15 @@ def fetch_financial_ratios(symbol):
             return pd.Timestamp(f"{y}-01-01").date()
 
         out_df["fiscal_date"] = out_df.apply(get_quarter_end, axis=1)
+        out_df = clean_decimal_cols(out_df, list(metric_map.keys()))
+
+        # Add ticker column AFTER all other columns are set to ensure proper alignment
+        out_df["ticker"] = symbol
 
         return out_df
 
     except Exception as e:
-        logging.error(f"Error fetching ratios for {symbol}: {e}", exc_info=True)
+        logging.error(f"Error ratios {symbol}: {e}")
         return pd.DataFrame()
 
 
