@@ -14,6 +14,7 @@ from etl_modules.fetcher import fetch_news
 from etl_modules.notifications import (
     send_success_notification,
     send_failure_notification,
+    send_telegram_news_summary,
 )
 
 # CONFIG
@@ -103,6 +104,16 @@ with DAG(
         print("News insertion complete.")
         client.command("OPTIMIZE TABLE market_dwh.fact_news FINAL")
 
+    @task
+    def send_news_digest(data):
+        """Send news summary to Telegram"""
+        if data:
+            send_telegram_news_summary(data)
+            print(f"Sent {len(data)} news items to Telegram")
+        else:
+            print("No news to send")
+
     # Orchestration
     news_records = extract_news()
     load_news(news_records)
+    send_news_digest(news_records)
