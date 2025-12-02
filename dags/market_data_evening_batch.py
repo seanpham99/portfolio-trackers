@@ -54,13 +54,17 @@ with DAG(
     def extract_prices():
         price_data = []
         print("RUNNING DAILY INCREMENTAL (7 DAYS)")
-        start_date = (datetime.today() - timedelta(days=7)).strftime("%Y-%m-%d")
+        # Fetch 250 days for indicator calculation, but only keep last 7 days
+        lookback_date = (datetime.today() - timedelta(days=250)).strftime("%Y-%m-%d")
         end_date = datetime.today().strftime("%Y-%m-%d")
-        print(f"Fetching prices from {start_date} to {end_date}")
+        filter_from = (datetime.today() - timedelta(days=7)).strftime("%Y-%m-%d")
+        print(f"Fetching prices from {lookback_date} to {end_date} (will filter to last 7 days)")
 
         for ticker in STOCKS:
-            df_price = fetch_stock_price(ticker, start_date, end_date)
+            df_price = fetch_stock_price(ticker, lookback_date, end_date)
             if not df_price.empty:
+                # Filter to only last 7 days for insertion
+                df_price = df_price[df_price["trading_date"].astype(str) >= filter_from]
                 price_data.append(df_price)
 
         if price_data:
@@ -96,6 +100,13 @@ with DAG(
             "close",
             "volume",
             "ticker",
+            "daily_return",
+            "ma_50",
+            "ma_200",
+            "rsi_14",
+            "macd",
+            "macd_signal",
+            "macd_hist",
             "source",
         ]
         price_tuples = []
