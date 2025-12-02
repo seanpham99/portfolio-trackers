@@ -58,7 +58,9 @@ with DAG(
         lookback_date = (datetime.today() - timedelta(days=250)).strftime("%Y-%m-%d")
         end_date = datetime.today().strftime("%Y-%m-%d")
         filter_from = (datetime.today() - timedelta(days=7)).strftime("%Y-%m-%d")
-        print(f"Fetching prices from {lookback_date} to {end_date} (will filter to last 7 days)")
+        print(
+            f"Fetching prices from {lookback_date} to {end_date} (will filter to last 7 days)"
+        )
 
         for ticker in STOCKS:
             df_price = fetch_stock_price(ticker, lookback_date, end_date)
