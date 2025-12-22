@@ -23,7 +23,7 @@
 - **Metadata Database**: [PostgreSQL](https://www.postgresql.org/)
 - **Data Source**: `vnstock` (Vietnamese Stock Market API)
 - **Containerization**: Docker & Docker Compose
-- **Language**: Python 3.x
+- **Language**: Python 3.12
 
 ---
 
