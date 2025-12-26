@@ -1,9 +1,10 @@
 import { createServerClient, parseCookieHeader, serializeCookieHeader } from '@supabase/ssr'
+import { Database } from '@repo/database-types'
 
 export function createClient(request: Request) {
   const headers = new Headers()
 
-  const supabase = createServerClient(
+  const supabase = createServerClient<Database>(
     process.env.VITE_SUPABASE_URL!,
     process.env.VITE_SUPABASE_PUBLISHABLE_OR_ANON_KEY!,
     {

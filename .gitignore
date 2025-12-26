@@ -4,3 +4,6 @@
 **/build
 **/.next
 **/.expo
+
+.env
+.env.*

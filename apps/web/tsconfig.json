@@ -19,6 +19,12 @@
       ],
       "@repo/ui/*": [
         "../../packages/ui/src/*"
+      ],
+      "@repo/database-types": [
+        "../../packages/database-types/src/index.ts"
+      ],
+      "@repo/api-types": [
+        "../../packages/api-types/src/index.ts"
       ]
     }
   }

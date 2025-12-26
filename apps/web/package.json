@@ -58,6 +58,7 @@
     "@tailwindcss/vite": "^4.1.18",
     "@types/node": "^25.0.3",
     "@repo/api-types": "workspace:*",
+    "@repo/database-types": "workspace:*",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react-swc": "^4.2.2",

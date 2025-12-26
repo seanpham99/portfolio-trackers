@@ -42,7 +42,7 @@ story_location: _bmad-output/implementation-artifacts
 development_status:
   epic-1: in-progress
   1-1-initialize-nestjs-api-shared-packages: done
-  1-2-configure-supabase-auth-google-oauth: backlog
+  1-2-configure-supabase-auth-google-oauth: done
   1-3-implement-login-signup-ui: backlog
   1-4-privacy-consent-pdpa-compliance: backlog
   epic-1-retrospective: optional
