@@ -58,11 +58,15 @@ workflow_status:
     updated: "2025-12-26"
 
   create-ux-design:
-    status: conditional
+    status: completed
     agent: ux-designer
     command: create-ux-design
     phase: 1
-    condition: if_has_ui
+    completed: "2025-12-26"
+    updated: "2025-12-26"
+    note: "UX design spec finalized: Enhanced Tabbed Navigation and core flows"
+    artifacts:
+      - "_bmad-output/project-planning-artifacts/ux/ux-design-specification.md"
 
   # PHASE 2: Solutioning
   create-architecture:

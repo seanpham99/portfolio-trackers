@@ -56,13 +56,13 @@ Fin-Sight transforms an existing institutional-grade data pipeline (Apache Airfl
 
 ### What Makes This Special
 
-**Differentiator:** The only tracker that makes cross‑border Vietnamese wealth feel simple — pairing institutional data quality with a calming, spatial UI to reduce volatility‑driven overwhelm.
+**Differentiator:** The only tracker that makes cross‑border Vietnamese wealth feel simple — pairing institutional data quality with a calming, polished interface designed to reduce volatility‑driven overwhelm.
 
 **Unique Differentiators**
 
 1. Vietnamese Market Excellence — Deep HSX/HNX integration via vnstock, understanding T+2 settlement and foreign ownership mechanics.
 2. Multi-Asset Parity — VN stocks, US equities, and crypto treated as first-class citizens with equal feature depth.
-3. Institutional Data + Consumer UX — Professional-grade technical indicators from TradingView/3rd-party providers wrapped in a minimalist spatial UI (horizontal stage slider).
+3. Institutional Data + Consumer UX — Professional-grade technical indicators from TradingView/3rd-party providers wrapped in a minimalist, premium interface with smooth micro-interactions.
 4. Transparent Methodology — Every metric (cost basis, returns, allocations) shows underlying formulas and data sources.
 5. Cross-Border Intelligence — Built for overseas Vietnamese and tech-savvy investors managing VN + US + crypto with automatic multi-currency reconciliation.
 
@@ -91,7 +91,7 @@ Fin-Sight transforms an existing institutional-grade data pipeline (Apache Airfl
 
 **Greenfield Components**
 
-- React 19 web app with TradingView widgets (stage slider UX).
+- React 19 web app with TradingView widgets (enhanced tabbed navigation with smooth transitions).
 - NestJS API (authentication, business logic, caching, payments).
 - Supabase (PostgreSQL) for users, portfolios, transactions.
 - Redis for hot data caching; polling-based refresh (30–60s).
@@ -144,11 +144,11 @@ Dimensional modeling + ClickHouse columnar storage yields fast analytics, clean 
 ### User Success
 
 - Consolidated multi‑asset view across VN stocks, US equities, and crypto in one dashboard; ≤ 3 clicks to drill from net worth → portfolio → asset → transaction.
-- Time‑to‑first‑complete‑portfolio ≤ 10 minutes (from signup to consolidated view).
-- Add transactions quickly: manual entry ≤ 15 seconds per transaction.
-- CSV import success rates: ≥ 95% (VN brokers), ≥ 92% (US brokers), ≥ 90% (crypto wallets/exchanges) with actionable validation feedback ≤ 2 seconds.
-- Volatility calm proxy: On VN down days (VN‑Index ≤ −1.5%), session duration ≥ 2 minutes; stage‑switch interactions increase ≥ 1.4× baseline.
-- Activation within 7 days: user links assets (≥ 1 VN stock + ≥ 1 crypto) or imports ≥ 10 transactions.
+- Time‑to‑first‑complete‑portfolio ≤ 15 minutes (from signup to consolidated view via manual entry).
+- Add transactions quickly: manual entry ≤ 30 seconds per transaction with autocomplete and keyboard shortcuts.
+- Crypto API sync: ≥ 98% successful connection rate for Binance and OKX; real-time balance sync within 5 seconds.
+- Volatility calm proxy: On VN down days (VN‑Index ≤ −1.5%), session duration ≥ 2 minutes; asset-class tab switches increase ≥ 1.4× baseline.
+- Activation within 7 days: user adds ≥ 10 assets manually OR syncs ≥ 1 crypto exchange account.
 
 ### Business Success
 
@@ -176,23 +176,25 @@ Consolidated in Project Scoping & Phased Development. See that section for MVP (
 
 ### Signup → Activation (Primary Vietnamese Tech Investor)
 
-- Signs up via Google OAuth; lands on stage slider with “Get started” coachmark.
-- Creates portfolio “VN + Crypto”; adds 10 VN stocks manually; adds 5 crypto assets.
-- CSV import for SSI holdings; validation passes in ≤ 2s; 95% success (VN); errors show mapping hints.
-- Outcome: Activation completed within 7 days; time‑to‑first‑complete‑portfolio ≤ 10 minutes; drill‑down ≤ 3 clicks.
-- Upgrade prompt: Hit 20‑asset free limit → modal offers unlock benefits (unlimited assets + faster polling + insights).
+- Signs up via Google OAuth; lands on dashboard with tabbed asset class navigation and "Get started" coachmark.
+- Creates portfolio "VN + Crypto"; adds 10 VN stocks manually using autocomplete (symbol search returns HPG, VCB, FPT instantly).
+- Connects Binance account via OAuth; 5 crypto holdings sync automatically within 5 seconds; real-time balance updates.
+- Outcome: Activation completed within 7 days; time‑to‑first‑complete‑portfolio ≤ 15 minutes; drill‑down ≤ 3 clicks.
+- Upgrade prompt: Hit 20‑asset free limit → modal offers unlock benefits (unlimited assets + faster polling + AI insights).
 
 ### Daily Check‑In (Calm‑Under‑Volatility)
 
-- VN‑Index down −2%; stage slider shows VN first; switches to Crypto → offset gain.
+- VN‑Index down −2%; dashboard shows VN tab first; user switches to Crypto tab → sees offset gain.
 - Allocation panel shows top movers; price freshness badge warns if > 5 minutes; polling refresh 60 seconds.
-- Outcome: Session duration ≥ 2 minutes on down days; stage‑switches ≥ 1.4× baseline; exploration instead of bounce.
+- Outcome: Session duration ≥ 2 minutes on down days; tab switches ≥ 1.4× baseline; exploration instead of bounce.
 
-### CSV Import (VN Broker, US Broker, Crypto)
+### Crypto Exchange Sync (Binance, OKX)
 
-- Chooses template (SSI/VPS/VCBS, US broker, Binance); drags file; sees preview.
-- Validation in ≤ 2s; success rates: VN ≥ 95%, US ≥ 92%, Crypto ≥ 90%; failures show row‑level errors + quick fixes.
-- Outcome: Import completes; Redis invalidates portfolio summary in ≤ 2s; holdings reflect immediately.
+- User navigates to Settings → Connected Accounts; clicks "Connect Binance".
+- OAuth flow opens Binance login; user authorizes read-only access (view balances, no trading).
+- Fin-sight receives API credentials; fetches all spot balances via CCXT library within 5 seconds.
+- Balances appear in Crypto tab with real-time sync badge; background refresh every 60s.
+- Outcome: Zero manual entry for crypto holdings; automatic updates; disconnect anytime in settings.
 
 ### Upgrade Flow (Freemium → Paid)
 
@@ -211,7 +213,7 @@ Consolidated in Project Scoping & Phased Development. See that section for MVP (
 
 - Price Staleness: If data > 5 minutes old, show banner and retry; user can refresh; system backoff handles provider outages.
 - Payment Failure: Polar/SePay error → “Try again” with persisted state; background retries; user remains in free tier until success; no partial upgrades.
-- CSV Failure: Invalid format → guided mapping; rerun validation; import resumes.
+- API Connection Failure: Binance/OKX auth fails → "Reconnect" button; clear error message ("API key expired" vs "Rate limit exceeded"); retry with exponential backoff.
 
 ### Admin/Backoffice (System)
 
@@ -296,7 +298,7 @@ Fin‑Sight v1.0 operates as a subscription portfolio tracker (no custody, no or
 
 ### Detected Innovation Areas
 
-- Spatial Stage Slider: A calming interaction model to navigate VN/US/Crypto contexts, designed to reduce volatility‑driven overwhelm while maintaining drill‑down speed.
+- Enhanced Tabbed Navigation: Proven interaction pattern elevated with premium micro-interactions (smooth transitions, animated indicators, keyboard shortcuts) to balance usability with differentiation.
 - Transparent Methodology: Inline “show methodology” panels that surface formulas and lineage, including separation of FX gains vs asset gains.
 - Cross‑Border Parity: VN stocks, US equities, and crypto treated equally with staleness badges and freshness cues.
 - Resilient Payments: Dual providers (SePay/Polar) with reconciliation; operational resilience as part of UX trust.
@@ -305,32 +307,33 @@ Fin‑Sight v1.0 operates as a subscription portfolio tracker (no custody, no or
 ### Market Context & Competitive Landscape
 
 - Baseline Trackers: US‑centric portfolio apps and crypto‑only trackers often lack VN coverage and transparent calculations.
-- Differentiation: Calm interaction + explicit methodology + cross‑border parity + resilience signals (staleness banners, payment states).
+- Differentiation: Polished premium UX + explicit methodology + cross‑border parity + resilience signals (staleness banners, payment states).
 
 ### Validation Approach
 
-- Behavioral KPIs: Down‑day sessions ≥ 2 minutes; stage‑switches ≥ 1.4× baseline; time‑to‑first‑complete‑portfolio ≤ 10 minutes; drill‑down ≤ 3 clicks.
-- Experiments: A/B Spatial Stage Slider vs tabbed baseline; measure staleness badge impact on perceived trust.
-- Instrumentation: Client events (stage changes, dwell, refresh); backend timings; price freshness; upgrade prompts at free‑tier limits.
+- Behavioral KPIs: Down‑day sessions ≥ 2 minutes; tab switches ≥ 1.4× baseline; time‑to‑first‑complete‑portfolio ≤ 10 minutes; drill‑down ≤ 3 clicks.
+- Experiments: Measure staleness badge impact on perceived trust; test upgrade modal timing and messaging.
+- Instrumentation: Client events (tab changes, dwell, refresh); backend timings; price freshness; upgrade prompts at free‑tier limits.
 - Qualitative: Usability tests on volatility scenarios; think‑aloud studies; short diary studies for daily check‑ins.
 
 ### Risk Mitigation
 
-- Fallback UX: Keep Spatial Stage Slider as default; include feature toggles for Tabbed Baseline and Split‑View Tri‑Pane as fallbacks.
+- Navigation Pattern: Enhanced Tabbed Navigation as primary; Spatial Stage Slider documented for Phase 2+ exploration.
 - Progressive Disclosure: Methodology panels collapsed by default; clear affordances to avoid cognitive overload.
 - Performance Guardrails: Cache TTLs, pagination, virtualization; defer heavy charts offscreen.
 - Operational Resilience: Staleness banners and graceful payment failure states; nightly reconciliation.
 
 ### Decision
 
-- Adopt Spatial Stage Slider for v1.0 as the primary interaction model.
-- Prototype fallbacks (Tabbed Baseline, Split‑View Tri‑Pane) behind settings to validate assumptions without blocking release.
+- Adopt Enhanced Tabbed Navigation for v1.0 as the primary interaction model (safety-first, proven pattern).
+- Spatial Stage Slider documented as Phase 2+ exploration pending dedicated UX research budget.
+- Phase 2 may introduce split-pane compare mode at XL breakpoints for side-by-side asset class comparison.
 
 ## Web App Specific Requirements
 
 ### Project-Type Overview
 
-SPA dashboard (React 19 + Vite) with Spatial Stage Slider interaction, TradingView widgets for charts, NestJS API for business logic and caching, Supabase Auth/Postgres for users/portfolios/transactions, ClickHouse for analytics, and Redis for hot data. Refresh strategy is polling-first with explicit staleness cues and resilience flows.
+SPA dashboard (React 19 + Vite) with Enhanced Tabbed Navigation (smooth transitions, micro-interactions), TradingView widgets for charts, NestJS API for business logic and caching, Supabase Auth/Postgres for users/portfolios/transactions, ClickHouse for analytics, and Redis for hot data. Refresh strategy is polling-first with explicit staleness cues and resilience flows.
 
 ### Technical Architecture Considerations
 
@@ -347,9 +350,9 @@ SPA dashboard (React 19 + Vite) with Spatial Stage Slider interaction, TradingVi
 
 ### Responsive Design
 
-- Breakpoints: sm ≤ 640px (single-stage stack), md 641–1024px (stage slider + mini‑map), lg 1025–1440px (standard layout), xl ≥ 1441px (enable split‑view compare).
-- Touch targets: ≥ 44px; swipe support for stage transitions; sticky headers; accessible scroll anchors.
-- Layout: Tri‑pane only ≥ lg; auto-fallback to single‑pane on small screens; avoid horizontal overflow.
+- Breakpoints: sm ≤ 640px (bottom tab bar), md 641–1024px (horizontal scrollable tabs), lg 1025–1440px (standard tab layout), xl ≥ 1441px (tabs + optional split-view compare in Phase 2).
+- Touch targets: ≥ 44px; swipe support for tab navigation on mobile; sticky headers; accessible scroll anchors.
+- Layout: Single-pane content with tab-based switching; auto-fallback to bottom tab bar on small screens; avoid horizontal overflow.
 
 ### Performance Targets
 
@@ -366,15 +369,16 @@ See Non‑Functional Requirements → Accessibility.
 
 ### Implementation Considerations
 
-- Feature Flags: Fallbacks (Tabbed Baseline, Split‑View Tri‑Pane), reduced motion, experimental charts.
+- Feature Flags: Reduced motion, experimental charts, Phase 2 features (split-view compare, spatial slider exploration).
 - Testing: Playwright E2E (matrix above); visual regression; accessibility checks; network throttling tests for staleness behavior.
 
 ## Project Scoping & Phased Development
 
 ### MVP Strategy & Philosophy
 
-**MVP Approach:** Experience MVP + Revenue MVP hybrid (deliver calm Stage Slider UX and launch paid tiers at v1.0).
+**MVP Approach:** Experience MVP + Revenue MVP hybrid (deliver Enhanced Tabbed Navigation and launch paid tiers at v1.0).
 **Resource Requirements:** 2–3 full‑stack TypeScript developers (NestJS/React), 1 part‑time designer, PM; access to existing Airflow/ClickHouse.
+**Timeline:** 6-8 weeks to MVP (2.5 weeks saved by removing CSV validation complexity).
 
 ### MVP Feature Set (Phase 1)
 
@@ -382,8 +386,9 @@ See Non‑Functional Requirements → Accessibility.
 
 **Must‑Have Capabilities:**
 
-- Authentication (Supabase) and portfolios; manual transactions + CSV import (VN brokers at ≥ 95% success).
-- Spatial Stage Slider dashboard; allocation visuals; TradingView charts (RSI/MACD/MA via 3rd‑party first; Airflow fallback if absent).
+- Authentication (Supabase) and portfolios; manual transaction entry with autocomplete (symbol search, recent assets) and keyboard shortcuts.
+- Crypto API Integration (Binance + OKX via CCXT library); OAuth flow; real-time balance sync; read-only access; automatic refresh every 60s.
+- Enhanced Tabbed Navigation dashboard; allocation visuals; TradingView charts (RSI/MACD/MA via 3rd‑party first; Airflow fallback if absent).
 - Net worth engine with FX separation; staleness badges; polling cadence ≈ 60s; Redis TTL ≈ 30s.
 - Payments: SePay (VND) + Polar (USD) with signature verification, idempotent webhooks, retries + reconciliation; no partial upgrades.
 - Data warehouse Star Schema: `Fact_Trades`, `Fact_Holdings_Daily`, `Fact_Portfolio_Valuation_Daily`; `Dim_Date`, `Dim_Asset` (SCD2), `Dim_Account`, `Dim_Platform`.
@@ -391,13 +396,13 @@ See Non‑Functional Requirements → Accessibility.
 
 ### Post‑MVP Features
 
-**Phase 2 (Growth):** AI insights (Gemini), faster polling for paid tier, FX breakdown views, advanced TradingView charts, holdings snapshot notifications, cohort‑based upgrade prompts.
+**Phase 2 (Growth):** AI insights (Gemini), faster polling for paid tier, FX breakdown views, advanced TradingView charts, holdings snapshot notifications, cohort‑based upgrade prompts, CSV import (experimental beta) for VN/US brokers if manual entry becomes top churn reason.
 
 **Phase 3 (Expansion):** Team collaboration, real‑time streams, developer API, mobile app, corporate actions automation (dividends/splits/rights) and enhanced risk analytics (Sharpe, Beta, correlations).
 
 ### Risk Mitigation Strategy
 
-**Technical Risks:** Payment webhook idempotency and retries; cache invalidation guarantees on portfolio mutations; CSV validation/mapping; kill‑switches for slider fallbacks.
+**Technical Risks:** Payment webhook idempotency and retries; cache invalidation guarantees on portfolio mutations; crypto API rate limits and connection failures; OAuth token refresh handling.
 
 **Market Risks:** Validate calm UX via down‑day cohorts; instrument conversion prompts at free‑tier limits; pricing A/B tests.
 
@@ -432,7 +437,7 @@ See Non‑Functional Requirements → Accessibility.
 
 ### Accessibility
 
-- Standard: WCAG 2.1 AA; keyboard navigation for Spatial Stage Slider; ARIA landmarks/labels for charts and staleness banners; color contrast ≥ 4.5:1; respect `prefers-reduced-motion`.
+- Standard: WCAG 2.1 AA; keyboard navigation for tabbed interface (arrow keys, Enter/Space); ARIA landmarks/labels for charts and staleness banners; color contrast ≥ 4.5:1; respect `prefers-reduced-motion`.
 - Audits: Automated axe/Lighthouse in CI; quarterly manual accessibility reviews.
 
 ### Scalability
