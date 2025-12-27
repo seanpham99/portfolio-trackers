@@ -8,7 +8,8 @@
     "dev": "tsc --watch"
   },
   "dependencies": {
-    "@repo/database-types": "workspace:*"
+    "@repo/database-types": "workspace:*",
+    "class-validator": "^0.14.3"
   },
   "devDependencies": {
     "typescript": "^5.0.0"

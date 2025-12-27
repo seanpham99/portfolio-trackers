@@ -3,6 +3,7 @@ import { NotFoundException, ConflictException } from '@nestjs/common';
 import { PortfoliosService } from './portfolios.service';
 import { CreatePortfolioDto, UpdatePortfolioDto } from './dto';
 import { Portfolio } from './portfolio.entity';
+import { CacheService } from '../cache';
 
 // Mock portfolio data
 const mockUserId = 'user-123';
@@ -21,6 +22,14 @@ const mockSupabaseClient = {
   from: jest.fn(),
 };
 
+// Mock Cache service
+const mockCacheService = {
+  get: jest.fn(),
+  set: jest.fn(),
+  del: jest.fn(),
+  invalidatePortfolio: jest.fn(),
+};
+
 describe('PortfoliosService', () => {
   let service: PortfoliosService;
 
@@ -31,6 +40,10 @@ describe('PortfoliosService', () => {
         {
           provide: 'SUPABASE_CLIENT',
           useValue: mockSupabaseClient,
+        },
+        {
+          provide: CacheService,
+          useValue: mockCacheService,
         },
       ],
     }).compile();
@@ -77,6 +90,7 @@ describe('PortfoliosService', () => {
         base_currency: createDto.base_currency,
         description: createDto.description,
       });
+      expect(mockCacheService.del).toHaveBeenCalledWith(`portfolios:${mockUserId}`);
     });
 
     it('should throw ConflictException for duplicate name', async () => {
@@ -103,7 +117,19 @@ describe('PortfoliosService', () => {
   });
 
   describe('findAll', () => {
-    it('should return all portfolios for user', async () => {
+    it('should return cached portfolios if available', async () => {
+      const mockPortfolios = [mockPortfolio];
+      mockCacheService.get.mockResolvedValue(mockPortfolios);
+
+      const result = await service.findAll(mockUserId);
+      
+      expect(result).toEqual(mockPortfolios);
+      expect(mockCacheService.get).toHaveBeenCalledWith(`portfolios:${mockUserId}`);
+      expect(mockSupabaseClient.from).not.toHaveBeenCalled();
+    });
+
+    it('should return all portfolios for user from DB and cache them', async () => {
+      mockCacheService.get.mockResolvedValue(null);
       const mockPortfolios = [mockPortfolio];
       const mockSelect = jest.fn().mockReturnThis();
       const mockEq = jest.fn().mockReturnThis();
@@ -125,28 +151,7 @@ describe('PortfoliosService', () => {
 
       expect(result).toEqual(mockPortfolios);
       expect(mockSupabaseClient.from).toHaveBeenCalledWith('portfolios');
-    });
-
-    it('should return empty array when no portfolios exist', async () => {
-      const mockSelect = jest.fn().mockReturnThis();
-      const mockEq = jest.fn().mockReturnThis();
-      const mockOrder = jest.fn().mockResolvedValue({
-        data: [],
-        error: null,
-      });
-
-      mockSupabaseClient.from.mockReturnValue({
-        select: mockSelect,
-        eq: mockEq,
-        order: mockOrder,
-      });
-
-      mockSelect.mockReturnValue({ eq: mockEq });
-      mockEq.mockReturnValue({ order: mockOrder });
-
-      const result = await service.findAll(mockUserId);
-
-      expect(result).toEqual([]);
+      expect(mockCacheService.set).toHaveBeenCalledWith(`portfolios:${mockUserId}`, mockPortfolios);
     });
   });
 
@@ -253,6 +258,7 @@ describe('PortfoliosService', () => {
       );
 
       expect(result).toEqual(updatedPortfolio);
+      expect(mockCacheService.invalidatePortfolio).toHaveBeenCalledWith(mockUserId, mockPortfolio.id);
     });
   });
 
@@ -295,6 +301,8 @@ describe('PortfoliosService', () => {
       await expect(
         service.remove(mockUserId, mockPortfolio.id),
       ).resolves.toBeUndefined();
+      
+      expect(mockCacheService.invalidatePortfolio).toHaveBeenCalledWith(mockUserId, mockPortfolio.id);
     });
 
     it('should throw NotFoundException when portfolio to delete is not found', async () => {

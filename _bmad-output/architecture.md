@@ -82,7 +82,7 @@ The PRD defines comprehensive functional requirements across 12 capability areas
   - User Database: Supabase (PostgreSQL) for auth, portfolios, transactions
   - Analytics Warehouse: ClickHouse (extend existing schema)
   - ETL Pipeline: Airflow (extend with US equities + crypto DAGs)
-  - Cache Layer: Redis (30s TTL for hot data)
+  - Cache Layer: Upstash (Serverless Redis, 30s TTL for hot data)
   - Payment Integration: SePay + Polar webhooks
   - Crypto Integration: CCXT library for Binance + OKX
 
@@ -121,7 +121,7 @@ The PRD defines comprehensive functional requirements across 12 capability areas
 
 **Performance Constraints:**
 
-- Polling-based refresh (no WebSockets in v1.0): Frontend 60s, Redis TTL 30s
+- Polling-based refresh (no WebSockets in v1.0): Frontend 60s, Upstash TTL 30s
 - Staleness detection threshold: >5 minutes triggers badge
 - Launch scale: Hundreds of users, scalable to low thousands without re-architecture
 
@@ -135,7 +135,7 @@ The PRD defines comprehensive functional requirements across 12 capability areas
 
 **2. Cache Invalidation Strategy**
 
-- Challenge: Redis cache (30s TTL) must invalidate on portfolio mutations
+- Challenge: Upstash cache (30s TTL) must invalidate on portfolio mutations
 - Implication: Write-through caching with explicit invalidation on transactions
 - Pattern needed: Cache key design for user portfolios, asset prices, FX rates
 
@@ -217,7 +217,7 @@ nest new api --package-manager pnpm --skip-git
 # Install essential dependencies
 cd api/
 pnpm add @nestjs/config @nestjs/swagger @nestjs/throttler
-pnpm add @supabase/supabase-js ioredis ccxt
+pnpm add @supabase/supabase-js @upstash/redis ccxt
 pnpm add -D @types/node
 ```
 
@@ -264,7 +264,7 @@ services/api/
 - Rate limiting (@nestjs/throttler)
 - Validation pipes (class-validator, class-transformer)
 - Supabase client integration
-- Redis cache manager
+- Upstash cache manager
 - CCXT for crypto exchange integration
 
 #### 2. React 19 Web App - Extend Existing
@@ -403,13 +403,13 @@ services:
     environment:
       - NODE_ENV=development
       - DATABASE_URL=${DATABASE_URL}
-      - REDIS_URL=redis://redis:6379
+      - UPSTASH_REDIS_REST_URL=${UPSTASH_REDIS_REST_URL}
+      - UPSTASH_REDIS_REST_TOKEN=${UPSTASH_REDIS_REST_TOKEN}
       - CLICKHOUSE_HOST=clickhouse-server
       - SUPABASE_URL=${SUPABASE_URL}
       - SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
     depends_on:
       - postgres
-      - redis
       - clickhouse-server
     volumes:
       - ./services/api/src:/app/src
@@ -498,19 +498,23 @@ CMD ["nginx", "-g", "daemon off;"]
 **Technology Stack Finalized:**
 
 - **Frontend:** React 19 + Vite + React Router 7 + Tailwind + Zustand + React Query
-- **Backend:** NestJS + TypeScript + Supabase Client + Redis + CCXT
+- **Backend:** NestJS + TypeScript + Supabase Client + Upstash Redis SDK + CCXT
 - **Data Pipeline:** Apache Airflow + Python 3.12 (existing, extend with US/crypto DAGs)
-- **Databases:** Supabase Postgres (users/portfolios) + ClickHouse (analytics) + Redis (cache)
-- **Deployment:** Docker Compose (dev) + Docker containers (production, self-hosted)
-- **Monorepo:** Turborepo + pnpm workspaces (existing structure maintained)
+- **Databases:** Supabase Postgres (users/portfolios) + ClickHouse (analytics) + Upstash (cache)
+-   **Frontend:** React 19 + Vite + React Router 7 + Tailwind + Zustand + React Query
+-   **Backend:** NestJS + TypeScript + Supabase Client + Upstash SDK + CCXT
+-   **Data Pipeline:** Apache Airflow + Python 3.12 (existing, extend with US/crypto DAGs)
+-   **Databases:** Supabase Postgres (users/portfolios) + ClickHouse (analytics) + Upstash (cache)
+-   **Deployment:** Docker Compose (dev) + Docker containers (production, self-hosted)
+-   **Monorepo:** Turborepo + pnpm workspaces (existing structure maintained)
 
 **Key Architectural Patterns Established:**
 
-- **API Gateway Pattern:** NestJS API orchestrates between Supabase, ClickHouse, and Redis
-- **Backend for Frontend (BFF):** API layer tailored for React web app needs
-- **Cache-Aside Pattern:** Redis caching with explicit invalidation
-- **Repository Pattern:** NestJS services abstract database access
-- **Brownfield Extension:** New greenfield components integrate with existing Airflow/ClickHouse
+-   **API Gateway Pattern:** NestJS API orchestrates between Supabase, ClickHouse, and Upstash
+-   **Backend for Frontend (BFF):** API layer tailored for React web app needs
+-   **Cache-Aside Pattern:** Upstash caching with explicit invalidation
+-   **Repository Pattern:** NestJS services abstract database access
+-   **Brownfield Extension:** New greenfield components integrate with existing Airflow/ClickHouse
 
 **Note:** Project initialization steps should be the first implementation stories in Epic 1.
 
@@ -522,25 +526,25 @@ CMD ["nginx", "-g", "daemon off;"]
 
 **Critical Decisions (Block Implementation):**
 
-- ✅ Supabase Postgres schema pattern (Hybrid: normalized + materialized views)
-- ✅ Data synchronization strategy (API-layer aggregation, no sync)
-- ✅ Cache invalidation approach (Write-through with explicit invalidation)
-- ✅ API design pattern (RESTful API)
-- ✅ Server state management (React Query)
+-   ✅ Supabase Postgres schema pattern (Hybrid: normalized + materialized views)
+-   ✅ Data synchronization strategy (API-layer aggregation, no sync)
+-   ✅ Cache invalidation approach (Write-through with explicit invalidation)
+-   ✅ API design pattern (RESTful API)
+-   ✅ Server state management (React Query)
 
 **Important Decisions (Shape Architecture):**
 
-- ✅ API documentation (OpenAPI/Swagger)
-- ✅ Error handling strategy (Retry with exponential backoff)
-- ✅ Logging approach (Structured JSON)
-- ✅ Testing strategy for MVP (E2E critical paths only)
+-   ✅ API documentation (OpenAPI/Swagger)
+-   ✅ Error handling strategy (Retry with exponential backoff)
+-   ✅ Logging approach (Structured JSON)
+-   ✅ Testing strategy for MVP (E2E critical paths only)
 
 **Deferred Decisions (Post-MVP):**
 
-- Circuit breaker pattern for external API failures
-- Fallback data strategies for technical indicators
-- Comprehensive unit test coverage
-- Advanced caching strategies (cache pre-aggregation)
+-   Circuit breaker pattern for external API failures
+-   Fallback data strategies for technical indicators
+-   Comprehensive unit test coverage
+-   Advanced caching strategies (cache pre-aggregation)
 
 ---
 
@@ -552,9 +556,9 @@ CMD ["nginx", "-g", "daemon off;"]
 
 **Rationale:**
 
-- Financial transactions require data integrity (normalized base tables)
-- Dashboard reads need performance (materialized views for aggregations)
-- Leverages Postgres strengths: ACID compliance + view refresh capabilities
+-   Financial transactions require data integrity (normalized base tables)
+-   Dashboard reads need performance (materialized views for aggregations)
+-   Leverages Postgres strengths: ACID compliance + view refresh capabilities
 
 **Implementation Details:**
 
@@ -591,18 +595,18 @@ REFRESH MATERIALIZED VIEW CONCURRENTLY portfolio_summary;
 
 **Rationale:**
 
-- Simplest implementation for MVP
-- Leverages Redis caching (30s TTL as specified in PRD)
-- Avoids data duplication and sync complexity
-- Aligns with polling-based architecture
+-   Simplest implementation for MVP
+-   Leverages Upstash caching (30s TTL as specified in PRD)
+-   Avoids data duplication and sync complexity
+-   Aligns with polling-based architecture
 
 **Implementation Pattern:**
 
 ```typescript
 // NestJS service example
 async getPortfolioValuation(portfolioId: string) {
-  // 1. Check Redis cache
-  const cached = await this.redis.get(`portfolio:${portfolioId}:valuation`);
+  // 1. Check Upstash cache
+  const cached = await this.cache.get(`portfolio:${portfolioId}:valuation`);
   if (cached) return JSON.parse(cached);
 
   // 2. Query Supabase for user holdings
@@ -623,17 +627,17 @@ async getPortfolioValuation(portfolioId: string) {
   const valuation = this.calculateValuation(holdings, prices);
 
   // 5. Cache result (30s TTL)
-  await this.redis.setex(
+  await this.cache.set(
     `portfolio:${portfolioId}:valuation`,
-    30,
-    JSON.stringify(valuation)
+    valuation,
+    { ex: 30 }
   );
 
   return valuation;
 }
 ```
 
-**Affects:** NestJS portfolio service, Redis cache configuration, API response times
+**Affects:** NestJS portfolio service, Upstash cache configuration, API response times
 
 **Future Enhancement (Post-MVP):** Add nightly Airflow DAG to pre-calculate historical portfolio snapshots in ClickHouse for faster historical analysis.
 
@@ -645,9 +649,9 @@ async getPortfolioValuation(portfolioId: string) {
 
 **Rationale:**
 
-- Users expect immediate reflection of transaction changes
-- Aligns with transparent calculations requirement
-- Cache key pattern enables granular invalidation
+-   Users expect immediate reflection of transaction changes
+-   Aligns with transparent calculations requirement
+-   Cache key pattern enables granular invalidation
 
 **Cache Key Design:**
 
@@ -669,11 +673,11 @@ async invalidatePortfolioCache(userId: string, portfolioId: string) {
     `portfolio:${userId}:${portfolioId}:holdings`,
     `portfolio:${userId}:${portfolioId}:transactions`,
   ];
-  await this.redis.del(...keys);
+  await this.cache.del(...keys);
 }
 ```
 
-**Affects:** NestJS transaction service, Redis cache manager, API mutations
+**Affects:** NestJS transaction service, Upstash cache manager, API mutations
 
 ---
 
@@ -685,10 +689,10 @@ async invalidatePortfolioCache(userId: string, portfolioId: string) {
 
 **Rationale:**
 
-- Simple, widely understood, great tooling
-- Aligns with NestJS controller patterns
-- Sufficient for MVP dashboard requirements
-- Cacheable HTTP GET requests
+-   Simple, widely understood, great tooling
+-   Aligns with NestJS controller patterns
+-   Sufficient for MVP dashboard requirements
+-   Cacheable HTTP GET requests
 
 **Endpoint Structure:**
 
@@ -744,10 +748,10 @@ GET    /admin/audit-logs                 # Audit trail export
 
 **Rationale:**
 
-- Auto-generated from decorators (stays in sync)
-- Interactive UI for testing endpoints
-- Type-safe client generation for frontend
-- Minimal effort with NestJS
+-   Auto-generated from decorators (stays in sync)
+-   Interactive UI for testing endpoints
+-   Type-safe client generation for frontend
+-   Minimal effort with NestJS
 
 **Implementation:**
 
@@ -790,10 +794,10 @@ export class PortfoliosController {
 
 **Rationale:**
 
-- Purpose-built for server state (API data)
-- Built-in caching, refetching, polling (matches 60s requirement)
-- Perfect for optimistic updates with React 19's useOptimistic
-- Automatic cache invalidation on mutations
+-   Purpose-built for server state (API data)
+-   Built-in caching, refetching, polling (matches 60s requirement)
+-   Perfect for optimistic updates with React 19's useOptimistic
+-   Automatic cache invalidation on mutations
 
 **Implementation:**
 
@@ -804,7 +808,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 30 * 1000,        // Match Redis TTL
+      staleTime: 30 * 1000,        // Match Upstash TTL
       refetchInterval: 60 * 1000,  // 60s polling as per PRD
       retry: 3,                     // Exponential backoff
     },
@@ -865,10 +869,10 @@ function TransactionForm({ portfolioId }) {
 
 **Rationale:**
 
-- Handles transient network failures
-- Simple to implement
-- React Query provides built-in retry logic
-- Sufficient for MVP, add circuit breaker post-MVP
+-   Handles transient network failures
+-   Simple to implement
+-   React Query provides built-in retry logic
+-   Sufficient for MVP, add circuit breaker post-MVP
 
 **Retry Configuration:**
 
@@ -899,16 +903,16 @@ async fetchFromExternalAPI(url: string) {
 
 **Error States to Handle:**
 
-- Network timeout → Retry with backoff
-- API rate limit (429) → Retry with exponential backoff
-- Server error (500) → Retry, then show error message
-- Client error (400) → No retry, show validation error
+-   Network timeout → Retry with backoff
+-   API rate limit (429) → Retry with exponential backoff
+-   Server error (500) → Retry, then show error message
+-   Client error (400) → No retry, show validation error
 
 **Future Enhancement (Post-MVP):**
 
-- Circuit breaker for external APIs (vnstock, yfinance, Binance)
-- Fallback to cached/stale data with staleness badge (>5 min)
-- Fallback to internal indicator calculation when TradingView unavailable
+-   Circuit breaker for external APIs (vnstock, yfinance, Binance)
+-   Fallback to cached/stale data with staleness badge (>5 min)
+-   Fallback to internal indicator calculation when TradingView unavailable
 
 **Affects:** API client configuration, error boundary components, user error messaging
 
@@ -922,9 +926,9 @@ async fetchFromExternalAPI(url: string) {
 
 **Rationale:**
 
-- Machine-parseable for querying and alerting
-- Correlation IDs trace requests across services (Airflow → ClickHouse → NestJS → React)
-- Essential for debugging distributed systems
+-   Machine-parseable for querying and alerting
+-   Correlation IDs trace requests across services (Airflow → ClickHouse → NestJS → React)
+-   Essential for debugging distributed systems
 
 **Implementation:**
 
@@ -964,10 +968,10 @@ this.logger.log({
 
 **Log Levels:**
 
-- `error`: API failures, database errors, webhook failures
-- `warn`: Retry attempts, stale cache, rate limits
-- `info`: User actions (transaction added), API calls, cache hits/misses
-- `debug`: Detailed flow for development
+-   `error`: API failures, database errors, webhook failures
+-   `warn`: Retry attempts, stale cache, rate limits
+-   `info`: User actions (transaction added), API calls, cache hits/misses
+-   `debug`: Detailed flow for development
 
 **Affects:** NestJS logger setup, middleware, service logging, operational debugging
 
@@ -981,10 +985,10 @@ this.logger.log({
 
 **Rationale:**
 
-- Fast MVP delivery (6-8 week timeline)
-- Tests what matters to users (journeys, not units)
-- Playwright already in PRD requirements
-- Add unit/integration tests post-MVP during refactoring
+-   Fast MVP delivery (6-8 week timeline)
+-   Tests what matters to users (journeys, not units)
+-   Playwright already in PRD requirements
+-   Add unit/integration tests post-MVP during refactoring
 
 **Critical E2E Test Scenarios:**
 
@@ -1068,8 +1072,8 @@ test("Error recovery: Stale price data shows badge", async ({ page }) => {
 
 **Test Matrix (Per PRD):**
 
-- Desktop: Chrome, Firefox, Safari (latest)
-- Mobile: iOS Safari, Android Chrome (latest)
+-   Desktop: Chrome, Firefox, Safari (latest)
+-   Mobile: iOS Safari, Android Chrome (latest)
 
 **CI Integration:**
 
@@ -1090,9 +1094,9 @@ jobs:
 
 **Deferred (Post-MVP):**
 
-- Unit tests for business logic (portfolio calculations, cost basis)
-- Integration tests for API endpoints
-- Visual regression tests for UI components
+-   Unit tests for business logic (portfolio calculations, cost basis)
+-   Integration tests for API endpoints
+-   Visual regression tests for UI components
 
 **Affects:** Testing infrastructure, CI/CD pipeline, development workflow
 
@@ -1102,48 +1106,48 @@ jobs:
 
 **Implementation Sequence (Recommended Order):**
 
-1. **Foundation Layer**
-   - NestJS project initialization with minimal setup
-   - Structured logging (Winston) + correlation ID middleware
-   - Swagger/OpenAPI setup
+1.  **Foundation Layer**
+    -   NestJS project initialization with minimal setup
+    -   Structured logging (Winston) + correlation ID middleware
+    -   Swagger/OpenAPI setup
 
-2. **Data Layer**
-   - Supabase schema (normalized tables + materialized views)
-   - ClickHouse schema extensions (market_type enum, FX rates table)
-   - Redis cache configuration
+2.  **Data Layer**
+    -   Supabase schema (normalized tables + materialized views)
+    -   ClickHouse schema extensions (market_type enum, FX rates table)
+    -   Upstash cache configuration
 
-3. **API Layer**
-   - RESTful endpoints (portfolios, transactions, assets)
-   - API-layer aggregation logic (Supabase + ClickHouse queries)
-   - Write-through cache invalidation
+3.  **API Layer**
+    -   RESTful endpoints (portfolios, transactions, assets)
+    -   API-layer aggregation logic (Supabase + ClickHouse queries)
+    -   Write-through cache invalidation
 
-4. **Frontend Integration**
-   - React Query setup with polling (60s)
-   - API client with retry logic
-   - Optimistic updates with useOptimistic
+4.  **Frontend Integration**
+    -   React Query setup with polling (60s)
+    -   API client with retry logic
+    -   Optimistic updates with useOptimistic
 
-5. **External Integrations**
-   - Crypto exchange OAuth (CCXT library for Binance/OKX)
-   - Payment webhooks (SePay + Polar)
+5.  **External Integrations**
+    -   Crypto exchange OAuth (CCXT library for Binance/OKX)
+    -   Payment webhooks (SePay + Polar)
 
-6. **Testing & Observability**
-   - Playwright E2E tests for critical paths
-   - Monitoring dashboards (optional for MVP)
+6.  **Testing & Observability**
+    -   Playwright E2E tests for critical paths
+    -   Monitoring dashboards (optional for MVP)
 
 **Cross-Component Dependencies:**
 
-- **Cache Invalidation** depends on **API Layer** completion
-- **Frontend React Query** depends on **API Layer** REST endpoints
-- **E2E Tests** depend on **Frontend + API + Data Layer** integration
-- **Crypto Integration** depends on **API Layer** + **Data Layer** (accounts table)
-- **Payment Webhooks** depend on **API Layer** + **Observability** (audit logs)
+-   **Cache Invalidation** depends on **API Layer** completion
+-   **Frontend React Query** depends on **API Layer** REST endpoints
+-   **E2E Tests** depend on **Frontend + API + Data Layer** integration
+-   **Crypto Integration** depends on **API Layer** + **Data Layer** (accounts table)
+-   **Payment Webhooks** depend on **API Layer** + **Observability** (audit logs)
 
 **Risk Mitigation:**
 
-- **Data sync complexity:** Avoided by choosing API-layer aggregation
-- **Cache consistency:** Mitigated by write-through invalidation pattern
-- **External API failures:** Handled by retry with exponential backoff
-- **Testing bottleneck:** Focused on E2E critical paths only for MVP speed
+-   **Data sync complexity:** Avoided by choosing API-layer aggregation
+-   **Cache consistency:** Mitigated by write-through invalidation pattern
+-   **External API failures:** Handled by retry with exponential backoff
+-   **Testing bottleneck:** Focused on E2E critical paths only for MVP speed
 
 ---
 
@@ -1258,10 +1262,10 @@ GET /portfolios/:id/transactions?start_date=2024-01-01&end_date=2024-12-31
 
 **Rationale:**
 
-- Plural resources = RESTful best practice
-- snake_case query params = URL convention, matches database
-- camelCase JSON = JavaScript/TypeScript convention
-- Always wrapped responses = predictable client parsing
+-   Plural resources = RESTful best practice
+-   snake_case query params = URL convention, matches database
+-   camelCase JSON = JavaScript/TypeScript convention
+-   Always wrapped responses = predictable client parsing
 
 ---
 
@@ -1325,9 +1329,9 @@ let totalValue = 0;
 
 **Rationale:**
 
-- kebab-case files = Linux/URL-safe, clear word separation
-- Industry standard casing for classes/functions
-- Consistent across React and NestJS codebases
+-   kebab-case files = Linux/URL-safe, clear word separation
+-   Industry standard casing for classes/functions
+-   Consistent across React and NestJS codebases
 
 ---
 
@@ -1460,7 +1464,7 @@ services/api/src/
 │
 ├── config/                   # Configuration
 │   ├── database.config.ts
-│   ├── redis.config.ts
+│   ├── cache.config.ts           # Upstash configuration
 │   └── supabase.config.ts
 │
 └── main.ts                   # Application entry point

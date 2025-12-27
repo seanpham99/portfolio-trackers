@@ -13,6 +13,7 @@ import {
 } from '@nestjs/common';
 import { PortfoliosService } from './portfolios.service';
 import { CreatePortfolioDto, UpdatePortfolioDto } from './dto';
+import { CreateTransactionDto } from '@repo/api-types';
 import { Portfolio } from './portfolio.entity';
 import { AuthGuard } from './guards/auth.guard';
 import { UserId } from './decorators/user-id.decorator';
@@ -79,5 +80,18 @@ export class PortfoliosController {
     @Param('id', ParseUUIDPipe) id: string,
   ): Promise<void> {
     return this.portfoliosService.remove(userId, id);
+  }
+
+  /**
+   * POST /portfolios/:id/transactions - Add a transaction
+   */
+  @Post(':id/transactions')
+  @HttpCode(HttpStatus.CREATED)
+  async addTransaction(
+    @UserId() userId: string,
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() createDto: CreateTransactionDto,
+  ): Promise<any> {
+    return this.portfoliosService.addTransaction(userId, id, createDto);
   }
 }

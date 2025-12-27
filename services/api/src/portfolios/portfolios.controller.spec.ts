@@ -3,6 +3,7 @@ import { NotFoundException } from '@nestjs/common';
 import { PortfoliosController } from './portfolios.controller';
 import { PortfoliosService } from './portfolios.service';
 import { CreatePortfolioDto, UpdatePortfolioDto } from './dto';
+import { CreateTransactionDto, TransactionType } from '@repo/api-types';
 import { Portfolio } from './portfolio.entity';
 import { AuthGuard } from './guards';
 
@@ -18,6 +19,18 @@ const mockPortfolio: Portfolio = {
   updated_at: '2025-01-01T00:00:00Z',
 };
 
+// Mock transaction data
+const mockTransaction = {
+  id: 'tx-1',
+  portfolio_id: 'portfolio-1',
+  asset_id: 'asset-1',
+  type: TransactionType.BUY,
+  quantity: 10,
+  price: 150,
+  fee: 0,
+  transaction_date: '2025-01-01T00:00:00Z',
+};
+
 // Mock PortfoliosService
 const mockPortfoliosService = {
   create: jest.fn(),
@@ -25,6 +38,7 @@ const mockPortfoliosService = {
   findOne: jest.fn(),
   update: jest.fn(),
   remove: jest.fn(),
+  addTransaction: jest.fn(),
 };
 
 describe('PortfoliosController', () => {
@@ -164,6 +178,34 @@ describe('PortfoliosController', () => {
       await expect(
         controller.remove(mockUserId, 'non-existent-id'),
       ).rejects.toThrow(NotFoundException);
+    });
+  });
+
+  describe('addTransaction', () => {
+    it('should add a transaction to portfolio', async () => {
+      const createTransactionDto: CreateTransactionDto = {
+        portfolio_id: 'portfolio-1',
+        asset_id: 'asset-1',
+        type: TransactionType.BUY,
+        quantity: 10,
+        price: 150,
+        fee: 0,
+      };
+
+      mockPortfoliosService.addTransaction.mockResolvedValue(mockTransaction);
+
+      const result = await controller.addTransaction(
+        mockUserId,
+        'portfolio-1',
+        createTransactionDto,
+      );
+
+      expect(result).toEqual(mockTransaction);
+      expect(mockPortfoliosService.addTransaction).toHaveBeenCalledWith(
+        mockUserId,
+        'portfolio-1',
+        createTransactionDto,
+      );
     });
   });
 });

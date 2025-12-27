@@ -7,17 +7,21 @@ import {
 import { SupabaseClient, PostgrestError } from '@supabase/supabase-js';
 import { Database } from '@repo/database-types';
 import { CreatePortfolioDto, UpdatePortfolioDto } from './dto';
+import { CreateTransactionDto } from '@repo/api-types';
 import { Portfolio } from './portfolio.entity';
+import { CacheService } from '../cache';
 
 /**
  * Service for portfolio CRUD operations
  * Uses Supabase client with RLS for data access
+ * Implements cache invalidation per Architecture Decision 1.3
  */
 @Injectable()
 export class PortfoliosService {
   constructor(
     @Inject('SUPABASE_CLIENT')
     private readonly supabase: SupabaseClient<Database>,
+    private readonly cacheService: CacheService,
   ) {}
 
   /**
@@ -42,6 +46,9 @@ export class PortfoliosService {
       this.handleError(error, createDto.name);
     }
 
+    // Invalidate portfolios list cache for user
+    await this.cacheService.del(`portfolios:${userId}`);
+
     return data;
   }
 
@@ -49,6 +56,13 @@ export class PortfoliosService {
    * Find all portfolios for the authenticated user
    */
   async findAll(userId: string): Promise<Portfolio[]> {
+    // Check cache first
+    const cacheKey = `portfolios:${userId}`;
+    const cached = await this.cacheService.get<Portfolio[]>(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
     const { data, error } = await this.supabase
       .from('portfolios')
       .select('*')
@@ -59,7 +73,12 @@ export class PortfoliosService {
       throw error;
     }
 
-    return data ?? [];
+    const portfolios = data ?? [];
+
+    // Cache the result
+    await this.cacheService.set(cacheKey, portfolios);
+
+    return portfolios;
   }
 
   /**
@@ -114,6 +133,9 @@ export class PortfoliosService {
       this.handleError(error, updateDto.name);
     }
 
+    // Invalidate caches
+    await this.cacheService.invalidatePortfolio(userId, id);
+
     return data;
   }
 
@@ -133,6 +155,9 @@ export class PortfoliosService {
     if (error) {
       throw error;
     }
+
+    // Invalidate caches
+    await this.cacheService.invalidatePortfolio(userId, id);
   }
 
   /**
@@ -146,5 +171,48 @@ export class PortfoliosService {
       );
     }
     throw error;
+  }
+
+  /**
+   * Add a transaction to a portfolio
+   * Implements cache invalidation per Architecture Decision 1.3
+   */
+  async addTransaction(
+    userId: string,
+    portfolioId: string,
+    createDto: CreateTransactionDto,
+  ): Promise<any> {
+    // 1. Verify portfolio ownership
+    await this.findOne(userId, portfolioId);
+
+    // 2. Validate DTO portfolio_id matches URL param
+    if (createDto.portfolio_id !== portfolioId) {
+      throw new ConflictException('Portfolio ID in body does not match URL parameter');
+    }
+
+    // 3. Insert transaction
+    const { data, error } = await this.supabase
+      .from('transactions')
+      .insert({
+        portfolio_id: portfolioId,
+        asset_id: createDto.asset_id,
+        type: createDto.type,
+        quantity: createDto.quantity,
+        price: createDto.price,
+        fee: createDto.fee ?? 0,
+        transaction_date: createDto.transaction_date ?? new Date().toISOString(),
+        notes: createDto.notes ?? null,
+      })
+      .select()
+      .single();
+
+    if (error) {
+      throw error;
+    }
+
+    // 4. Invalidate Upstash cache keys for the portfolio (Decision 1.3)
+    await this.cacheService.invalidatePortfolio(userId, portfolioId);
+
+    return data;
   }
 }

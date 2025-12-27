@@ -101,6 +101,66 @@ export type Database = {
           },
         ]
       }
+      transactions: {
+        Row: {
+          asset_id: string
+          created_at: string | null
+          fee: number | null
+          id: string
+          notes: string | null
+          portfolio_id: string
+          price: number
+          quantity: number
+          total: number | null
+          transaction_date: string
+          type: string
+          updated_at: string | null
+        }
+        Insert: {
+          asset_id: string
+          created_at?: string | null
+          fee?: number | null
+          id?: string
+          notes?: string | null
+          portfolio_id: string
+          price: number
+          quantity: number
+          total?: number | null
+          transaction_date?: string
+          type: string
+          updated_at?: string | null
+        }
+        Update: {
+          asset_id?: string
+          created_at?: string | null
+          fee?: number | null
+          id?: string
+          notes?: string | null
+          portfolio_id?: string
+          price?: number
+          quantity?: number
+          total?: number | null
+          transaction_date?: string
+          type?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transactions_asset_id_fkey"
+            columns: ["asset_id"]
+            isOneToOne: false
+            referencedRelation: "assets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transactions_portfolio_id_fkey"
+            columns: ["portfolio_id"]
+            isOneToOne: false
+            referencedRelation: "portfolios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_preferences: {
         Row: {
           audit_metadata: Json
