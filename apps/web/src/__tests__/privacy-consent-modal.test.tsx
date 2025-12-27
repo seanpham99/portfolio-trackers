@@ -35,10 +35,12 @@ describe('PrivacyConsentModal', () => {
     const mockOnAccept = vi.fn(async () => {});
     render(<PrivacyConsentModal {...defaultProps} onAccept={mockOnAccept} />)
     
-    const acceptButton = screen.getByText(/Accept and Continue/i)
-    fireEvent.click(acceptButton)
-
     // Form submission happens via useActionState, verify the version is in the form
+    const acceptButton = screen.getByText(/Accept and Continue/i)
+    
+    await waitFor(() => {
+      fireEvent.click(acceptButton)
+    })
     const hiddenInput = screen.getByDisplayValue('2025-12-a')
     expect(hiddenInput).toBeInTheDocument()
     expect(hiddenInput).toHaveAttribute('name', 'consent_version')
