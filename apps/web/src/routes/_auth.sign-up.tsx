@@ -170,13 +170,17 @@ export default function SignUp() {
                 method="post" 
                 onSubmit={(e) => {
                   e.preventDefault()
-                  form.handleSubmit(() => {
-                    // After validation passes, use requestSubmit to trigger fetcher submission
-                    formRef.current?.requestSubmit()
+                  form.handleSubmit((data) => {
+                    // After validation passes, submit with validated data
+                    const formData = new FormData()
+                    formData.set('email', data.email)
+                    formData.set('password', data.password)
+                    fetcher.submit(formData, { method: 'post' })
                   })(e)
                 }} 
                 className="space-y-4"
               >
+
                 <Controller
                   name="email"
                   control={form.control}

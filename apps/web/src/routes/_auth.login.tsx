@@ -123,7 +123,21 @@ export default function Login() {
           </FieldSeparator>
 
           {/* Email/Password Form */}
-          <fetcher.Form method="post" onSubmit={form.handleSubmit(() => {})} className="space-y-5">
+          <fetcher.Form 
+            method="post" 
+            onSubmit={(e) => {
+              e.preventDefault()
+              form.handleSubmit((data) => {
+                // After validation passes, submit with validated data
+                const formData = new FormData()
+                formData.set('email', data.email)
+                formData.set('password', data.password)
+                fetcher.submit(formData, { method: 'post' })
+              })(e)
+            }} 
+            className="space-y-5"
+          >
+
             <Controller
               name="email"
               control={form.control}
