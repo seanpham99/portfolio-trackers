@@ -50,7 +50,7 @@ development_status:
   # Preparation Sprint
   prep-1-fix-ci-pipeline: done
   prep-2-extract-vite-config: done
-  prep-3-seed-asset-data: ready-for-dev
+  prep-3-seed-asset-data: done
 
   epic-2: backlog
   2-1-portfolio-management-logic-api-database: backlog

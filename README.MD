@@ -69,7 +69,7 @@ fin-sight/
   ```bash
   cd services/data-pipelines
   # If you have a template, copy it; otherwise create a new .env
-  [ -f .env.template ] && cp .env.template .env || printf "TELEGRAM_BOT_TOKEN=\nTELEGRAM_CHAT_ID=\nGEMINI_API_KEY=\nCLICKHOUSE_HOST=clickhouse-server\nCLICKHOUSE_PORT=8123\nCLICKHOUSE_USER=default\nCLICKHOUSE_PASSWORD=\nAIRFLOW_UID=$(id -u)\n" > .env
+  [ -f template.env ] && cp template.env .env || printf "TELEGRAM_BOT_TOKEN=\nTELEGRAM_CHAT_ID=\nGEMINI_API_KEY=\nCLICKHOUSE_HOST=clickhouse-server\nCLICKHOUSE_PORT=8123\nCLICKHOUSE_USER=default\nCLICKHOUSE_PASSWORD=\nAIRFLOW_UID=$(id -u)\n" > .env
   ```
   *Update the following variables in `.env`:*
    - `TELEGRAM_BOT_TOKEN`: Your Telegram Bot Token.
@@ -85,8 +85,8 @@ fin-sight/
   *This will start Airflow services, ClickHouse, PostgreSQL, and Redis.*
 
 4. **Access Interfaces**
-  - **Airflow API**: http://localhost:8181 (API server)
-    - Check version: http://localhost:8181/api/v2/version
+  - **Airflow API**: http://localhost:8080 (API server)
+    - Check version: http://localhost:8080/api/v2/version
     - Note: If you want the Web UI, add/expose an Airflow webserver service.
    - **ClickHouse HTTP**: [http://localhost:8123](http://localhost:8123)
 

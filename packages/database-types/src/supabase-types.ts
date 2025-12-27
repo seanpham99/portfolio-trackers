@@ -9,6 +9,60 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      assets: {
+        Row: {
+          asset_class: string
+          created_at: string | null
+          currency: string
+          exchange: string | null
+          id: string
+          industry: string | null
+          logo_url: string | null
+          market: string | null
+          metadata: Json | null
+          name_en: string
+          name_local: string | null
+          sector: string | null
+          source: string | null
+          symbol: string
+          updated_at: string | null
+        }
+        Insert: {
+          asset_class: string
+          created_at?: string | null
+          currency: string
+          exchange?: string | null
+          id?: string
+          industry?: string | null
+          logo_url?: string | null
+          market?: string | null
+          metadata?: Json | null
+          name_en: string
+          name_local?: string | null
+          sector?: string | null
+          source?: string | null
+          symbol: string
+          updated_at?: string | null
+        }
+        Update: {
+          asset_class?: string
+          created_at?: string | null
+          currency?: string
+          exchange?: string | null
+          id?: string
+          industry?: string | null
+          logo_url?: string | null
+          market?: string | null
+          metadata?: Json | null
+          name_en?: string
+          name_local?: string | null
+          sector?: string | null
+          source?: string | null
+          symbol?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       user_preferences: {
         Row: {
           audit_metadata: Json
@@ -82,7 +136,8 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      show_limit: { Args: never; Returns: number }
+      show_trgm: { Args: { "": string }; Returns: string[] }
     }
     Enums: {
       [_ in never]: never

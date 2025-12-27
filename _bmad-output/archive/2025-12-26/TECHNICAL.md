@@ -2629,7 +2629,7 @@ cd fin-sight
 
 ```bash
 cd services/data-pipelines
-cp .env.template .env
+cp template.env .env
 ```
 
 **Edit `.env` with new variables:**
