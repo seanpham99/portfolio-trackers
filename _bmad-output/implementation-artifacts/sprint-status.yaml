@@ -49,7 +49,7 @@ development_status:
 
   # Preparation Sprint
   prep-1-fix-ci-pipeline: done
-  prep-2-extract-vite-config: ready-for-dev
+  prep-2-extract-vite-config: done
   prep-3-seed-asset-data: ready-for-dev
 
   epic-2: backlog

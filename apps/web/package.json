@@ -35,6 +35,7 @@
     "@react-router/node": "^7.11.0",
     "@react-router/serve": "7.11.0",
     "@repo/ui": "workspace:*",
+    "@repo/vite-config": "workspace:*",
     "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.89.0",
     "class-variance-authority": "^0.7.1",
