@@ -54,10 +54,12 @@ development_status:
 
   epic-2: in-progress
   2-1-portfolio-management-logic-api-database: done
-  2-2-enhanced-tabbed-dashboard-shell: done
+  2-2-unified-portfolio-dashboard-shell: ready-for-dev
   2-3-manual-transaction-entry-with-autocomplete: ready-for-dev
-  2-4-basic-net-worth-holdings-list: ready-for-dev
+  2-4-unified-holdings-table: ready-for-dev
   2-5-transparent-methodology-basic-panels: ready-for-dev
+  2-6-asset-detail-page: ready-for-dev
+  2-7-connection-settings: ready-for-dev
   epic-2-retrospective: optional
 
   epic-3: backlog

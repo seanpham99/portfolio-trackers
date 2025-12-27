@@ -128,85 +128,119 @@ The product bridges a critical gap: no existing platform offers unified VN + US 
 
 ## Strategic Decisions
 
-### Navigation Pattern: Enhanced Tabbed Navigation
+### Navigation Pattern: Unified Portfolio Dashboard (v1.0)
 
-**Decision Date:** 2025-12-26  
-**Decision:** Adopt Enhanced Tabbed Navigation as primary pattern for v1.0
+**Decision Date:** 2025-12-27
+**Decision:** Adopt **Unified Portfolio Dashboard** as the primary interaction model.
 
 **Rationale:**
+- **Professional Context:** Asset managers and serious investors view wealth holistically, regardless of asset class (VN vs US vs Crypto). Segregation creates friction.
+- **Scalability:** The system must support **Multiple Portfolios** (e.g., "Personal Fund", "Family Trust", "Trading Bot"). A unified view per portfolio is scalable; rigid asset-class tabs are not.
+- **Risk Management:** Aggregated allocation views (Donut Chart) allow immediate risk assessment across all holdings.
 
-Based on Nielsen Norman Group usability research and resource constraints (zero budget, tight timeline), the team unanimously recommends **Enhanced Tabbed Navigation** as the primary pattern for v1.0:
-
-**Why Tabs Win:**
-
-- ✅ **Proven usability**: NN/G research shows tabs "just work" — users understand them immediately
-- ✅ **Zero learning curve**: No onboarding needed, accessible by default (keyboard, screen readers)
-- ✅ **Fast to implement**: Standard React components + Framer Motion animations = 1-2 weeks dev
-- ✅ **Mobile-proven**: Horizontal scrollable tabs + bottom tab bars are industry standard
-- ✅ **Safety-first**: Achieves same goal (multi-asset switching) without discovery risk
-
-**Why Not Spatial Stage Slider (Deferred to Phase 2+):**
-
-- ❌ **Horizontal scrolling risks**: NN/G data shows users consistently dislike horizontal scrolling on desktop
-- ❌ **Discovery problems**: Even strong visual cues (arrows) are often ignored; weak information scent
-- ❌ **No budget for validation**: Spatial slider requires dedicated UX research ($750 + 2 weeks) to de-risk
-- ❌ **Innovation for innovation's sake**: Differentiation through polish > novelty
-
-**Enhanced Tab Features:**
-
-1. **Smooth transitions**: Fade content (200ms) + subtle 30px slide — feels premium without usability cost
-2. **Tab badges**: Each tab shows `VN Stocks (12 • ₫450M)` — instant context
-3. **Keyboard shortcuts**: `Cmd+1/2/3/4` for power users, arrow keys for navigation
-4. **Animated underline**: Indicator slides smoothly between tabs (not jarring instant switch)
-5. **Mobile swipe**: Touch gesture support on mobile only (familiar, low risk)
-
-**Future Exploration:**
-
-- **Phase 2**: Split-pane compare mode at XL breakpoints (≥1441px) — side-by-side VN vs US comparison
-- **Phase 3**: Spatial Stage Slider as experimental feature pending dedicated UX budget and A/B testing
+**Key Features:**
+1.  **Multi-Portfolio Architecture:** Users can switch between different portfolios. Each portfolio has its own unified dashboard.
+2.  **Unified Holdings Table:** Mixing VN Stocks, US Equities, and Crypto in one sortable, filterable list.
+3.  **Performance-First:** Large time-series chart showing aggregated Net Worth history.
 
 ---
 
-### Scope Change: CSV Import → Crypto API Integration
+## User Journeys (Flows)
 
-**Decision Date:** 2025-12-26  
-**Decision:** Remove CSV Import from MVP; Add Crypto API Integration (Binance + OKX)
+### 1. Daily Check-In & Portfolio Review
+**Goal:** Assess total wealth health of a specific portfolio (e.g., "Family Trust") in < 2 minutes.
 
-**Rationale:**
+```mermaid
+graph TD
+    A[Launch App] --> B{Auth Status?}
+    B -- No --> C[Login Page]
+    B -- Yes --> D[Unified Dashboard]
+    
+    D -- "Select Portfolio" --> D1[Portfolio: Family Trust]
+    D1 --> E[Review Total Net Worth]
+    D1 --> F[Check Allocation Donut]
+    D1 --> G[Scan Top Movers Cards]
+    
+    G -- "Investigate Mover" --> H[Asset Detail Page]
+    H --> I[TradingView Chart]
+    H --> K[Analysis/Transactions]
+    I --> J[Back to Dashboard] --> D1
+```
 
-**Why Remove CSV Import:**
+### 2. Manual Asset Entry (Cross-Border)
+**Goal:** Add a US Stock purchase to the current portfolio.
 
-1. **High Failure Risk** - Vietnamese investor forums (cophieu68) report 30-40% CSV import failures due to inconsistent broker formats (SSI/VPS/VCBS)
-2. **Maintenance Burden** - 3 weeks dev effort for parsing, validation, error mapping; ongoing support as broker formats change
-3. **False Convenience** - Users expect "easy import" but hit format errors, blame the app, churn
-4. **No Broker APIs** - VN brokers (SSI/VPS/VCBS) offer zero retail APIs; US brokers require expensive Plaid aggregation ($0.30+/user/month)
+```mermaid
+sequenceDiagram
+    participant User
+    participant Dashboard
+    participant Search
+    participant DB
+    
+    User->>Dashboard: Click "Add Transaction"
+    Dashboard->>Search: Type "AAPL" (US Equity)
+    Search-->>User: Show "Apple Inc (US)"
+    User->>Search: Select AAPL
+    User->>Dashboard: Enter Price ($150), Qty (10)
+    Dashboard->>DB: Save Transaction (Linked to Active Portfolio)
+    DB-->>Dashboard: Confirm Success
+    Dashboard-->>User: Update Net Worth & Holdings List
+```
 
-**Why Add Crypto API Integration:**
+### 3. Syncing Crypto Exchange
+**Goal:** Zero-maintenance tracking for crypto assets.
 
-1. **Market Differentiation** - Competitors (Delta, CoinStats) don't focus on Vietnamese market with crypto sync
-2. **Technical Simplicity** - CCXT library provides unified interface to 100+ exchanges; Binance + OKX = 4 days dev vs 3 weeks for CSV
-3. **Real-Time Sync** - Automatic balance updates every 60s; no user error from outdated exports
-4. **Magic Moment** - "Whoa, it synced all my Binance holdings instantly!" creates immediate value perception
-5. **User Segment Fit** - 30% of Vietnamese tech investors are crypto-heavy; this serves them perfectly
+```mermaid
+graph LR
+    A[Settings] --> B[Connections]
+    B --> C[Select Binance]
+    C --> D[Redirect to Binance OAuth]
+    D --> E[Authorize Read-Only]
+    E --> F[Redirect back to App]
+    F --> G[Background Sync Started]
+    G --> H[Dashboard - New Assets Appear]
+```
 
-**Impact on Activation:**
+## Screen Specifications (Dev Ready)
 
-- Time-to-first-portfolio: 10 min → 15 min (acceptable for early adopters)
-- Crypto users: Get instant sync (competitive advantage)
-- Stock users: Manual entry with enhanced UX (autocomplete, keyboard shortcuts)
-- Net timeline: Ship 2.5 weeks earlier
+### 1. Dashboard (`/dashboard`)
+The command center. Shows performance of the **currently selected portfolio**.
+- **Layout:** `DashboardLayout` (Sidebar + Top Bar with Portfolio Selector).
+- **Primary Components:**
+    - `PortfolioSelector`: Dropdown to switch between "Personal", "Family", etc.
+    - `PortfolioHistoryChart`: Time-series Net Worth data (1D/1W/1M/YTD/ALL).
+    - `AllocationDonut`: Asset class breakdown (VN / US / Crypto).
+    - `SummaryStats`: Net Worth, 24h P/L, Cash Balance.
+    - `UnifiedHoldingsTable`: List of all assets.
+        - Cols: Name, Ticker, Type (Badge), Price, 24h %, Value (Base Currency), P/L.
 
-**Team Consensus:**
+### 2. Portfolio Detail (`/portfolio/:id`)
+*Note: In v1.0, the Dashboard acts as the Portfolio Detail view for the selected portfolio. Separate detail pages are for metadata management (renaming, deleting).*
 
-- **PM (John):** Strategic pivot reduces risk, faster launch, clearer value prop
-- **Architect (Winston):** Massively simpler implementation; CCXT handles complexity
-- **Analyst (Mary):** User research shows manual entry acceptable if app is good; CSV failures kill trust
-- **UX Designer (Sally):** Crypto API = magic moment; manual entry = predictable; CSV = broken promises
+### 3. Asset Detail (`/asset/:symbol`)
+Deep dive into a specific holding.
+- **Components:**
+    - `TradingViewWidget`: Advanced charting.
+    - `TransactionHistory`: List of buy/sells for this asset *within this portfolio*.
+    - `PerformanceCard`: Realized vs Unrealized P/L.
+- **Context:** Accessible via clicking a row in the Dashboard table.
 
-**Phase 2 Consideration:**
+### 4. Connections (`/settings/connections`)
+API Management.
+- **Components:**
+    - `IntegrationCard`: Logo, Status (Connected/Disconnected), "Sync Now" button.
+    - `APIKeyForm`: For exchanges not supporting OAuth.
 
-- CSV Import moves to experimental beta if manual entry becomes #1 churn driver
-- Monitor activation metrics for 3 months before committing resources
+## Deliverables Checklist
+- [ ] Refactor `DashboardLayout` to implement Unified View and Portfolio Selector.
+- [ ] Implement `UnifiedHoldingsTable` with multi-currency normalization.
+- [ ] Create `PortfolioHistory` chart component.
+- [ ] Build `AssetDetail` page.
+
+## UI Design Reference
+**Visual Concept:**
+![Unified Dashboard Concept](assets/dashboard-visual-concept.png)
+
 
 ---
 
@@ -288,13 +322,6 @@ Based on Nielsen Norman Group usability research and resource constraints (zero 
 - Grid/Spacing: 8px base; consistent rhythm; predictable density.
 - Elevation: Minimal; reserved for interactive surfaces.
 
-## User Journeys (Key Flows)
-
-- Signup → Activation: Coachmarks guide to add assets and connect exchanges; ≤ 15 minutes to complete.
-- Daily Check-In: Down-day path highlights offsetting gains; dwell ≥ 2 minutes; 1.4× tab switching.
-- Crypto Sync: OAuth connect; balances within 5 seconds; 60s background refresh; clear error recovery.
-- Upgrade Flow: Trigger at 20-asset limit; outcome-focused modal; dual currency providers (SePay/Polar).
-
 ## Instrumentation & Metrics
 
 - Client events: Tab changes, dwell time, refresh clicks, form submits.
@@ -318,7 +345,31 @@ Based on Nielsen Norman Group usability research and resource constraints (zero 
 
 ## Deliverables
 
-- Wireframes for core screens (dashboard, portfolio, asset, transactions, connections).
+- Wireframes for corescreens (dashboard, portfolio, asset, transactions, connections).
 - Component specs (tabs, tables, cards, badges, charts, forms).
 - Motion tokens and accessibility checklist.
 - Instrumentation plan mapped to success metrics.
+
+## UI Design & Visualization (V2: Unified)
+
+### Dashboard Content Mockup (V2)
+Based on user feedback, the design has shifted from an "Asset Class Silo" approach to a **Unified Portfolio View**. This better supports asset managers holding mixed assets (VN/US/Crypto) in single portfolios.
+
+**Design Artifact:** [Dashboard V2 Mockup](dashboard-ui-mockup-v2.md)
+
+**Visual Concept:**
+![Unified Dashboard V2](file:///C:/Users/phamh/.gemini/antigravity/brain/dcbf7eb0-105d-43a1-bf30-2a7eb79c74aa/dashboard_ui_mockup_v2_1766845376613.png)
+
+### Gap Analysis (v1.0 Implementation)
+
+**Current State:**
+- `DashboardLayout` is currently implemented with rigid Tabs ("VN/US/Crypto") which conflicts with the new Unified direction.
+- **Critical Mismatch:** The code forces segregation; the requirement is now Aggregation.
+
+**Missing Components & Pages:**
+1.  **Unified Portfolio Components:**
+    - `PortfolioPerformanceChart`: Time-series value chart.
+    - `AllocationDonut`: Asset class breakdown.
+    - `UnifiedHoldingsTable`: Mixed-asset list with "Type" column.
+2.  **Asset Detail Page:** (`/asset/:id`) - No route or component exists.
+3.  **Transaction History:** (`/transactions`) - Skeleton only.

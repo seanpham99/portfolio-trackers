@@ -1,52 +1,52 @@
-# Story 2.2: Enhanced Tabbed Dashboard Shell
-
-Status: review
-
-<!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
-
-## Story
-
-As a User,
-I want a smooth, premium tabbed interface to switch between asset classes,
-So that I can explore my portfolio without cognitive overload during market volatility.
-
-## Acceptance Criteria
-
-1. **Given** the dashboard page in the React 19 frontend
-2. **When** I switch between "VN Stocks", "US Equities", and "Crypto" tabs
-3. **Then** the transition should be smooth using Framer Motion (200ms fade + 30px slide)
-4. **And** each tab should display a badge showing the asset count and total value
-5. **And** I can use `Cmd/Ctrl + 1/2/3` shortcuts to switch tabs on desktop.
-
-## Tasks / Subtasks
-
-- [x] **Task 1: Dashboard Structure**
-  - [x] Create `DashboardLayout` component in `apps/web`.
-  - [x] Define tab states (VN Stocks, US Equities, Crypto).
-
-- [x] **Task 2: Animated Tabs**
-  - [x] Implement tab switching logic.
-  - [x] Apply Framer Motion `AnimatePresence` for smooth transitions (fade + slide).
-
-- [x] **Task 3: Tab Content & Badges**
-  - [x] Create placeholders or connect basic data for "Asset Count" and "Total Value" badges on tabs.
-  - [x] Ensure badges update based on mock or real data.
-
-- [x] **Task 4: Keyboard Shortcuts**
-  - [x] Add event listeners for `Cmd+1`, `Cmd+2`, `Cmd+3` to switch active tab.
-
-## Dev Notes
-
-- **UX:** Prioritize smoothness and perceived performance.
-- **Tech:** React Router 7 + Framer Motion.
-
-### Project Structure Notes
-
-- **Location:** `apps/web/src/routes/_protected.dashboard.tsx` (or similar route).
-
-### References
-
-- [Source: _bmad-output/project-planning-artifacts/epics.md#Story 2.2]
+# Story 2.2: Unified Portfolio Dashboard Shell
+ 
+ Status: todo
+ 
+ <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
+ 
+ ## Story
+ 
+ As a User,
+ I want a unified dashboard showing my total aggregated wealth across all asset classes,
+ So that I can manage my risk and performance holistically without switching context.
+ 
+ ## Acceptance Criteria
+ 
+ 1. **Given** the dashboard page
+ 2. **When** I view the main "Overview" area
+ 3. **Then** I should see a **Portfolio Selector** in the top bar (switching between "Personal", "Family", etc.)
+ 4. **And** I should see a **Portfolio History Chart** (Time-series Net Worth) as the primary visual
+ 5. **And** I should see an **Allocation Donut** chart showing exposure by asset class (VN/US/Crypto)
+ 6. **And** there should typically be **NO TABS** separating asset classes; they are aggregated.
+ 
+ ## Tasks / Subtasks
+ 
+ - [ ] **Task 1: Dashboard Refactor**
+   - [ ] Rename `DashboardLayout` to `UnifiedDashboardLayout`.
+   - [ ] Remove "VN/US/Crypto" tabs.
+   - [ ] Implement Top Bar with `PortfolioSelector` dropdown.
+ 
+ - [ ] **Task 2: Portfolio History Chart**
+   - [ ] Create `PortfolioHistoryChart` using Recharts/Victory.
+   - [ ] Visual style: Line chart with gradient fill, interactive tooltips.
+   - [ ] Filtering: 1D, 1W, 1M, YTD, ALL time ranges.
+ 
+ - [ ] **Task 3: Allocation Visuals**
+   - [ ] Create `AllocationDonut` component.
+   - [ ] Interactive slices: Hovering highlights the segment.
+ 
+ ## Dev Notes
+ 
+ - **Pivot:** This replaces the previous "Tabbed" design.
+ - **UX:** "Asset Manager Cockpit" style. Dark mode, dense but readable data.
+ 
+ ### Project Structure Notes
+ 
+ - **Location:** `apps/web/src/routes/_protected.dashboard.tsx`
+ 
+ ### References
+ 
+ - [Design: Unified Dashboard Concept](../project-planning-artifacts/ux/ux-design-specification.md)
 
 ## Dev Agent Record
 

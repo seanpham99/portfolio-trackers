@@ -143,7 +143,7 @@ Dimensional modeling + ClickHouse columnar storage yields fast analytics, clean 
 
 ### User Success
 
-- Consolidated multi‑asset view across VN stocks, US equities, and crypto in one dashboard; ≤ 3 clicks to drill from net worth → portfolio → asset → transaction.
+- Consolidated multi‑asset view across VN stocks, US equities, and crypto in one unified dashboard; ≤ 3 clicks to drill from net worth → portfolio → asset → transaction.
 - Time‑to‑first‑complete‑portfolio ≤ 15 minutes (from signup to consolidated view via manual entry).
 - Add transactions quickly: manual entry ≤ 30 seconds per transaction with autocomplete and keyboard shortcuts.
 - Crypto API sync: ≥ 98% successful connection rate for Binance and OKX; real-time balance sync within 5 seconds.
@@ -298,7 +298,7 @@ Fin‑Sight v1.0 operates as a subscription portfolio tracker (no custody, no or
 
 ### Detected Innovation Areas
 
-- Enhanced Tabbed Navigation: Proven interaction pattern elevated with premium micro-interactions (smooth transitions, animated indicators, keyboard shortcuts) to balance usability with differentiation.
+- Unified Portfolio Dashboard: A single "cockpit" view connecting multiple asset classes and portfolios with aggregated performance metrics, rather than segregated tabs.
 - Transparent Methodology: Inline “show methodology” panels that surface formulas and lineage, including separation of FX gains vs asset gains.
 - Cross‑Border Parity: VN stocks, US equities, and crypto treated equally with staleness badges and freshness cues.
 - Resilient Payments: Dual providers (SePay/Polar) with reconciliation; operational resilience as part of UX trust.
