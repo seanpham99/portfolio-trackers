@@ -1,14 +1,13 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { PrivacyConsentModal } from '../components/auth/privacy-consent-modal'
 import { describe, it, expect, vi } from 'vitest'
-import { userEvent } from '@testing-library/user-event'
 
 describe('PrivacyConsentModal', () => {
   const defaultProps = {
     isOpen: true,
     onOpenChange: vi.fn(),
     currentVersion: '2025-12-a',
-    onAccept: vi.fn(async () => ({ success: true })),
+    onAccept: vi.fn(async () => {}),
     onDecline: vi.fn()
   }
 
@@ -33,7 +32,7 @@ describe('PrivacyConsentModal', () => {
   })
 
   it('submits form with correct consent_version when accept button is clicked', async () => {
-    const mockOnAccept = vi.fn(async () => ({ success: true }));
+    const mockOnAccept = vi.fn(async () => {});
     render(<PrivacyConsentModal {...defaultProps} onAccept={mockOnAccept} />)
     
     const acceptButton = screen.getByText(/Accept and Continue/i)
@@ -93,19 +92,19 @@ describe('PrivacyConsentModal', () => {
   })
 
   it('displays error message when onAccept returns an error', async () => {
-    const mockOnAcceptWithError = vi.fn(async () => ({ 
-      success: false, 
-      error: 'Network error occurred'
-    }));
+    const mockOnAcceptWithError = vi.fn(async () => {
+      throw new Error('Network error occurred');
+    });
     
-    const { rerender } = render(
+    render(
       <PrivacyConsentModal {...defaultProps} onAccept={mockOnAcceptWithError} />
     )
     
     const acceptButton = screen.getByText(/Accept and Continue/i)
     fireEvent.click(acceptButton)
 
-    // Note: Error display requires useActionState state update which happens asynchronously
-    // In real usage, the error would be shown via state.error
+    await waitFor(() => {
+      expect(screen.getByText(/An unexpected error occurred/i)).toBeInTheDocument()
+    })
   })
 })

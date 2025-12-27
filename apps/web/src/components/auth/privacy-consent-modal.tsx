@@ -11,7 +11,6 @@ import {
 import { Button } from "@repo/ui/components/button"
 import { ShieldCheck, ShieldAlert, Loader2 } from "lucide-react"
 import { motion, useReducedMotion } from "framer-motion"
-import { cn } from "@repo/ui/lib/utils"
 
 interface PrivacyConsentModalProps {
   isOpen: boolean
