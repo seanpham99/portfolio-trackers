@@ -57,11 +57,11 @@ development_status:
   2-2-unified-portfolio-dashboard-shell: done
   2-3-manual-transaction-entry-with-autocomplete: done
   2-4-unified-holdings-table: done
-  2-5-transparent-methodology-basic-panels: done  # Code review complete
+  2-5-transparent-methodology-basic-panels: done
   2-6-asset-detail-page: done
   2-7-connection-settings: ready-for-dev
-  2-8-portfolio-first-dashboard-navigation: review  # NEW: Critical navigation fix from Party Mode discussion
-  2-9-user-preferences-and-mock-cleanup: done  # Backend settings API + popular assets + removed mock data
+  2-8-portfolio-first-dashboard-navigation: done
+  2-9-user-preferences-and-mock-cleanup: done
   epic-2-retrospective: optional
 
   epic-3: backlog

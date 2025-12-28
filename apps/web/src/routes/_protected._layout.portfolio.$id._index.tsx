@@ -8,6 +8,14 @@ import { AddAssetModal } from '@/components/add-asset-modal';
 import { Button } from '@repo/ui/components/button';
 import { ChevronLeft, AlertCircle, Plus } from 'lucide-react';
 import { Empty, EmptyHeader, EmptyTitle, EmptyDescription, EmptyMedia } from '@repo/ui/components/empty';
+import { 
+  Breadcrumb, 
+  BreadcrumbList, 
+  BreadcrumbItem, 
+  BreadcrumbLink, 
+  BreadcrumbPage, 
+  BreadcrumbSeparator 
+} from '@repo/ui/components/breadcrumb';
 
 export default function PortfolioDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -48,16 +56,28 @@ export default function PortfolioDetailPage() {
     <div className="flex h-full flex-col">
       {/* Top Bar: Portfolio Header */}
       <div className="border-b border-white/[0.06] px-8 py-6">
-        <div className="mx-auto flex max-w-7xl items-center justify-between">
-          <div className="flex items-center gap-4">
-             <Link to="/dashboard" className="rounded-full p-2 hover:bg-white/5 transition-colors text-zinc-400 hover:text-white">
-                <ChevronLeft className="h-5 w-5" />
-             </Link>
-             <div>
-                <h1 className="text-2xl font-semibold text-white tracking-tight">{portfolio.name}</h1>
-                <p className="text-sm text-zinc-500">{portfolio.description || 'No description'}</p>
-             </div>
-          </div>
+        <div className="mx-auto max-w-7xl">
+          <Breadcrumb className="mb-4">
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink asChild>
+                  <Link to="/dashboard">Dashboard</Link>
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage className="text-emerald-400">{portfolio.name}</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+          
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+               <div>
+                  <h1 className="text-2xl font-semibold text-white tracking-tight">{portfolio.name}</h1>
+                  <p className="text-sm text-zinc-500">{portfolio.description || 'No description'}</p>
+               </div>
+            </div>
           
           <div className="flex items-center gap-6">
              {/* Summary Stats */}
@@ -71,6 +91,7 @@ export default function PortfolioDetailPage() {
             <Button onClick={() => setIsAddAssetOpen(true)} className="bg-emerald-600 hover:bg-emerald-500 text-white">
               <Plus className="mr-2 h-4 w-4" /> Add Asset
             </Button>
+            </div>
           </div>
         </div>
       </div>
@@ -82,10 +103,10 @@ export default function PortfolioDetailPage() {
           {/* Top Row: Charts */}
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
             <div className="lg:col-span-2">
-              <PortfolioHistoryChart />
+              <PortfolioHistoryChart portfolioId={id} />
             </div>
             <div>
-              <AllocationDonut />
+              <AllocationDonut portfolioId={id} />
             </div>
           </div>
 

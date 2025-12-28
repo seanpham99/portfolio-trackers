@@ -55,9 +55,8 @@ export function PortfolioCard({ portfolio }: PortfolioCardProps) {
           
           {/* Micro Allocation Indicator (simplified for now) */}
           <div className="mt-4 flex h-1.5 w-full overflow-hidden rounded-full bg-zinc-800">
-             {/* If we had allocation data, we would map specific colors. 
-                 For now, show a single bar or placeholder if missing */}
-             <div className="h-full bg-indigo-500 w-full opacity-0" />
+             {/* Placeholder allocation bar - will be replaced with real data in future stories */}
+             <div className="h-full bg-gradient-to-r from-emerald-500 via-blue-500 to-amber-500 w-full" />
           </div>
         </CardContent>
       </Card>

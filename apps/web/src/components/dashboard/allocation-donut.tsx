@@ -1,17 +1,23 @@
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 
+// TODO: Replace with real allocation data from API in future story
 const data = [
-  { name: 'VN Stocks', value: 450000000 }, // 450M VND (~$18k)
-  { name: 'US Equities', value: 1250000000 }, // $50k
-  { name: 'Crypto', value: 200000000 }, // ~$8k
+  { name: 'VN Stocks', value: 450000000 }, // Placeholder
+  { name: 'US Equities', value: 1250000000 }, // Placeholder
+  { name: 'Crypto', value: 200000000 }, // Placeholder
 ];
 
 const COLORS = ['#10b981', '#3b82f6', '#f59e0b']; // Emerald, Blue, Amber
 
-export function AllocationDonut() {
+interface AllocationDonutProps {
+  portfolioId?: string;
+}
+
+export function AllocationDonut({ portfolioId }: AllocationDonutProps) {
   return (
     <div className="h-[400px] w-full rounded-xl border border-white/5 bg-zinc-900/50 p-6">
       <h3 className="mb-4 font-serif text-lg font-light text-white">Allocation</h3>
+      <p className="mb-2 text-xs text-zinc-500">Placeholder data - real allocation coming soon</p>
       <div className="h-[300px]">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
