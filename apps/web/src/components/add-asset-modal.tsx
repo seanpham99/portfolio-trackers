@@ -10,10 +10,6 @@ import {
   Search,
   ChevronLeft,
 } from "lucide-react";
-
-// portfolioStore removed - using API hooks instead
-import type { Asset } from "./asset-blade";
-
 import { Button } from "@repo/ui/components/button";
 import { useSearchAssets, useAddTransaction } from "@/api/hooks/use-portfolios";
 import { usePopularAssets } from "@/api/hooks/use-popular-assets";
@@ -30,13 +26,6 @@ import {
   FieldError
 } from "@repo/ui/components/field";
 import { Input } from "@repo/ui/components/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@repo/ui/components/select";
 import { ScrollArea } from "@repo/ui/components/scroll-area";
 
 // --- Types & Data ---
@@ -119,13 +108,6 @@ export function AddAssetModal({
         transaction_date: new Date().toISOString(),
       });
 
-      // Also update local mock notification for legacy UI support if needed
-      portfolioStore.addNotification({
-        type: "portfolio_change",
-        title: "Asset Added",
-        message: `Added ${values.quantity} ${selectedAsset.symbol} to your portfolio.`,
-      });
-
       onClose();
     } catch (err: any) {
       console.error("Failed to add asset:", err);
@@ -133,41 +115,15 @@ export function AddAssetModal({
     }
   };
 
-  const handleRequestAsset = (values: RequestAssetFormValues) => {
-    submitRequest({
-      symbol: values.symbol.toUpperCase(),
-      name: values.name || values.symbol.toUpperCase(),
-      type: values.type,
-      exchange: values.exchange || undefined,
-      country: values.country || undefined,
-    });
 
-    setRequestSubmitted(true);
-    setTimeout(() => {
-      setShowRequestForm(false);
-      requestForm.reset();
-      setRequestSubmitted(false);
-    }, 2000);
-  };
 
   const handleOpenChange = (open: boolean) => {
     if (!open) onClose();
   };
 
-  const canGoBack = !!(selectedAsset || showRequestForm || showPendingRequests);
+  const canGoBack = !!selectedAsset;
   const handleBack = () => {
     setSelectedAsset(null);
-    setShowRequestForm(false);
-    setShowPendingRequests(false);
-  };
-
-  const getStageIcon = () => {
-    switch (stageId) {
-      case "equities": return <TrendingUp className="h-5 w-5" />;
-      case "crypto": return <Coins className="h-5 w-5" />;
-      case "real-estate": return <Building2 className="h-5 w-5" />;
-      default: return <Plus className="h-5 w-5" />;
-    }
   };
 
   return (
@@ -177,7 +133,7 @@ export function AddAssetModal({
         {/* Header */}
         <div className="flex items-center justify-between border-b border-white/[0.08] px-6 py-4 shrink-0">
           <div className="flex items-center gap-3">
-            {canGoBack ? (
+            {canGoBack && (
               <Button 
                 variant="ghost" 
                 size="icon" 
@@ -186,10 +142,6 @@ export function AddAssetModal({
               >
                 <ChevronLeft className="h-5 w-5" />
               </Button>
-            ) : (
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-400">
-                {getStageIcon()}
-              </div>
             )}
             <div>
               <DialogTitle className="font-serif text-xl font-light">

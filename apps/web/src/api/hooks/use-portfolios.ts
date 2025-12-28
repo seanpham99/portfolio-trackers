@@ -40,6 +40,7 @@ export const useAddTransaction = (portfolioId: string) => {
       quantity: number;
       price: number;
       fee?: number;
+      transaction_date?: string;
       notes?: string;
     }) => addTransaction(portfolioId, { ...transaction, portfolio_id: portfolioId }),
     onSuccess: () => {
