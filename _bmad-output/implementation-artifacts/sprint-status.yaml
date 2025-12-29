@@ -53,10 +53,10 @@ development_status:
   prep-3-seed-asset-data: done
 
   # Repository Quality & Automation
-  prep-4-repository-quality-automation: in-progress
+  prep-4-repository-quality-automation: done
   prep-4-1-changesets-version-management: done
   prep-4-2-lint-staged-husky-pre-commit: done
-  prep-4-3-conventional-commits-commitlint: review
+  prep-4-3-conventional-commits-commitlint: done
 
   # Security Hardening & Compliance
   prep-5-security-hardening-compliance: backlog

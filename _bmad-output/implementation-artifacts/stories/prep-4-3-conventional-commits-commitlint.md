@@ -1,6 +1,6 @@
 # Story Prep-4.3: Conventional Commits & Commit Linting
 
-Status: review
+Status: done
 
 ## Story
 
@@ -31,11 +31,11 @@ So that changelogs are auto-generated correctly and commit history is readable.
 ## Tasks / Subtasks
 
 - [x] **Task 1: Install Commitlint**
-  - [ ] Run `pnpm add -Dw @commitlint/cli @commitlint/config-conventional`
-  - [ ] Verify installations in root `package.json`
+  - [x] Run `pnpm add -Dw @commitlint/cli @commitlint/config-conventional`
+  - [x] Verify installations in root `package.json`
 
 - [x] **Task 2: Configure Commitlint**
-  - [ ] Create `commitlint.config.js` in project root:
+  - [x] Create `commitlint.config.js` in project root:
     ```javascript
     module.exports = {
       extends: ["@commitlint/config-conventional"],
@@ -61,28 +61,28 @@ So that changelogs are auto-generated correctly and commit history is readable.
       },
     };
     ```
-  - [ ] Verify configuration is valid
+  - [x] Verify configuration is valid
 
 - [x] **Task 3: Create Commit-Msg Hook**
-  - [ ] Run `echo "pnpm commitlint --edit \$1" > .husky/commit-msg`
-  - [ ] Make hook executable: `chmod +x .husky/commit-msg`
-  - [ ] Test hook triggers on commit
+  - [x] Run `echo "pnpm commitlint --edit \$1" > .husky/commit-msg`
+  - [x] Make hook executable: `chmod +x .husky/commit-msg`
+  - [x] Test hook triggers on commit
 
 - [x] **Task 4: Test Valid Commits**
-  - [ ] Test `feat: add new feature`
-  - [ ] Test `fix(api): resolve null pointer`
-  - [ ] Test `docs: update README`
-  - [ ] Verify all pass validation
+  - [x] Test `feat: add new feature`
+  - [x] Test `fix(api): resolve null pointer`
+  - [x] Test `docs: update README`
+  - [x] Verify all pass validation
 
 - [x] **Task 5: Test Invalid Commits**
-  - [ ] Test `updated files` (no type)
-  - [ ] Test `Feature: new feature` (wrong case)
-  - [ ] Test `feat:missing space`
-  - [ ] Verify all are rejected with clear errors
+  - [x] Test `updated files` (no type)
+  - [x] Test `Feature: new feature` (wrong case)
+  - [x] Test `feat:missing space`
+  - [x] Verify all are rejected with clear errors
 
 - [x] **Task 6: (Optional) Install Commitizen**
-  - [ ] Run `pnpm add -Dw commitizen cz-conventional-changelog`
-  - [ ] Add to root `package.json`:
+  - [x] Run `pnpm add -Dw commitizen cz-conventional-changelog`
+  - [x] Add to root `package.json`:
     ```json
     "config": {
       "commitizen": {
@@ -90,23 +90,23 @@ So that changelogs are auto-generated correctly and commit history is readable.
       }
     }
     ```
-  - [ ] Add script: `"commit": "cz"`
-  - [ ] Test interactive commit: `pnpm commit`
+  - [x] Add script: `"commit": "cz"`
+  - [x] Test interactive commit: `pnpm commit`
 
 - [x] **Task 7: Document Commit Conventions**
-  - [ ] Update `CONTRIBUTING.md` with:
+  - [x] Update `CONTRIBUTING.md` with:
     - Commit message format: `<type>(<scope>): <subject>`
     - List of allowed types and when to use them
     - Examples of good vs bad commit messages
     - How to use `pnpm commit` for guided commits
-  - [ ] Add commit message template (`.gitmessage`)
+  - [x] Add commit message template (`.gitmessage`)
 
 - [x] **Task 8: Validate with Changesets**
-  - [ ] Verify commit types map to changeset bump types:
+  - [x] Verify commit types map to changeset bump types:
     - `feat:` → `minor` bump
     - `fix:` → `patch` bump
     - `BREAKING CHANGE:` → `major` bump
-  - [ ] Update `CONTRIBUTING.md` with mapping
+  - [x] Update `CONTRIBUTING.md` with mapping
 
 ## Technical Guidelines
 
