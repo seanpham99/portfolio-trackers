@@ -16,15 +16,19 @@
         "test": "turbo test",
         "clean": "turbo clean && rm -rf node_modules",
         "format": "prettier --write \"**/*.{ts,tsx,md,json}\"",
-        "db:gen-types": "npx supabase gen types --local --lang=typescript --schema public > packages/database-types/src/supabase-types.ts && npx better-supabase-types -i ./packages/database-types/src/supabase-types.ts -o ./packages/database-types/src/supabase-types.ts"
+        "db:gen-types": "npx supabase gen types --local --lang=typescript --schema public > packages/database-types/src/supabase-types.ts && npx better-supabase-types -i ./packages/database-types/src/supabase-types.ts -o ./packages/database-types/src/supabase-types.ts",
+        "changeset": "changeset",
+        "changeset:version": "changeset version",
+        "changeset:publish": "changeset publish"
     },
     "devDependencies": {
+        "@changesets/cli": "^2.29.8",
         "@repo/eslint-config": "workspace:*",
         "@repo/typescript-config": "workspace:*",
-        "prettier": "^3.7.4",
         "@turbo/gen": "^2.7.2",
-        "turbo": "^2.7.2",
-        "supabase": "2.70.4"
+        "prettier": "^3.7.4",
+        "supabase": "2.70.4",
+        "turbo": "^2.7.2"
     },
     "packageManager": "pnpm@10.26.2",
     "engines": {
