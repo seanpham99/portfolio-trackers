@@ -52,6 +52,19 @@ development_status:
   prep-2-extract-vite-config: done
   prep-3-seed-asset-data: done
 
+  # Repository Quality & Automation
+  prep-4-repository-quality-automation: backlog
+  prep-4-1-changesets-version-management: backlog
+  prep-4-2-lint-staged-husky-pre-commit: backlog
+  prep-4-3-conventional-commits-commitlint: backlog
+
+  # Security Hardening & Compliance
+  prep-5-security-hardening-compliance: backlog
+  prep-5-1-csrf-protection-security-headers: backlog
+  prep-5-2-rate-limiting-ddos-protection: backlog
+  prep-5-3-input-validation-sanitization-audit: backlog
+  prep-5-4-secrets-management-rotation-policy: backlog
+
   epic-2: in-progress
   2-1-portfolio-management-logic-api-database: done
   2-2-unified-portfolio-dashboard-shell: done

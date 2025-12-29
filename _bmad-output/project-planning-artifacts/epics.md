@@ -72,32 +72,49 @@ FR13 (Admin/Recon): Epic 6 - Premium Subscriptions & Billing
 ## Epic List
 
 ### Epic 1: Secure Account Foundation
+
 Users can securely join the platform via Google/Email and manage their identity under PDPA/GDPR compliance.
 **FRs covered:** FR1, NFR4, NFR5, NFR6
 
 ### Epic 2: Multi-Asset Portfolio & Manual Tracking
+
 Users can build a unified view of their wealth by manually logging VN/US/Crypto transactions on a premium tabbed dashboard.
 **FRs covered:** FR2, FR3, FR8, FR10, NFR8
 
 ### Epic 3: Professional Crypto Automation
+
 Users can achieve "magic moment" tracking by syncing Binance and OKX balances effortlessly via read-only API access.
 **FRs covered:** FR4
 
 ### Epic 4: Institutional Market Intelligence
+
 Users can analyze assets with high-freshness price data and TradingView charts featuring professional indicators (RSI/MACD).
 **FRs covered:** FR5, FR9, NFR1, NFR2, NFR7
 
 ### Epic 5: Transparent Analytics & FX Intelligence
+
 Users can audit their performance with drill-down P&L and separate asset gains from currency fluctuations (VND/USD).
 **FRs covered:** FR6, FR7, FR10
 
 ### Epic 6: Premium Subscriptions & Billing
+
 Users can unlock unlimited assets and AI insights by subscribing via SePay (VND) or Polar (USD).
 **FRs covered:** FR11, FR13, NFR3
 
 ### Epic 7: Intelligent Alerts & Engagement
+
 Users stay informed with automated holdings snapshots and price alerts via Telegram.
 **FRs covered:** FR12
+
+### Prep Sprint 4: Repository Quality & Automation
+
+Developers can maintain code quality and streamline releases with automated tooling.
+**Goal:** Establish changesets, pre-commit hooks, and conventional commits for professional repo management.
+
+### Prep Sprint 5: Security Hardening & Compliance Review
+
+Platform is hardened against common web attacks and follows security best practices.
+**Goal:** Implement CSRF protection, rate limiting, input validation, and secrets management.
 
 ## Epic 1: Secure Account Foundation
 
@@ -467,6 +484,154 @@ So that I stay informed without having to log in to the app every day.
 As a User,
 I want to set price alerts for my favorite assets,
 So that I don't have to watch the market constantly.
+
+## Prep Sprint 4: Repository Quality & Automation
+
+Developers can maintain code quality and streamline releases with automated tooling.
+
+### Story Prep-4.1: Changesets for Version Management
+
+As a Developer,
+I want automated versioning and changelog generation via Changesets,
+So that I can track changes across packages and publish releases with confidence.
+
+**Acceptance Criteria:**
+
+1. **Given** the monorepo structure
+   **When** I run `pnpm changeset add`
+   **Then** I should be prompted to select affected packages and describe changes
+
+2. **Given** multiple changesets in `.changeset/`
+   **When** I run `pnpm changeset version`
+   **Then** package versions should be bumped atomically and CHANGELOG.md files updated
+
+3. **Given** a changeset workflow
+   **When** changes are committed
+   **Then** a GitHub Action (or equivalent) should validate changeset presence for non-chore commits
+
+### Story Prep-4.2: Lint-Staged & Husky for Pre-Commit Quality
+
+As a Developer,
+I want automatic linting and formatting before commits,
+So that code quality issues are caught before reaching CI.
+
+**Acceptance Criteria:**
+
+1. **Given** staged files with linting errors
+   **When** I run `git commit`
+   **Then** the commit should be blocked and errors displayed
+
+2. **Given** staged TypeScript files
+   **When** pre-commit hook runs
+   **Then** only staged files should be type-checked (not entire project)
+
+3. **Given** successful pre-commit checks
+   **When** I commit
+   **Then** changes should be automatically formatted (Prettier)
+
+### Story Prep-4.3: Conventional Commits & Commit Linting
+
+As a Developer,
+I want enforced conventional commit messages,
+So that changelogs are auto-generated correctly and commit history is readable.
+
+**Acceptance Criteria:**
+
+1. **Given** a commit message like `feat: add user auth`
+   **When** I commit
+   **Then** it should pass validation
+
+2. **Given** an invalid message like `updated stuff`
+   **When** I commit
+   **Then** it should be rejected with helpful error message
+
+3. **Given** conventional commits in history
+   **When** generating changelog
+   **Then** commits should be grouped by type (feat, fix, chore, etc.)
+
+## Prep Sprint 5: Security Hardening & Compliance Review
+
+Platform is hardened against common web attacks and follows security best practices.
+
+### Story Prep-5.1: CSRF Protection & Security Headers
+
+As a User,
+I want protection against CSRF attacks,
+So that malicious sites cannot perform actions on my behalf.
+
+**Acceptance Criteria:**
+
+1. **Given** the NestJS API
+   **When** a request is made without proper CSRF token
+   **Then** it should be rejected with 403 Forbidden
+
+2. **Given** the React frontend
+   **When** making mutations (POST/PUT/DELETE)
+   **Then** a CSRF token should be included in headers
+
+3. **Given** API responses
+   **When** inspecting headers
+   **Then** I should see: `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Strict-Transport-Security`
+
+### Story Prep-5.2: Rate Limiting & DDoS Protection
+
+As a System Administrator,
+I want API rate limiting per user/IP,
+So that the platform remains available during traffic spikes or attacks.
+
+**Acceptance Criteria:**
+
+1. **Given** authenticated requests
+   **When** a user exceeds 100 requests/minute
+   **Then** they should receive 429 Too Many Requests
+
+2. **Given** unauthenticated requests
+   **When** an IP exceeds 20 requests/minute
+   **Then** they should be rate-limited
+
+3. **Given** rate-limit exceeded
+   **When** response is sent
+   **Then** it should include `Retry-After` header
+
+### Story Prep-5.3: Input Validation & Sanitization Audit
+
+As a Security Engineer,
+I want comprehensive input validation across all API endpoints,
+So that injection attacks (SQL/XSS/NoSQL) are prevented.
+
+**Acceptance Criteria:**
+
+1. **Given** user inputs in DTOs
+   **When** validation fails
+   **Then** descriptive errors should be returned (no stack traces in production)
+
+2. **Given** file uploads (future CSV import)
+   **When** validating
+   **Then** MIME type, size, and content should be checked
+
+3. **Given** API responses
+   **When** rendering user-generated content
+   **Then** XSS payloads should be sanitized
+
+### Story Prep-5.4: Secrets Management & Rotation Policy
+
+As a DevOps Engineer,
+I want a documented secrets rotation policy,
+So that compromised keys can be replaced without downtime.
+
+**Acceptance Criteria:**
+
+1. **Given** environment variables
+   **When** reviewing
+   **Then** no secrets should be hardcoded in source code or `template.env`
+
+2. **Given** production deployment
+   **When** rotating `ENCRYPTION_KEY`
+   **Then** dual-key decryption should support old + new keys during transition
+
+3. **Given** external API keys (CCXT, payment providers)
+   **When** rotating
+   **Then** services should detect rotation and reload without restart
 
 **Acceptance Criteria:**
 
