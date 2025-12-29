@@ -15,8 +15,6 @@ import {
   ArrowDownRight,
 } from "lucide-react";
 import { GlassCard } from "./glass-card";
-import { Sparkline } from "./sparkline";
-import type { Stage } from "./stage-slider";
 import type { JSX } from "react/jsx-runtime"; // Import JSX to fix the undeclared variable error
 
 interface AnalyticsOverlayProps {
@@ -126,11 +124,10 @@ export function AnalyticsOverlay({
                 <button
                   key={id}
                   onClick={() => setActiveTab(id as typeof activeTab)}
-                  className={`flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-all ${
-                    activeTab === id
+                  className={`flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-all ${activeTab === id
                       ? "bg-white/10 text-white"
                       : "text-zinc-500 hover:bg-white/5 hover:text-zinc-300"
-                  }`}
+                    }`}
                 >
                   <Icon className="h-4 w-4" />
                   {label}
@@ -149,15 +146,6 @@ export function AnalyticsOverlay({
                       Net Worth Trajectory
                     </h3>
                   </div>
-                  <div className="flex h-48 items-center justify-center">
-                    <Sparkline
-                      data={netWorthData}
-                      color="#10b981"
-                      width={600}
-                      height={160}
-                      strokeWidth={2.5}
-                    />
-                  </div>
                   <div className="mt-4 flex items-end justify-between">
                     <div>
                       <p className="text-3xl font-semibold tabular-nums text-white">
@@ -172,11 +160,10 @@ export function AnalyticsOverlay({
                       </p>
                     </div>
                     <div
-                      className={`rounded-full px-3 py-1 text-sm font-medium ${
-                        metrics.ytdReturn >= 0
+                      className={`rounded-full px-3 py-1 text-sm font-medium ${metrics.ytdReturn >= 0
                           ? "bg-emerald-500/10 text-emerald-400"
                           : "bg-rose-500/10 text-rose-400"
-                      }`}
+                        }`}
                     >
                       {metrics.ytdReturn >= 0 ? "+" : ""}
                       {metrics.ytdReturn.toFixed(1)}% YTD
@@ -198,11 +185,10 @@ export function AnalyticsOverlay({
                         Sharpe Ratio
                       </span>
                       <span
-                        className={`text-lg font-semibold tabular-nums ${
-                          metrics.sharpeRatio >= 1
+                        className={`text-lg font-semibold tabular-nums ${metrics.sharpeRatio >= 1
                             ? "text-emerald-400"
                             : "text-amber-400"
-                        }`}
+                          }`}
                       >
                         {metrics.sharpeRatio.toFixed(2)}
                       </span>
@@ -311,11 +297,10 @@ export function AnalyticsOverlay({
                             </div>
                           </div>
                           <div
-                            className={`flex items-center gap-1 text-lg font-semibold ${
-                              ret >= metrics.ytdReturn
+                            className={`flex items-center gap-1 text-lg font-semibold ${ret >= metrics.ytdReturn
                                 ? "text-zinc-400"
                                 : "text-zinc-500"
-                            }`}
+                              }`}
                           >
                             {ret >= 0 ? (
                               <ArrowUpRight className="h-4 w-4" />

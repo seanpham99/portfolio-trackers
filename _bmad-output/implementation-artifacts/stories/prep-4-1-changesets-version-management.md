@@ -1,6 +1,6 @@
 # Story Prep-4.1: Changesets for Version Management
 
-Status: review
+Status: done
 
 ## Story
 
@@ -87,13 +87,15 @@ So that I can track changes across packages and publish releases with confidence
 Implemented automated version management using Changesets CLI for the Turborepo monorepo. The workflow enables atomic version bumps across multiple packages with automatic CHANGELOG generation.
 
 **Key Implementation Details:**
+
 1. **Base Branch Configuration:** Updated config to use `master` (not `main`) to match repository's actual branch structure
-2. **Package Detection:** Verified all 9 workspace packages are correctly detected (apps/web, services/api, packages/*)
+2. **Package Detection:** Verified all 9 workspace packages are correctly detected (apps/web, services/api, packages/\*)
 3. **Version Workflow:** Successfully tested patch bump on @repo/api-types (0.0.1 → 0.0.2)
 4. **Documentation:** Created comprehensive CONTRIBUTING.md with changeset workflow, conventional commits mapping, and examples
 5. **CI Integration:** Added GitHub Actions workflow to validate changeset presence on PRs for feat/fix commits
 
 **Files Created:**
+
 - `.changeset/config.json` - Changesets configuration with baseBranch: "master"
 - `.changeset/README.md` - Auto-generated changeset usage instructions
 - `CONTRIBUTING.md` - Comprehensive contributor guide with changeset workflow
@@ -101,15 +103,18 @@ Implemented automated version management using Changesets CLI for the Turborepo 
 - `packages/api-types/CHANGELOG.md` - Auto-generated changelog (from test)
 
 **Files Modified:**
+
 - `package.json` (root) - Added changeset, changeset:version, changeset:publish scripts
 
 **Completion Notes:**
 ✅ All acceptance criteria satisfied:
+
 1. `pnpm changeset` prompts for package selection and change description
 2. `pnpm changeset:version` atomically bumps versions and updates CHANGELOGs
 3. GitHub Action validates changeset presence for non-chore commits on PRs
 
 **Testing:**
+
 - Installed @changesets/cli successfully
 - Created sample changeset for @repo/api-types
 - Ran changeset:version to verify version bump (0.0.1 → 0.0.2)
