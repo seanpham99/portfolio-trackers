@@ -19,7 +19,7 @@ import {
   ExchangeId,
 } from '@repo/api-types';
 import { encryptSecret, decryptSecret, maskApiKey } from './crypto.utils';
-import * as ccxt from 'ccxt';
+import ccxt, { Exchange } from "ccxt";
 
 type ExchangeClass = typeof ccxt.binance | typeof ccxt.okx;
 
@@ -28,7 +28,7 @@ export class ConnectionsService {
   constructor(
     @Inject('SUPABASE_CLIENT')
     private readonly supabase: SupabaseClient<Database>,
-  ) {}
+  ) { }
 
   /**
    * Get all connections for a user (secrets are never returned)
@@ -159,7 +159,7 @@ export class ConnectionsService {
     exchange: ExchangeId,
     apiKey: string,
     apiSecret: string,
-  ): ccxt.Exchange {
+  ): Exchange {
     const exchangeClasses: Record<ExchangeId, ExchangeClass> = {
       [ExchangeId.BINANCE]: ccxt.binance,
       [ExchangeId.OKX]: ccxt.okx,

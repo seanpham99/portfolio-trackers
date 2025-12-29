@@ -1,20 +1,26 @@
 {
   "extends": "@repo/typescript-config/base.node.json",
   "compilerOptions": {
-    "module": "node16",
-    "moduleResolution": "node16",
+    "module": "esnext",
+    "moduleResolution": "bundler",
     "outDir": "./dist",
-    "baseUrl": ".",
-    "paths": {
-      "ccxt": ["../../node_modules/ccxt/js/ccxt.d.ts"]
-    },
     "emitDecoratorMetadata": true,
-    "experimentalDecorators": true, // NestJS requirement
+    "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "incremental": true,
     "skipLibCheck": true,
     "strictNullChecks": true,
-    "noFallthroughCasesInSwitch": false
-  }
+    "noFallthroughCasesInSwitch": false,
+    "resolveJsonModule": true,
+    "sourceMap": true
+  },
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "test"
+  ]
 }

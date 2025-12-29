@@ -79,6 +79,16 @@ workflow_status:
     artifacts:
       - "_bmad-output/architecture.md"
 
+  generate-project-context:
+    status: completed
+    agent: architect
+    command: generate-project-context
+    phase: 2
+    note: "Implementation rules for AI agents - TypeScript, React, Testing, Code Quality, Workflow patterns"
+    completed: "2025-12-29"
+    artifacts:
+      - "_bmad-output/project-context.md"
+
   create-epics-and-stories:
     status: completed
     agent: pm
