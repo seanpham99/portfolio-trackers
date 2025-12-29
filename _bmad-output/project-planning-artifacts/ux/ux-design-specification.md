@@ -102,9 +102,10 @@ The product bridges a critical gap: no existing platform offers unified VN + US 
 
 **2. Transparent Methodology as Trust Builder**
 
-- Inline "show methodology" panels (collapsible) differentiate from black-box competitors
-- Progressive disclosure: Beginners see summary, experts drill formulas
+- Inline methodology via **info icon hover cards** differentiate from black-box competitors
+- Space-efficient progressive disclosure: Hover icon → see formula & data source in hover card
 - Builds educational trust: "This is how we calculate your cost basis (FIFO), here's the FX rate source"
+- **UX Rationale:** HoverCards preserve screen real estate while maintaining transparency; no content shift on expansion; better UX than tooltips with richer content display and hover activation (no click required)
 
 **3. Cross-Border Narrative & Multi-Currency Storytelling**
 
@@ -232,9 +233,9 @@ Drill-down view for a **single portfolio**. This is where the UnifiedHoldingsTab
   - `AllocationDonut`: Asset class breakdown (VN / US / Crypto)
   - `SummaryStats`: Net Worth, 24h P/L, Cash Balance
   - `UnifiedHoldingsTable`: List of holdings for **THIS portfolio only**
-    - Cols: Expand icon, Name, Ticker, Type (Badge), Price, 24h %, Value (Base Currency), P/L
+    - Cols: Name, Ticker, Type (Badge), Price, 24h %, Value (Base Currency), P/L (with info icon)
     - Filter bar: [All] [VN] [US] [Crypto]
-    - Row expansion → MethodologyPanel (Story 2.5)
+    - Info icon tooltip → Shows calculation method & data source (Story 2.5)
 - **API:** `GET /portfolios/:id/holdings`
 
 ### 3. Asset Detail (`/portfolio/:id/asset/:symbol`)
@@ -280,7 +281,7 @@ API Management.
 ## Information Architecture
 
 - **Global structure:** Dashboard (portfolio list) → Portfolio Detail (holdings with asset-class filters) → Asset → Transaction.
-- **Navigation flow:** Dashboard shows portfolio cards; clicking a card drills into portfolio detail with UnifiedHoldingsTable; clicking a holding expands MethodologyPanel or navigates to Asset Detail.
+- **Navigation flow:** Dashboard shows portfolio cards; clicking a card drills into portfolio detail with UnifiedHoldingsTable; clicking a holding navigates to Asset Detail; hovering info icons shows methodology hover cards.
 - **Content hierarchy:** Portfolio cards first, then holdings list with filtering; charts and detailed analytics in Portfolio Detail and Asset Detail views.
 
 ## Core Screens
@@ -295,7 +296,7 @@ API Management.
 ### Portfolio Detail - `/portfolio/:id`
 
 - **Holdings table** (`UnifiedHoldingsTable`) with asset-class filter bar: [All] [VN] [US] [Crypto].
-- Row expansion → MethodologyPanel (Story 2.5).
+- Info icon hover card → Shows calculation method & data source (Story 2.5).
 - Allocation donut, net worth chart, performance sparklines.
 - Staleness indicators; polling status; export actions.
 
@@ -303,6 +304,7 @@ API Management.
 
 - TradingView chart embed (RSI/MACD/MA); interval controls; reduced motion fallback.
 - Lots and transactions list; realized/unrealized PnL; FX gain separation where applicable.
+- Info icon hover cards → Show calculation method & data source (Story 2.5, 2.6).
 - Data source disclosure and last refresh timestamps.
 
 ### Transactions

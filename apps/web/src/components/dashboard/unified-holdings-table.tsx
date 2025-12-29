@@ -3,26 +3,27 @@ import {
   useReactTable,
   getCoreRowModel,
   getSortedRowModel,
-  getExpandedRowModel,
   flexRender,
   createColumnHelper,
   SortingState,
-  ExpandedState,
 } from "@tanstack/react-table";
 import {
   ArrowUpRight,
   ArrowDownRight,
   TrendingUp,
   Filter,
-  ChevronRight,
+  Info,
   Briefcase,
   Plus,
 } from "lucide-react";
-import { AnimatePresence } from "framer-motion";
 import { Link } from "react-router";
 import { useHoldings } from "@/api/hooks/use-holdings";
-import { HoldingDto as Holding } from "@repo/api-types";
-import { MethodologyPanel } from "@/components/common/methodology-panel";
+import { HoldingDto as Holding, CalculationMethod } from "@repo/api-types";
+import {
+  HoverCard,
+  HoverCardTrigger,
+  HoverCardContent,
+} from "@repo/ui/components/hover-card";
 import {
   Empty,
   EmptyHeader,
@@ -50,7 +51,6 @@ export function UnifiedHoldingsTable({
     isError,
   } = useHoldings(portfolioId);
   const [sorting, setSorting] = useState<SortingState>([]);
-  const [expanded, setExpanded] = useState<ExpandedState>({});
   const [filter, setFilter] = useState<"ALL" | "VN" | "US" | "CRYPTO">("ALL");
 
   const holdings = useMemo(() => {
@@ -70,28 +70,27 @@ export function UnifiedHoldingsTable({
     });
   }, [allHoldings, filter]);
 
+  // Methodology content helper
+  const getMethodologyContent = (calculationMethod?: CalculationMethod) => {
+    const METHODOLOGY_CONTENT: Record<
+      CalculationMethod,
+      { title: string; formula: string }
+    > = {
+      [CalculationMethod.WEIGHTED_AVG]: {
+        title: "Weighted Average Cost Basis",
+        formula: "Avg Cost = Total Cost / Total Quantity",
+      },
+      [CalculationMethod.FIFO]: {
+        title: "First-In, First-Out (FIFO)",
+        formula: "Cost Basis = Oldest Purchased Shares Sold First",
+      },
+    };
+
+    return calculationMethod ? METHODOLOGY_CONTENT[calculationMethod] : null;
+  };
+
   const columns = useMemo(
     () => [
-      // Expansion trigger column
-      columnHelper.display({
-        id: "expander",
-        header: () => null,
-        cell: ({ row }) => (
-          <button
-            onClick={row.getToggleExpandedHandler()}
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-zinc-500 transition-colors hover:bg-white/5 hover:text-zinc-300"
-            aria-label={
-              row.getIsExpanded() ? "Hide methodology" : "Show methodology"
-            }
-            aria-expanded={row.getIsExpanded()}
-            aria-controls={`methodology-${row.id}`}
-          >
-            <ChevronRight
-              className={`h-4 w-4 transition-transform duration-200 ${row.getIsExpanded() ? "rotate-90" : ""}`}
-            />
-          </button>
-        ),
-      }),
       columnHelper.accessor("symbol", {
         header: "Asset",
         cell: (info) => (
@@ -196,20 +195,85 @@ export function UnifiedHoldingsTable({
         },
       }),
       columnHelper.accessor("pl", {
-        header: () => <div className="text-right">P/L</div>,
+        header: () => (
+          <div className="flex items-center justify-end gap-1.5">
+            <span>P/L</span>
+            <HoverCard>
+              <HoverCardTrigger asChild>
+                <button
+                  aria-label="View methodology for P/L calculation"
+                  className="inline-flex items-center justify-center text-zinc-500 hover:text-zinc-300 transition-colors"
+                  tabIndex={0}
+                >
+                  <Info className="h-3.5 w-3.5" />
+                </button>
+              </HoverCardTrigger>
+              <HoverCardContent side="top" className="max-w-xs">
+                <div className="space-y-1.5">
+                  <p className="text-xs font-medium">Cost Basis Calculation</p>
+                  <p className="text-xs text-zinc-400">
+                    Hover over a row to see specific methodology and data source
+                    for that asset.
+                  </p>
+                </div>
+              </HoverCardContent>
+            </HoverCard>
+          </div>
+        ),
         cell: (info) => {
           const val = info.getValue();
+          const holding = info.row.original;
+          const methodologyContent = getMethodologyContent(
+            holding.calculationMethod,
+          );
+
           if (val === undefined)
             return <div className="text-right text-zinc-500">-</div>;
+
           return (
-            <div
-              className={`text-right tabular-nums ${val >= 0 ? "text-emerald-400" : "text-rose-400"}`}
-            >
-              {val >= 0 ? "+" : ""}
-              {new Intl.NumberFormat("en-US", {
-                style: "currency",
-                currency: "USD",
-              }).format(val)}
+            <div className="flex items-center justify-end gap-1.5">
+              <div
+                className={`text-right tabular-nums ${val >= 0 ? "text-emerald-400" : "text-rose-400"}`}
+              >
+                {val >= 0 ? "+" : ""}
+                {new Intl.NumberFormat("en-US", {
+                  style: "currency",
+                  currency: "USD",
+                }).format(val)}
+              </div>
+              {methodologyContent && (
+                <HoverCard>
+                  <HoverCardTrigger asChild>
+                    <button
+                      aria-label="View methodology for this asset"
+                      className="inline-flex items-center justify-center text-zinc-500 hover:text-zinc-300 transition-colors"
+                      tabIndex={0}
+                    >
+                      <Info className="h-3.5 w-3.5" />
+                    </button>
+                  </HoverCardTrigger>
+                  <HoverCardContent side="left" className="max-w-xs">
+                    <div className="space-y-2">
+                      <div>
+                        <p className="text-xs font-medium text-white">
+                          {methodologyContent.title}
+                        </p>
+                        <p className="text-xs text-zinc-400 mt-1">
+                          Formula: {methodologyContent.formula}
+                        </p>
+                      </div>
+                      {holding.dataSource && (
+                        <div className="pt-2 border-t border-white/10">
+                          <p className="text-xs text-zinc-500">
+                            <span className="font-medium">Data Source:</span>{" "}
+                            {holding.dataSource}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </HoverCardContent>
+                </HoverCard>
+              )}
             </div>
           );
         },
@@ -223,13 +287,10 @@ export function UnifiedHoldingsTable({
     columns,
     state: {
       sorting,
-      expanded,
     },
     onSortingChange: setSorting,
-    onExpandedChange: setExpanded,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    getExpandedRowModel: getExpandedRowModel(),
   });
 
   return (
@@ -308,7 +369,7 @@ export function UnifiedHoldingsTable({
           <tbody className="divide-y divide-white/5">
             {isLoading ? (
               <tr>
-                <td colSpan={7} className="p-0">
+                <td colSpan={6} className="p-0">
                   <div className="flex items-center justify-center py-12 text-zinc-500">
                     <div className="animate-pulse flex items-center gap-2">
                       <div className="h-2 w-2 rounded-full bg-zinc-500"></div>
@@ -321,7 +382,7 @@ export function UnifiedHoldingsTable({
               </tr>
             ) : isError || holdings.length === 0 ? (
               <tr>
-                <td colSpan={7} className="p-0">
+                <td colSpan={6} className="p-0">
                   <Empty className="py-12">
                     <EmptyHeader>
                       <EmptyMedia
@@ -362,32 +423,19 @@ export function UnifiedHoldingsTable({
               </tr>
             ) : (
               table.getRowModel().rows.map((row) => (
-                <React.Fragment key={row.id}>
-                  <tr className="group hover:bg-white/5 transition-colors">
-                    {row.getVisibleCells().map((cell) => (
-                      <td key={cell.id} className="px-6 py-4">
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext(),
-                        )}
-                      </td>
-                    ))}
-                  </tr>
-                  {row.getIsExpanded() && (
-                    <tr>
-                      <td colSpan={7} className="p-0">
-                        <AnimatePresence>
-                          <div id={`methodology-${row.id}`}>
-                            <MethodologyPanel
-                              calculationMethod={row.original.calculationMethod}
-                              dataSource={row.original.dataSource}
-                            />
-                          </div>
-                        </AnimatePresence>
-                      </td>
-                    </tr>
-                  )}
-                </React.Fragment>
+                <tr
+                  key={row.id}
+                  className="group hover:bg-white/5 transition-colors"
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <td key={cell.id} className="px-6 py-4">
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext(),
+                      )}
+                    </td>
+                  ))}
+                </tr>
               ))
             )}
           </tbody>

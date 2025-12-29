@@ -18,7 +18,7 @@ So that I can analyze why I'm making or losing money on this specific holding wi
 6. [x] **And** I should see my **Your Stats** card (Avg Cost, Total Return, Unrealized P/L, AND FX Gain) with data calculated by NestJS.
 7. [x] **And** I should see **Breadcrumbs** navigation: `Dashboard > [Portfolio Name] > [Asset Symbol]`
 8. [x] **And** I should see **Data Freshness** indicators (Staleness badge if price > 5m old)
-9. [x] **And** I should be able to toggle "Show Methodology" to see P/L calculation details.
+9. [x] **And** I should see **info icon hover cards** showing P/L calculation methodology (rework from Story 2.5).
 10. [x] **And** initial data should be pre-loaded from the `useHoldings(id)` cache to avoid loading flickers.
 
 ## Tasks / Subtasks
@@ -37,7 +37,7 @@ So that I can analyze why I'm making or losing money on this specific holding wi
 - [x] **Task 3: Institutional UI Components**
   - [x] Embed TradingView widget with `theme` property bound to application state.
   - [x] Implement `AssetStatsCards` with FX vs Asset gain breakdown.
-  - [x] Implement `MethodologyPanel` (Story 2.5) for holding calculations.
+  - [x] **Rework Complete:** Replaced `MethodologyPanel` toggle with info icon hover cards (Story 2.5).
   - [x] Wire up `StalenessBadge` (Story 4.4) for price data.
 
 ## Dev Notes
@@ -45,6 +45,16 @@ So that I can analyze why I'm making or losing money on this specific holding wi
 - **Route Context:** This route MUST be a child of `_layout` to maintain navigation and sidebar.
 - **Performance:** Ensure query keys for `/portfolios/:id/holdings` and `/portfolios/:id/assets/:symbol/details` are consistent to allow partial cache sharing.
 - **FX Logic:** Asset Gain = `(Current Price - Avg Cost) * Qty` (in Asset Currency). FX Gain = `Value in Base Currency - (Avg Cost * Qty * Historical FX Rate) - Asset Gain in Base Currency`.
+- **Methodology Display (v3):** ✅ Complete - Info icon hover cards in stat cards (e.g., next to "Avg Cost" or "P/L" labels). Uses `@repo/ui/components/hover-card` (Radix UI HoverCard).
+
+### Rework Notes (2025-12-29)
+
+- **Status:** ✅ Complete - Rework for AC 9 finished with HoverCard implementation
+- **Change v2:** Replaced methodology toggle/panel with info icon tooltips per UX design update
+- **Change v3:** Replaced Tooltip with HoverCard for better UX (hover activation, richer content)
+- **Scope:** Asset detail page stat cards now show info icons with hover card content
+- **Impact:** Minor UI refactor; backend API unchanged
+- **Implementation:** Removed `MethodologyPanel` import, `AnimatePresence`, and toggle button; replaced `Tooltip` components with `HoverCard` components in `StatCard` with methodology props
 
 ### Project Structure Notes
 

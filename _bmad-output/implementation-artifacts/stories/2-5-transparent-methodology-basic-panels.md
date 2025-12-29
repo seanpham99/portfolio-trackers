@@ -1,72 +1,134 @@
-# Story 2.5: Transparent Methodology Basic Panels
+# Story 2.5: Transparent Methodology Hover Cards
 
 Status: done
 
 ## Story
 
 As a User,
-I want to see how my cost basis is calculated,
-So that I can trust the accuracy of the platform.
+I want to see how my cost basis is calculated via an info icon hover card,
+So that I can trust the accuracy of the platform without losing screen space.
 
 ## Acceptance Criteria
 
 1. **Given** a holding in the `UnifiedHoldingsTable`
-2. **When** I click the "Show Methodology" info icon (or row expansion trigger)
-3. **Then** a collapsible panel must appear using **TanStack Table Row Expansion**
-4. **And** the expansion must use **Framer Motion** for a smooth slide/fade transition (respecting `prefers-reduced-motion`)
-5. **And** the panel must display the calculation formula (FIFO/Weighted Avg) and the **Asset Data Source** (e.g., "Binance via CCXT", "vnstock")
+2. **When** I hover over (desktop) or tap (mobile) the info icon next to the P/L column header or value
+3. **Then** a **HoverCard** must appear using the `@repo/ui` HoverCard component (Radix UI)
+4. **And** the hover card must display the calculation formula (FIFO/Weighted Avg) and the **Asset Data Source** (e.g., "Binance via CCXT", "vnstock", "Manual Entry")
+5. **And** the hover card must have smooth fade-in animation (respecting `prefers-reduced-motion`)
 6. **And** methodology data must be server-driven via the `HoldingDto` to ensure consistency
-7. **And** the toggle button must meet accessibility standards (`aria-expanded`, `aria-controls`, and descriptive `aria-label`).
+7. **And** the info icon must meet accessibility standards (`aria-label` for screen readers, keyboard focusable)
+8. **And** the hover card must not push content or cause layout shift
+
+## Design Rationale
+
+**Previous Approach:** Row expansion panels with Framer Motion animations.
+**Issue:** Takes significant vertical space, pushes content down, creates jarring layout shifts.
+**Intermediate Approach:** Tooltip components (v2 initial implementation).
+**Final Approach:** Info icon with hover card (using Radix UI HoverCard via `@repo/ui`).
+**Benefits:**
+
+- Zero layout shift
+- Always accessible via icon
+- Space-efficient
+- Better UX than tooltips: hover activation (no click required), richer content display
+- Industry standard pattern (used by Stripe, Linear, Vercel dashboards)
 
 ## Tasks / Subtasks
 
-- [x] **Task 1: Extend Shared API Contracts**
-  - [x] Update `HoldingDto` in `@repo/api-types` to include `calculationMethod` (enum) and `dataSource` (string) fields.
-  - [x] Define `CalculationMethod` enum (e.g., `WEIGHTED_AVG`, `FIFO`) in shared types.
-  - [x] Update NestJS `PortfoliosService` to populate these fields in the `getHoldings` response.
+### Completed (v1 - Row Expansion)
 
-- [x] **Task 2: Implement UI with TanStack Table Expansion**
-  - [x] Enable row expansion in `UnifiedHoldingsTable` (`apps/web/src/components/dashboard/unified-holdings-table.tsx`).
-  - [x] Create `MethodologyPanel` component in `apps/web/src/components/common/`.
-  - [x] Implement `renderSubComponent` to display the `MethodologyPanel` within the expanded row.
-  - [x] Use `AnimatePresence` from **Framer Motion** for the expansion animation.
-  - [x] Add ARIA attributes to the expansion trigger icon.
+- [x] **Task 1: Extend Shared API Contracts**
+  - [x] Update `HoldingDto` with `calculationMethod` and `dataSource` fields ✅ Done
+  - [x] Define `CalculationMethod` enum ✅ Done
+  - [x] Update NestJS `PortfoliosService` ✅ Done
+
+### Rework Required (v2 - Tooltips)
+
+- [x] **Task 1: Remove Row Expansion Logic**
+  - [x] Remove `getExpandedRowModel()` from `UnifiedHoldingsTable`
+  - [x] Remove expansion column from table columns
+  - [x] Remove `ExpandedState` and related handlers
+  - [x] Archive `methodology-panel.tsx` (keep for reference)
+
+- [x] **Task 2: Implement HoverCard-Based Methodology**
+  - [x] Add info icon (`Info` from `lucide-react`) to P/L column header or individual cells
+  - [x] Wrap icon with `HoverCard`, `HoverCardTrigger`, `HoverCardContent` from `@repo/ui`
+  - [x] Create `MethodologyHoverCardContent` component to display:
+    - Calculation method title (e.g., "Weighted Average Cost Basis")
+    - Formula (e.g., "Avg Cost = Total Cost / Total Quantity")
+    - Data source badge
+  - [x] Ensure keyboard accessibility (focusable icon, `aria-label`)
+  - [x] Test with `prefers-reduced-motion` to ensure smooth behavior
 
 ## Dev Agent Record
 
-### Implementation Plan
+### v1 Implementation (Row Expansion - Completed 2025-12-28)
 
-- [x] **Task 1: Extend Shared API Contracts**
-  - [x] Created `CalculationMethod` enum in `@repo/api-types`
-  - [x] Extended `HoldingDto` with `calculationMethod` and `dataSource` fields
-  - [x] Updated NestJS `PortfoliosService.getHoldings()` to populate methodology fields
-  - [x] Added unit tests for methodology field population
+**Implemented:**
 
-- [x] **Task 2: Implement UI with TanStack Table Expansion**
-  - [x] Added TanStack Table row expansion with `getExpandedRowModel()`
-  - [x] Created `MethodologyPanel` component with Framer Motion animations
-  - [x] Added expansion trigger column with `ChevronRight` icon and rotation animation
-  - [x] Implemented ARIA attributes (`aria-expanded`, `aria-controls`, `aria-label`)
-  - [x] Used `AnimatePresence` for smooth slide/fade transitions
+- ✅ Extended `HoldingDto` with `calculationMethod` and `dataSource`
+- ✅ Created `MethodologyPanel` component with Framer Motion animations
+- ✅ TanStack Table row expansion with ARIA attributes
+- ✅ Accessibility support with `prefers-reduced-motion`
 
-### Debug Log
+**Issue Identified (2025-12-29):**
 
-_(No blocking issues encountered)_
+- ❌ Row expansion takes significant vertical space
+- ❌ Layout shifts when toggling methodology panels
+- ❌ Poor UX on mobile (limited screen real estate)
 
-### Completion Notes
+### v2 Rework (Tooltips - Required)
 
-- ✅ **Backend:** `HoldingDto` extended with `calculationMethod` (enum) and `dataSource` fields
-- ✅ **Shared Types:** `CalculationMethod` enum created with `WEIGHTED_AVG` and `FIFO` values
-- ✅ **Service Logic:** All holdings now return `calculationMethod: WEIGHTED_AVG` and `dataSource: Manual Entry`
-- ✅ **Frontend:** TanStack Table row expansion implemented with accessibility features
-- ✅ **MethodologyPanel:** Created with formula display, data source badge, and Framer Motion animations
-- ✅ **Animation:** Used `initial={{ height: 0, opacity: 0 }}` and `animate={{ height: 'auto', opacity: 1 }}` as specified
-- ✅ **Accessibility:** Added full ARIA support - `aria-expanded`, `aria-controls`, and descriptive `aria-label`
-- ✅ **Testing:** Backend compiles successfully with TypeScript strict mode
-- ✅ **(Review Fix 1):** Improved empty state with `@repo/ui/components/empty` component and "Add Transaction" CTA
-- ✅ **(Review Fix 2):** Added `useReducedMotion` hook to respect `prefers-reduced-motion` accessibility preference (AC 4)
-- ✅ **(Review Fix 3):** Fixed React Fragment key warning in table row mapping
-- ✅ **(Review Fix 4):** Cleaned up import formatting and extracted animation duration constant
+**Rationale:** Replace row expansion with tooltip-based methodology display for:
+
+- Zero layout shift
+- Better space efficiency
+- Industry-standard pattern
+- Consistent with design system (`@repo/ui`)
+
+**Status:** ✅ Complete (2025-12-29) → Superseded by v3 HoverCard implementation
+
+**Implementation Summary:**
+
+- ✅ Removed TanStack Table row expansion logic (`getExpandedRowModel`, `ExpandedState`, expansion column)
+- ✅ Added info icon tooltips to P/L column (header + individual cells)
+- ✅ Integrated `@repo/ui/components/tooltip` (Radix UI Tooltip)
+- ✅ Methodology content helper function for displaying calculation methods
+- ✅ Full accessibility support (`aria-label`, `tabIndex={0}`, keyboard focusable)
+- ✅ Zero layout shift - tooltips overlay content without pushing rows
+- ✅ Archived `methodology-panel.tsx` for reference
+- ✅ All tests passing (4/4 in unified-holdings-table.test.tsx)
+- ✅ No regressions (44/44 tests passing across codebase)
+- ✅ Type-check passed
+
+### v3 Final Implementation (HoverCard - Current)
+
+**Rationale:** Replace Tooltip with HoverCard for enhanced UX:
+
+- Better hover activation (no click required)
+- Richer content display capabilities
+- More suitable for methodology formulas and descriptions
+- Consistent with Radix UI design patterns
+
+**Status:** ✅ Complete (2025-12-29)
+
+**Implementation Summary:**
+
+- ✅ Created `hover-card.tsx` component in `@repo/ui` package
+- ✅ Installed `@radix-ui/react-hover-card` dependency
+- ✅ Replaced all Tooltip components with HoverCard in:
+  - `UnifiedHoldingsTable` P/L column header
+  - `UnifiedHoldingsTable` P/L cells (per-asset methodology)
+- ✅ Maintained full accessibility support
+- ✅ Zero layout shift preserved
+- ✅ All tests passing (44/44)
+- ✅ Type-check passed
+
+**Files Modified:**
+
+- `packages/ui/src/components/hover-card.tsx` (created)
+- `apps/web/src/components/dashboard/unified-holdings-table.tsx`
+- `apps/web/src/routes/_protected._layout.portfolio.$id.asset.$symbol.tsx`
 
 ## File List
 
@@ -75,14 +137,26 @@ _(No blocking issues encountered)_
 - packages/api-types/src/index.ts
 - services/api/src/portfolios/portfolios.service.ts
 - services/api/src/portfolios/portfolios.service.spec.ts
-- apps/web/src/components/common/methodology-panel.tsx
-- apps/web/src/components/dashboard/unified-holdings-table.tsx
+- apTooltip Pattern:\*\* Use `@repo/ui/components/tooltip` (Radix UI) for consistent, accessible tooltips across the app.
+- **Icon Placement:** Add info icon next to P/L column header or in each cell (TBD based on UX testing).
+- **Content:** Keep tooltip content concise (3-4 lines max) to avoid overwhelming users.
+- **A11y:** Ensure icon is keyboard focusable (`tabIndex={0}`) and has descriptive `aria-label`.
+- **Performance:** Tooltip component is already optimized; no need for custom lazy loading.
+
+### Migration Notes (v1 → v2)
+
+- **Deprecated:** `MethodologyPanel` component (row expansion)
+- **New:** Info icon + Tooltip pattern
+- **Data Contract:** `calculationMethod` and `dataSource` fields in `HoldingDto` remain unchanged
+- **No Breaking Changes:** Backend API stays the same; only frontend UI pattern changes
 
 ## Change Log
 
 - 2025-12-28: Story 2.5 implemented - Added methodology transparency with row expansion panels
 - 2025-12-28: (Review Fix) Replaced plain empty state with shared Empty component from @repo/ui with proper CTA
 - 2025-12-28: (Code Review) Fixed 4 issues: prefers-reduced-motion support, React Fragment keys, import cleanup, animation constants
+- 2025-12-29: (UX Rework) Replaced row expansion with tooltip-based methodology for space efficiency and zero layout shift
+- 2025-12-29: Integrated Radix UI Tooltip via @repo/ui; archived methodology-panel.tsx; all tests passing
 
 ## Dev Notes
 

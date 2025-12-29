@@ -31,9 +31,11 @@ import {
   TableRow,
 } from "@repo/ui/components/table";
 import { ScrollArea } from "@repo/ui/components/scroll-area";
-import { MethodologyPanel } from "@/components/common/methodology-panel";
-import { useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import {
+  HoverCard,
+  HoverCardTrigger,
+  HoverCardContent,
+} from "@repo/ui/components/hover-card";
 import TradingViewWidget from "@/components/asset/trading-view-widget";
 import { CalculationMethod } from "@repo/api-types";
 
@@ -48,7 +50,6 @@ export default function AssetDetailPage() {
     isLoading,
     isError,
   } = useAssetDetails(portfolioId!, symbol!);
-  const [showMethodology, setShowMethodology] = useState(false);
 
   if (isLoading && !assetData) {
     return (
@@ -171,14 +172,6 @@ export default function AssetDetailPage() {
             </div>
 
             <div className="flex items-center gap-3">
-              <Button
-                variant="outline"
-                className="border-white/10 bg-white/5 text-zinc-300 hover:bg-white/10"
-                onClick={() => setShowMethodology(!showMethodology)}
-              >
-                <Info className="mr-2 h-4 w-4" />
-                {showMethodology ? "Hide Methodology" : "Methodology"}
-              </Button>
               <Button className="bg-emerald-600 hover:bg-emerald-500 text-white font-medium shadow-lg shadow-emerald-600/20">
                 Trade on Exchange <ExternalLink className="ml-2 h-4 w-4" />
               </Button>
@@ -190,48 +183,37 @@ export default function AssetDetailPage() {
       {/* Main Content Area */}
       <div className="flex-1 overflow-y-auto overflow-x-hidden p-8">
         <div className="mx-auto max-w-7xl space-y-8">
-          <AnimatePresence>
-            {showMethodology && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: "auto", opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                className="overflow-hidden"
-              >
-                <MethodologyPanel
-                  calculationMethod={
-                    (details.calculation_method as any) ||
-                    CalculationMethod.WEIGHTED_AVG
-                  }
-                  dataSource="Manual Entry + API"
-                />
-              </motion.div>
-            )}
-          </AnimatePresence>
-
           {/* Stats Grid */}
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             <StatCard
               label="Average Cost"
               value={formatCurrency(details.avg_cost)}
               subValue="Weighted Average"
+              methodologyTitle="Weighted Average Cost Basis"
+              methodologyFormula="Avg Cost = Total Cost of All Purchases / Total Quantity"
             />
             <StatCard
               label="Asset Gain"
               value={formatCurrency(details.asset_gain)}
               percentage={details.total_return_pct}
               type="dynamic"
+              methodologyTitle="Asset Gain Calculation"
+              methodologyFormula="Asset Gain = (Current Price - Avg Cost) × Total Quantity"
             />
             <StatCard
               label="FX Gain"
               value={formatCurrency(details.fx_gain)}
               percentage={0} // Placeholder for now
               type="neutral"
+              methodologyTitle="Foreign Exchange Gain"
+              methodologyFormula="FX Gain = Currency exchange rate impact on asset value"
             />
             <StatCard
               label="Realized P/L"
               value={formatCurrency(details.realized_pl || 0)}
               subValue="Total realized from sells"
+              methodologyTitle="Realized Profit/Loss"
+              methodologyFormula="Realized P/L = Sum of (Sell Price - Cost Basis) for all sold assets"
             />
           </div>
 
@@ -334,24 +316,48 @@ function StatCard({
   percentage,
   subValue,
   type = "default",
+  methodologyTitle,
+  methodologyFormula,
 }: {
   label: string;
   value: string;
   percentage?: number;
   subValue?: string;
   type?: "default" | "dynamic" | "neutral";
+  methodologyTitle?: string;
+  methodologyFormula?: string;
 }) {
   const isPositive = percentage !== undefined && percentage >= 0;
 
   return (
     <div className="relative group rounded-2xl border border-white/5 bg-zinc-900/50 p-5 shadow-lg transition-all hover:bg-zinc-900/80 hover:border-white/10 overflow-hidden">
-      <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
-        <TrendingUp className="h-10 w-10 text-white" />
+      <div className="flex items-center justify-between mb-2">
+        <p className="text-xs font-medium text-zinc-500 uppercase tracking-tight">
+          {label}
+        </p>
+        {methodologyTitle && methodologyFormula && (
+          <HoverCard>
+            <HoverCardTrigger asChild>
+              <button
+                aria-label={`View methodology for ${label}`}
+                className="inline-flex items-center justify-center text-zinc-500 hover:text-zinc-300 transition-colors"
+                tabIndex={0}
+              >
+                <Info className="h-3.5 w-3.5" />
+              </button>
+            </HoverCardTrigger>
+            <HoverCardContent side="left" className="max-w-xs">
+              <div className="space-y-2">
+                <p className="text-xs font-medium text-white">
+                  {methodologyTitle}
+                </p>
+                <p className="text-xs text-zinc-400">{methodologyFormula}</p>
+              </div>
+            </HoverCardContent>
+          </HoverCard>
+        )}
       </div>
 
-      <p className="text-xs font-medium text-zinc-500 mb-2 uppercase tracking-tight">
-        {label}
-      </p>
       <div className="flex items-baseline gap-2">
         <span className="text-2xl font-bold text-white tracking-tight">
           {value}
