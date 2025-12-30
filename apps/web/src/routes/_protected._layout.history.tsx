@@ -1,4 +1,4 @@
-import { TransactionHistory } from "@/components/transaction-history";
+import { TransactionHistory } from "@/features/transactions/transaction-history";
 
 export default function HistoryPage() {
   return (

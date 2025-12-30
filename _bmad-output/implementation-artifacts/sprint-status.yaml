@@ -66,10 +66,10 @@ development_status:
   prep-5-4-secrets-management-rotation-policy: backlog
 
   # Monorepo Quality & Architecture Enforcement
-  prep-6-monorepo-quality-architecture: backlog
+  prep-6-monorepo-quality-architecture: in-progress
   prep-6-1-syncpack-version-consistency: done
   prep-6-2-knip-dead-code-detection: done
-  prep-6-3-sheriff-import-boundaries: backlog
+  prep-6-3-architecture-migration: done
   prep-6-4-turbo-gen-package-scaffolding: backlog
 
   epic-2: done

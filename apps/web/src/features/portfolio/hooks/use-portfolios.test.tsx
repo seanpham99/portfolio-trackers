@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from "vitest";
 import { renderHook, waitFor } from "@testing-library/react";
 import { usePortfolios } from "./use-portfolios";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import * as client from "../client";
+import * as client from "@/api/client";
 
 // Mock client
 vi.mock("../client", () => ({

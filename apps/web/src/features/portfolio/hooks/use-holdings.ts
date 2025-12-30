@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getPortfolioHoldings, getAllHoldings } from "../client";
+import { getPortfolioHoldings, getAllHoldings } from "@/api/client";
 
 export const useHoldings = (portfolioId?: string) => {
   return useQuery({

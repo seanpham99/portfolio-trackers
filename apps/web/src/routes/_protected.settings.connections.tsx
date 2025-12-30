@@ -10,8 +10,8 @@ import { ExchangeId, type ConnectionDto } from "@repo/api-types";
 import {
   useConnections,
   useDeleteConnection,
-} from "@/api/hooks/use-connections";
-import { IntegrationCard, ConnectionModal } from "@/components/connections";
+} from "@/features/crypto/use-connections";
+import { IntegrationCard, ConnectionModal } from "@/features/crypto";
 import { Button } from "@repo/ui/components/button";
 import { Card, CardContent } from "@repo/ui/components/card";
 import { Spinner } from "@repo/ui/components/spinner";

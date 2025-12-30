@@ -1,9 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import * as client from "./client";
-import { apiFetch } from "../lib/api";
+import { apiFetch } from "@/lib/api";
 
 // Mock apiFetch
-vi.mock("../lib/api", () => ({
+vi.mock("@/lib/api", () => ({
   apiFetch: vi.fn(),
   getApiUrl: vi.fn().mockReturnValue("http://localhost:3000"),
   getAuthHeaders: vi

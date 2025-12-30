@@ -15,7 +15,7 @@ import {
   AssetDetailsResponseDto,
 } from '@repo/api-types';
 import { Portfolio } from './portfolio.entity';
-import { CacheService } from '../cache';
+import { CacheService } from '../common/cache';
 
 /**
  * Service for portfolio CRUD operations

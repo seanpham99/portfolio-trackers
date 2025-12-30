@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { apiFetch } from "../client";
+import { apiFetch } from "@/api/client";
 import { PopularAssetDto } from "@repo/api-types";
 
 export function usePopularAssets() {

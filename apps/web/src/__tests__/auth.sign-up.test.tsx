@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { describe, it, expect } from "vitest";
-import SignUp from "../routes/_auth.sign-up";
+import SignUp from "@/routes/_auth.sign-up";
 
 describe("SignUp Component", () => {
   it("renders signup form elements", () => {

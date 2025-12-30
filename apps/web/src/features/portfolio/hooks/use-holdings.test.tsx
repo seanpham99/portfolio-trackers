@@ -2,10 +2,10 @@ import { describe, it, expect, vi } from "vitest";
 import { renderHook, waitFor } from "@testing-library/react";
 import { useHoldings } from "./use-holdings";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import * as client from "../client";
+import * as client from "@/api/client";
 
 // Mock client
-vi.mock("../client", () => ({
+vi.mock("@/api/client", () => ({
   getPortfolioHoldings: vi.fn(),
   getAllHoldings: vi.fn(),
   getPortfolios: vi.fn(),

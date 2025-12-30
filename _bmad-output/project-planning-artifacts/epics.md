@@ -797,7 +797,7 @@ So that compromised keys can be replaced without downtime.
 
 Developers can maintain architectural integrity and prevent technical debt through automated workspace-wide quality checks.
 
-**Goal:** Establish Syncpack (version consistency), Knip (dead code detection), Sheriff (import boundaries), and Turbo Gen (scaffolding templates) to enforce monorepo discipline.
+**Goal:** Establish Syncpack (version consistency), Knip (dead code detection), and Turbo Gen (scaffolding templates) to enforce monorepo discipline.
 
 ### Story Prep-6.1: Syncpack for Version Consistency
 
@@ -838,26 +838,6 @@ So that the codebase stays lean and maintainable.
 3. **Given** `knip.json` configuration
    **When** configured with entry points for each workspace package
    **Then** it should correctly analyze TypeScript project references and Turborepo dependencies
-
-### Story Prep-6.3: Sheriff for Import Boundary Enforcement
-
-As a Developer,
-I want to prevent UI packages from importing server code,
-So that architectural layers remain clean and deployable independently.
-
-**Acceptance Criteria:**
-
-1. **Given** `sheriff.config.ts` with defined modules and tags
-   **When** `@repo/ui` attempts to import from `@repo/api`
-   **Then** the build should fail with a clear boundary violation error
-
-2. **Given** workspace structure
-   **When** configuring Sheriff
-   **Then** tags should be defined: `ui`, `server`, `shared`, `types-only`
-
-3. **Given** CI pipeline
-   **When** import boundaries are violated
-   **Then** the build should fail before merge
 
 ### Story Prep-6.4: Turbo Gen for Package Scaffolding
 

@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { usePortfolios } from "@/api/hooks/use-portfolios";
-import { PortfolioCard } from "@/components/dashboard/portfolio-card";
-import { CreatePortfolioModal } from "@/components/create-portfolio-modal";
+import { usePortfolios } from "@/features/portfolio/hooks/use-portfolios";
+import { PortfolioCard } from "@/features/portfolio/portfolio-card";
+import { CreatePortfolioModal } from "@/features/portfolio/create-portfolio-modal";
 import {
   Empty,
   EmptyHeader,

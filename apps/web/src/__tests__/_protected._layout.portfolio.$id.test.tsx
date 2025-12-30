@@ -2,30 +2,30 @@ import { describe, it, expect, vi } from "vitest";
 import { screen, render } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MemoryRouter, Route, Routes } from "react-router";
-import PortfolioDetail from "../routes/_protected._layout.portfolio.$id._index";
+import PortfolioDetail from "@/routes/_protected._layout.portfolio.$id._index";
 
 // Mock the hooks
-vi.mock("@/api/hooks/use-portfolios", () => ({
+vi.mock("@/features/portfolio/hooks/use-portfolios", () => ({
   usePortfolio: vi.fn(),
 }));
 
-import { usePortfolio } from "@/api/hooks/use-portfolios";
+import { usePortfolio } from "@/features/portfolio/hooks/use-portfolios";
 
-vi.mock("@/components/dashboard/unified-holdings-table", () => ({
+vi.mock("@/features/portfolio/unified-holdings-table", () => ({
   UnifiedHoldingsTable: () => (
     <div data-testid="holdings-table">Holdings Table</div>
   ),
 }));
 
-vi.mock("@/components/dashboard/portfolio-history-chart", () => ({
+vi.mock("@/features/portfolio/portfolio-history-chart", () => ({
   PortfolioHistoryChart: () => <div>Chart</div>,
 }));
 
-vi.mock("@/components/dashboard/allocation-donut", () => ({
+vi.mock("@/features/portfolio/allocation-donut", () => ({
   AllocationDonut: () => <div>Donut</div>,
 }));
 
-vi.mock("@/components/add-asset-modal", () => ({
+vi.mock("@/features/transactions/add-asset-modal", () => ({
   AddAssetModal: () => <div>Add Asset Modal</div>,
 }));
 

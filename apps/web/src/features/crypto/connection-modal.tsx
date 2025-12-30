@@ -22,10 +22,7 @@ import { Label } from "@repo/ui/components/label";
 import { Alert, AlertDescription } from "@repo/ui/components/alert";
 import { Loader2, ShieldCheck, AlertCircle, CheckCircle2 } from "lucide-react";
 import { ExchangeId } from "@repo/api-types";
-import {
-  useValidateConnection,
-  useCreateConnection,
-} from "@/api/hooks/use-connections";
+import { useValidateConnection, useCreateConnection } from "./use-connections";
 
 const EXCHANGE_NAMES: Record<ExchangeId, string> = {
   [ExchangeId.BINANCE]: "Binance",

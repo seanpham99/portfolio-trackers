@@ -3,7 +3,7 @@
 import { History, ArrowUpRight, ArrowDownRight } from "lucide-react";
 
 import { usePortfolioStore } from "@/stores/portfolio-store";
-import { GlassCard } from "./glass-card";
+import { GlassCard } from "@/components/glass-card";
 import {
   Table,
   TableBody,

@@ -17,7 +17,7 @@ import {
   Plus,
 } from "lucide-react";
 import { Link } from "react-router";
-import { useHoldings } from "@/api/hooks/use-holdings";
+import { useHoldings } from "@/features/portfolio/hooks/use-holdings";
 import { HoldingDto as Holding, CalculationMethod } from "@repo/api-types";
 import {
   HoverCard,

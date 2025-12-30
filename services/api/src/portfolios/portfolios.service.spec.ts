@@ -3,7 +3,7 @@ import { NotFoundException, ConflictException } from '@nestjs/common';
 import { PortfoliosService } from './portfolios.service';
 import { CreatePortfolioDto, UpdatePortfolioDto } from './dto';
 import { Portfolio } from './portfolio.entity';
-import { CacheService } from '../cache';
+import { CacheService } from '../common/cache';
 
 // Mock portfolio data
 const mockUserId = 'user-123';

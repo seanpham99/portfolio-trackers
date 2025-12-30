@@ -1,13 +1,13 @@
 import { render, screen } from "@testing-library/react";
 import { UnifiedHoldingsTable } from "./unified-holdings-table";
-import { useHoldings } from "../../api/hooks/use-holdings";
+import { useHoldings } from "./hooks/use-holdings";
 import { vi, describe, it, expect, beforeEach } from "vitest";
 import React from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter } from "react-router";
 
 // Mock hook
-vi.mock("../../api/hooks/use-holdings", () => ({
+vi.mock("./use-holdings", () => ({
   useHoldings: vi.fn(),
 }));
 

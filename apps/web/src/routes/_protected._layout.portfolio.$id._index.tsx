@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useParams, Link } from "react-router";
-import { usePortfolio } from "@/api/hooks/use-portfolios";
-import { UnifiedHoldingsTable } from "@/components/dashboard/unified-holdings-table";
-import { PortfolioHistoryChart } from "@/components/dashboard/portfolio-history-chart";
-import { AllocationDonut } from "@/components/dashboard/allocation-donut";
-import { AddAssetModal } from "@/components/add-asset-modal";
+import { usePortfolio } from "@/features/portfolio/hooks/use-portfolios";
+import { UnifiedHoldingsTable } from "@/features/portfolio/unified-holdings-table";
+import { PortfolioHistoryChart } from "@/features/portfolio/portfolio-history-chart";
+import { AllocationDonut } from "@/features/portfolio/allocation-donut";
+import { AddAssetModal } from "@/features/transactions/add-asset-modal";
 import { Button } from "@repo/ui/components/button";
 import { ChevronLeft, AlertCircle, Plus } from "lucide-react";
 import {

@@ -4,7 +4,7 @@ import {
   getPortfolio,
   addTransaction,
   searchAssets,
-} from "../client";
+} from "@/api/client";
 import { TransactionType } from "@repo/api-types";
 
 export const usePortfolios = () => {

@@ -36,8 +36,6 @@
     "@commitlint/config-conventional": "^20.2.0",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "@softarc/eslint-plugin-sheriff": "^0.19.6",
-    "@softarc/sheriff-core": "^0.19.6",
     "@turbo/gen": "^2.7.2",
     "better-supabase-types": "^2.7.6",
     "commitizen": "^4.3.1",

@@ -11,7 +11,7 @@ import {
   MIN_REQUIRED_PRIVACY_VERSION,
   type AuditMetadata,
 } from "@/lib/supabase/preferences";
-import { PrivacyConsentModal } from "@/components/auth/privacy-consent-modal";
+import { PrivacyConsentModal } from "@/features/auth/privacy-consent-modal";
 import { useState, useEffect } from "react";
 
 export async function loader({ request }: LoaderFunctionArgs) {

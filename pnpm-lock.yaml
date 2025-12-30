@@ -25,6 +25,9 @@ importers:
       "@turbo/gen":
         specifier: ^2.7.2
         version: 2.7.2(@swc/core@1.15.7)(@types/node@25.0.3)(typescript@5.9.3)
+      better-supabase-types:
+        specifier: ^2.7.6
+        version: 2.7.6
       commitizen:
         specifier: ^4.3.1
         version: 4.3.1(@types/node@25.0.3)(typescript@5.9.3)
@@ -438,9 +441,6 @@ importers:
       "@tailwindcss/vite":
         specifier: ^4.1.18
         version: 4.1.18(vite@7.3.0(@types/node@25.0.3)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.2))
-      tailwindcss:
-        specifier: ^4.1.18
-        version: 4.1.18
       vite-tsconfig-paths:
         specifier: ^6.0.3
         version: 6.0.3(typescript@5.9.3)(vite@7.3.0(@types/node@25.0.3)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.2))
@@ -4233,6 +4233,12 @@ packages:
         integrity: sha512-C5Mc6rdnsaJDjO3UpGW/CQTHtCKaYlScZTly4JIu97Jxo/odCiH0ITnDXSJPTOrEKk/ycSZ0AOgTmkDtkOsvIA==,
       }
 
+  "@ts-morph/common@0.19.0":
+    resolution:
+      {
+        integrity: sha512-Unz/WHmd4pGax91rdIKWi51wnVUW11QttMEPpBiBgIewnc9UQIX7UDLxr5vRlqeByXCwhkF6VabSsI0raWcyAQ==,
+      }
+
   "@tsconfig/node10@1.0.12":
     resolution:
       {
@@ -5594,6 +5600,13 @@ packages:
       }
     engines: { node: ">=4" }
 
+  better-supabase-types@2.7.6:
+    resolution:
+      {
+        integrity: sha512-BHzbSGb8bLiozsTRZG7ds0cbZTxEFdLcbziMOSPcUuFrkFG7HAPvTV/s5heWmjC0VIKKw6HMMmMS4bZ4w/GOTw==,
+      }
+    hasBin: true
+
   bidi-js@1.0.3:
     resolution:
       {
@@ -6033,6 +6046,12 @@ packages:
         integrity: sha512-QVb0dM5HvG+uaxitm8wONl7jltx8dqhfU33DcqtOZcLSVIKSDDLDi7+0LbAKiyI8hD9u42m2YxXSkMGWThaecQ==,
       }
     engines: { iojs: ">= 1.0.0", node: ">= 0.12.0" }
+
+  code-block-writer@12.0.0:
+    resolution:
+      {
+        integrity: sha512-q4dMFMlXtKR3XNBHyMHt/3pwYNA69EDk00lloMOaaUMKPUXBw6lpXtbu3MMVG6/uOihGnRDOlkyqsONEUj60+w==,
+      }
 
   collect-v8-coverage@1.0.3:
     resolution:
@@ -9755,6 +9774,13 @@ packages:
         integrity: sha512-J7p63hRiAjw1NDEww1W7i37+ByIrOWO5XQQAzZ3VOcL0PNybwpfmV/N05zFAzwQ9USyEcX6t3UO+K5aqBQOIHw==,
       }
 
+  minimatch@7.4.6:
+    resolution:
+      {
+        integrity: sha512-sBz8G/YjVniEz6lKPNpKxXwazJe4c19fEfV2GDMX6AjFz+MX9uDWIZW8XreVhkFW3fkIdTv/gxWr/Kks5FFAVw==,
+      }
+    engines: { node: ">=10" }
+
   minimatch@9.0.0:
     resolution:
       {
@@ -9800,6 +9826,14 @@ packages:
       {
         integrity: sha512-FP+p8RB8OWpF3YZBCrP5gtADmtXApB5AMLn+vdyA+PyxCjrCs00mjyUozssO33cwDeT3wNGdLxJ5M//YqtHAJw==,
       }
+    hasBin: true
+
+  mkdirp@2.1.6:
+    resolution:
+      {
+        integrity: sha512-+hEnITedc8LAtIP9u3HJDFIdcLV2vXP33sqLLIzkv1Db1zO/1OxbvYf0Y1OC/S/Qo5dxHXepofhmxL02PsKe+A==,
+      }
+    engines: { node: ">=10" }
     hasBin: true
 
   morgan@1.10.1:
@@ -10337,6 +10371,12 @@ packages:
     resolution:
       {
         integrity: sha512-qjS4s8rBOJa2Xm0jmxXiyh1+OFf6ekCWOvUaRgAQSktzlTbMotS0nmG9gyYAybCWBcuP4fsBeRCKNwGBnMe2OQ==,
+      }
+
+  path-browserify@1.0.1:
+    resolution:
+      {
+        integrity: sha512-b7uo2UCUOYZcnF/3ID0lulOJi/bafxa1xPe7ZPsammBSpjSWQkjNxlt635YGS2MiR9GjvuXCtz2emr3jbsz98g==,
       }
 
   path-case@2.1.1:
@@ -12089,6 +12129,12 @@ packages:
       typescript: "*"
       webpack: ^5.0.0
 
+  ts-morph@18.0.0:
+    resolution:
+      {
+        integrity: sha512-Kg5u0mk19PIIe4islUI/HWRvm9bC1lHejK4S0oh1zaZ77TMZAEmQC0sHQYiu2RgCQFZKXz1fMVi/7nOOeirznA==,
+      }
+
   ts-node@10.9.2:
     resolution:
       {
@@ -12966,6 +13012,12 @@ packages:
     engines: { node: ">=18.0.0" }
     peerDependencies:
       zod: ^3.25.0 || ^4.0.0
+
+  zod@3.25.76:
+    resolution:
+      {
+        integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==,
+      }
 
   zod@4.2.1:
     resolution:
@@ -15544,6 +15596,13 @@ snapshots:
 
   "@tootallnate/quickjs-emscripten@0.23.0": {}
 
+  "@ts-morph/common@0.19.0":
+    dependencies:
+      fast-glob: 3.3.3
+      minimatch: 7.4.6
+      mkdirp: 2.1.6
+      path-browserify: 1.0.1
+
   "@tsconfig/node10@1.0.12": {}
 
   "@tsconfig/node12@1.0.11": {}
@@ -16467,6 +16526,15 @@ snapshots:
     dependencies:
       is-windows: 1.0.2
 
+  better-supabase-types@2.7.6:
+    dependencies:
+      chalk: 4.1.2
+      pluralize: 8.0.0
+      prettier: 3.7.4
+      ts-morph: 18.0.0
+      yargs: 17.7.2
+      zod: 3.25.76
+
   bidi-js@1.0.3:
     dependencies:
       require-from-string: 2.0.2
@@ -16757,6 +16825,8 @@ snapshots:
       - "@types/react-dom"
 
   co@4.6.0: {}
+
+  code-block-writer@12.0.0: {}
 
   collect-v8-coverage@1.0.3: {}
 
@@ -19282,6 +19352,10 @@ snapshots:
     dependencies:
       brace-expansion: 1.1.12
 
+  minimatch@7.4.6:
+    dependencies:
+      brace-expansion: 2.0.2
+
   minimatch@9.0.0:
     dependencies:
       brace-expansion: 2.0.2
@@ -19303,6 +19377,8 @@ snapshots:
   mkdirp@0.5.6:
     dependencies:
       minimist: 1.2.8
+
+  mkdirp@2.1.6: {}
 
   morgan@1.10.1:
     dependencies:
@@ -19656,6 +19732,8 @@ snapshots:
     dependencies:
       camel-case: 3.0.0
       upper-case-first: 1.1.2
+
+  path-browserify@1.0.1: {}
 
   path-case@2.1.1:
     dependencies:
@@ -20771,6 +20849,11 @@ snapshots:
       typescript: 5.9.3
       webpack: 5.103.0(@swc/core@1.15.7)
 
+  ts-morph@18.0.0:
+    dependencies:
+      "@ts-morph/common": 0.19.0
+      code-block-writer: 12.0.0
+
   ts-node@10.9.2(@swc/core@1.15.7)(@types/node@25.0.3)(typescript@5.9.3):
     dependencies:
       "@cspotcode/source-map-support": 0.8.1
@@ -21358,5 +21441,7 @@ snapshots:
   zod-validation-error@4.0.2(zod@4.2.1):
     dependencies:
       zod: 4.2.1
+
+  zod@3.25.76: {}
 
   zod@4.2.1: {}

@@ -1,0 +1,5 @@
+
+# Build artifacts at root (should only be in dist/)
+index.js
+index.ts
+index.d.ts

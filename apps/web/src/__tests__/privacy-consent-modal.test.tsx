@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { PrivacyConsentModal } from "../components/auth/privacy-consent-modal";
+import { PrivacyConsentModal } from "@/features/auth/privacy-consent-modal";
 import { describe, it, expect, vi } from "vitest";
 
 describe("PrivacyConsentModal", () => {

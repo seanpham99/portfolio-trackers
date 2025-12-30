@@ -2,9 +2,10 @@ import path from "path";
 import { reactRouter } from "@react-router/dev/vite";
 import { defineConfig, mergeConfig } from "vite";
 import { getBaseViteConfig } from "@repo/vite-config";
+import type { UserConfig } from "vite";
 
 // https://vite.dev/config/
-export default defineConfig((configEnv) => {
+export default defineConfig(() => {
   const baseConfig = getBaseViteConfig();
 
   const appConfig = {
@@ -32,4 +33,4 @@ export default defineConfig((configEnv) => {
   };
 
   return mergeConfig(baseConfig, appConfig);
-});
+}) as UserConfig;

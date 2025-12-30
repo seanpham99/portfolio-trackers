@@ -1,6 +1,6 @@
 import { useParams, Link } from "react-router";
 import { useAssetDetails } from "@/api/hooks/use-asset-details";
-import { usePortfolio } from "@/api/hooks/use-portfolios";
+import { usePortfolio } from "@/features/portfolio/hooks/use-portfolios";
 import {
   History,
   TrendingUp,
@@ -36,7 +36,7 @@ import {
   HoverCardTrigger,
   HoverCardContent,
 } from "@repo/ui/components/hover-card";
-import TradingViewWidget from "@/components/asset/trading-view-widget";
+import TradingViewWidget from "@/features/portfolio/trading-view-widget";
 import { CalculationMethod } from "@repo/api-types";
 
 export default function AssetDetailPage() {

@@ -1,6 +1,5 @@
 import js from "@eslint/js";
 import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
-import sheriff from "@softarc/eslint-plugin-sheriff";
 import globals from "globals";
 import tseslint from "typescript-eslint";
 
@@ -9,7 +8,6 @@ export const config = [
   js.configs.recommended,
   ...tseslint.configs.recommended,
   eslintPluginPrettierRecommended,
-  sheriff.configs.all,
   {
     languageOptions: {
       globals: {
@@ -24,8 +22,6 @@ export const config = [
         { argsIgnorePattern: "^_" },
       ],
       "@typescript-eslint/no-explicit-any": "warn",
-      // Disable encapsulation rule for monorepo cross-package imports
-      "@softarc/sheriff/encapsulation": "off",
     },
   },
   {
