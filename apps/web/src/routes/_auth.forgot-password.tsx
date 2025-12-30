@@ -104,7 +104,7 @@ export default function ForgotPassword() {
       }
       className="w-full"
     >
-      <Card className="border-white/[0.15] bg-zinc-900/40 backdrop-blur-2xl shadow-2xl shadow-black/50 overflow-hidden ring-1 ring-white/5">
+      <Card className="glass-card overflow-hidden">
         {success ? (
           <div
             className="flex flex-col items-center justify-center p-8 text-center"
@@ -117,22 +117,22 @@ export default function ForgotPassword() {
               />
             </div>
             <CardHeader className="p-0 mb-4">
-              <CardTitle className="font-serif text-2xl font-light text-white tracking-tight">
+              <CardTitle className="font-serif text-2xl font-light text-foreground tracking-tight">
                 Check your email
               </CardTitle>
-              <CardDescription className="text-zinc-400">
+              <CardDescription className="text-muted-foreground">
                 Password reset instructions sent
               </CardDescription>
             </CardHeader>
             <CardContent className="p-0">
-              <p className="text-sm text-zinc-500 max-w-xs mx-auto mb-6">
+              <p className="text-sm text-muted-foreground max-w-xs mx-auto mb-6">
                 If you registered using your email and password, you will
                 receive a password reset email.
               </p>
               <Link to="/login">
                 <Button
                   variant="outline"
-                  className="border-white/10 hover:bg-white/5 hover:text-white"
+                  className="border-border hover:bg-overlay-light hover:text-foreground"
                 >
                   Return to Login
                 </Button>
@@ -142,10 +142,10 @@ export default function ForgotPassword() {
         ) : (
           <>
             <CardHeader className="space-y-1 pb-6 pt-8 text-center">
-              <CardTitle className="font-serif text-2xl font-light text-white tracking-tight">
+              <CardTitle className="font-serif text-2xl font-light text-foreground tracking-tight">
                 Reset your password
               </CardTitle>
-              <CardDescription className="text-zinc-400">
+              <CardDescription className="text-muted-foreground">
                 Enter your email to receive reset instructions
               </CardDescription>
             </CardHeader>
@@ -169,7 +169,7 @@ export default function ForgotPassword() {
                     <Field data-invalid={fieldState.invalid}>
                       <FieldLabel
                         htmlFor="forgot-email"
-                        className="text-zinc-400 font-normal"
+                        className="text-muted-foreground font-normal"
                       >
                         Email
                       </FieldLabel>
@@ -181,10 +181,10 @@ export default function ForgotPassword() {
                           placeholder="name@example.com"
                           autoComplete="email"
                           aria-invalid={fieldState.invalid}
-                          className="pl-10 h-11 border-white/10 bg-white/5 text-white placeholder:text-zinc-600 focus:bg-zinc-900/50 focus:border-emerald-500/50"
+                          className="pl-10 h-11 border-border bg-overlay-light text-foreground placeholder:text-muted-foreground focus:bg-surface-elevated focus:border-emerald-500/50"
                         />
                         <Mail
-                          className="absolute left-3 top-3 h-5 w-5 text-zinc-600 pointer-events-none"
+                          className="absolute left-3 top-3 h-5 w-5 text-muted-foreground pointer-events-none"
                           aria-hidden="true"
                         />
                       </div>
@@ -224,7 +224,7 @@ export default function ForgotPassword() {
                 </Button>
               </fetcher.Form>
 
-              <div className="mt-6 text-center text-sm text-zinc-500">
+              <div className="mt-6 text-center text-sm text-muted-foreground">
                 Remember your password?{" "}
                 <Link
                   to="/login"

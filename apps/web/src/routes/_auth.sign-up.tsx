@@ -154,7 +154,7 @@ export default function SignUp() {
       }
       className="w-full"
     >
-      <Card className="border-white/[0.15] bg-zinc-900/40 backdrop-blur-2xl shadow-2xl shadow-black/50 overflow-hidden ring-1 ring-white/5">
+      <Card className="glass-card overflow-hidden">
         {success ? (
           <div
             className="flex flex-col items-center justify-center p-8 text-center"
@@ -167,22 +167,22 @@ export default function SignUp() {
               />
             </div>
             <CardHeader className="p-0 mb-4">
-              <CardTitle className="font-serif text-2xl font-light text-white tracking-tight">
+              <CardTitle className="font-serif text-2xl font-light text-foreground tracking-tight">
                 Check your email
               </CardTitle>
-              <CardDescription className="text-zinc-400">
+              <CardDescription className="text-muted-foreground">
                 We&apos;ve sent a confirmation link to your email address.
               </CardDescription>
             </CardHeader>
             <CardContent className="p-0">
-              <p className="text-sm text-zinc-500 max-w-xs mx-auto mb-6">
+              <p className="text-sm text-muted-foreground max-w-xs mx-auto mb-6">
                 Please check your inbox (and spam folder) to confirm your
                 account.
               </p>
               <Link to="/login">
                 <Button
                   variant="outline"
-                  className="border-white/10 hover:bg-white/5 hover:text-white"
+                  className="border-border hover:bg-overlay-light hover:text-foreground"
                 >
                   Return to Login
                 </Button>
@@ -192,10 +192,10 @@ export default function SignUp() {
         ) : (
           <>
             <CardHeader className="space-y-1 pb-6 pt-8 text-center">
-              <CardTitle className="font-serif text-2xl font-light text-white tracking-tight">
+              <CardTitle className="font-serif text-2xl font-light text-foreground tracking-tight">
                 Create an account
               </CardTitle>
-              <CardDescription className="text-zinc-400">
+              <CardDescription className="text-muted-foreground">
                 Start your wealth tracking journey
               </CardDescription>
             </CardHeader>
@@ -206,7 +206,7 @@ export default function SignUp() {
                 <Button
                   type="submit"
                   variant="outline"
-                  className="relative w-full h-11 border-white/10 bg-white/5 text-white hover:bg-white/10 group"
+                  className="relative w-full h-11 border-border bg-overlay-light text-foreground hover:bg-overlay-medium group"
                   disabled={loading}
                 >
                   <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity bg-gradient-to-r from-emerald-500/10 to-transparent" />
@@ -237,7 +237,7 @@ export default function SignUp() {
               </fetcher.Form>
 
               <FieldSeparator className="my-6">
-                <span className="text-[10px] uppercase tracking-widest text-zinc-500">
+                <span className="text-[10px] uppercase tracking-widest text-muted-foreground">
                   Or continue with email
                 </span>
               </FieldSeparator>
@@ -265,7 +265,7 @@ export default function SignUp() {
                     <Field data-invalid={fieldState.invalid}>
                       <FieldLabel
                         htmlFor="signup-email"
-                        className="text-zinc-400 font-normal"
+                        className="text-muted-foreground font-normal"
                       >
                         Email
                       </FieldLabel>
@@ -277,10 +277,10 @@ export default function SignUp() {
                           placeholder="name@example.com"
                           autoComplete="email"
                           aria-invalid={fieldState.invalid}
-                          className="pl-10 h-11 border-white/10 bg-white/5 text-white placeholder:text-zinc-600 focus:bg-zinc-900/50 focus:border-emerald-500/50"
+                          className="pl-10 h-11 border-border bg-overlay-light text-foreground placeholder:text-muted-foreground focus:bg-surface-elevated focus:border-emerald-500/50"
                         />
                         <Mail
-                          className="absolute left-3 top-3 h-5 w-5 text-zinc-600 pointer-events-none"
+                          className="absolute left-3 top-3 h-5 w-5 text-muted-foreground pointer-events-none"
                           aria-hidden="true"
                         />
                       </div>
@@ -298,7 +298,7 @@ export default function SignUp() {
                     <Field data-invalid={fieldState.invalid}>
                       <FieldLabel
                         htmlFor="signup-password"
-                        className="text-zinc-400 font-normal"
+                        className="text-muted-foreground font-normal"
                       >
                         Password
                       </FieldLabel>
@@ -310,10 +310,10 @@ export default function SignUp() {
                           autoComplete="new-password"
                           aria-invalid={fieldState.invalid}
                           aria-describedby="password-requirements"
-                          className="pl-10 h-11 border-white/10 bg-white/5 text-white placeholder:text-zinc-600 focus:bg-zinc-900/50 focus:border-emerald-500/50"
+                          className="pl-10 h-11 border-border bg-overlay-light text-foreground placeholder:text-muted-foreground focus:bg-surface-elevated focus:border-emerald-500/50"
                         />
                         <Lock
-                          className="absolute left-3 top-3 h-5 w-5 text-zinc-600 pointer-events-none"
+                          className="absolute left-3 top-3 h-5 w-5 text-muted-foreground pointer-events-none"
                           aria-hidden="true"
                         />
                       </div>
@@ -329,13 +329,13 @@ export default function SignUp() {
                             {[1, 2, 3, 4].map((level) => (
                               <div
                                 key={level}
-                                className={`h-1 flex-1 rounded-full transition-colors ${passwordValidation.strength >= level ? (level <= 2 ? "bg-amber-500" : "bg-emerald-500") : "bg-white/10"}`}
+                                className={`h-1 flex-1 rounded-full transition-colors ${passwordValidation.strength >= level ? (level <= 2 ? "bg-amber-500" : "bg-emerald-500") : "bg-border"}`}
                               />
                             ))}
                           </div>
                           <ul className="text-xs space-y-1">
                             <li
-                              className={`flex items-center gap-1.5 ${passwordValidation.checks.minLength ? "text-emerald-400" : "text-zinc-500"}`}
+                              className={`flex items-center gap-1.5 ${passwordValidation.checks.minLength ? "text-emerald-400" : "text-muted-foreground"}`}
                             >
                               {passwordValidation.checks.minLength ? (
                                 <Check className="h-3 w-3" />
@@ -345,7 +345,7 @@ export default function SignUp() {
                               At least {PASSWORD_MIN_LENGTH} characters
                             </li>
                             <li
-                              className={`flex items-center gap-1.5 ${passwordValidation.checks.hasUppercase && passwordValidation.checks.hasLowercase ? "text-emerald-400" : "text-zinc-500"}`}
+                              className={`flex items-center gap-1.5 ${passwordValidation.checks.hasUppercase && passwordValidation.checks.hasLowercase ? "text-emerald-400" : "text-muted-foreground"}`}
                             >
                               {passwordValidation.checks.hasUppercase &&
                               passwordValidation.checks.hasLowercase ? (
@@ -356,7 +356,7 @@ export default function SignUp() {
                               Upper & lowercase letters
                             </li>
                             <li
-                              className={`flex items-center gap-1.5 ${passwordValidation.checks.hasNumber ? "text-emerald-400" : "text-zinc-500"}`}
+                              className={`flex items-center gap-1.5 ${passwordValidation.checks.hasNumber ? "text-emerald-400" : "text-muted-foreground"}`}
                             >
                               {passwordValidation.checks.hasNumber ? (
                                 <Check className="h-3 w-3" />
@@ -379,7 +379,7 @@ export default function SignUp() {
                     <Field data-invalid={fieldState.invalid}>
                       <FieldLabel
                         htmlFor="signup-confirm"
-                        className="text-zinc-400 font-normal"
+                        className="text-muted-foreground font-normal"
                       >
                         Confirm Password
                       </FieldLabel>
@@ -390,10 +390,10 @@ export default function SignUp() {
                           type="password"
                           autoComplete="new-password"
                           aria-invalid={fieldState.invalid}
-                          className="pl-10 h-11 border-white/10 bg-white/5 text-white placeholder:text-zinc-600 focus:bg-zinc-900/50 focus:border-emerald-500/50"
+                          className="pl-10 h-11 border-border bg-overlay-light text-foreground placeholder:text-muted-foreground focus:bg-surface-elevated focus:border-emerald-500/50"
                         />
                         <Lock
-                          className="absolute left-3 top-3 h-5 w-5 text-zinc-600 pointer-events-none"
+                          className="absolute left-3 top-3 h-5 w-5 text-muted-foreground pointer-events-none"
                           aria-hidden="true"
                         />
                       </div>
@@ -433,7 +433,7 @@ export default function SignUp() {
                 </Button>
               </fetcher.Form>
 
-              <div className="mt-6 text-center text-sm text-zinc-500">
+              <div className="mt-6 text-center text-sm text-muted-foreground">
                 Already have an account?{" "}
                 <Link
                   to="/login"

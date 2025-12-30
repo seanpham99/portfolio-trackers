@@ -99,7 +99,7 @@ export default function ProtectedLayout() {
   // We wrap the modal in a full-screen container to ensure it's centered and blocks all content.
   if (showModal) {
     return (
-      <main className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950 p-4">
+      <main className="fixed inset-0 z-50 flex items-center justify-center bg-background p-4">
         <div className="w-full max-w-md">
           <PrivacyConsentModal
             isOpen={showModal}

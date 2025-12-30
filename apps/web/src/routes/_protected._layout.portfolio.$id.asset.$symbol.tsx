@@ -56,7 +56,7 @@ export default function AssetDetailPage() {
       <div className="flex h-full items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <div className="h-12 w-12 animate-spin rounded-full border-4 border-emerald-500 border-t-transparent" />
-          <p className="text-zinc-500 animate-pulse">
+          <p className="text-muted-foreground animate-pulse">
             Loading asset details...
           </p>
         </div>
@@ -106,9 +106,9 @@ export default function AssetDetailPage() {
     new Date().getTime() - new Date(details.last_updated).getTime() > 3600000; // 1 hour
 
   return (
-    <div className="flex h-full flex-col bg-zinc-950">
+    <div className="flex h-full flex-col bg-background">
       {/* Header Section */}
-      <div className="border-b border-white/[0.06] bg-zinc-900/40 px-8 py-4 backdrop-blur-md">
+      <div className="border-b border-border bg-surface/40 px-8 py-4 backdrop-blur-md">
         <div className="mx-auto max-w-7xl">
           <Breadcrumb className="mb-4">
             <BreadcrumbList>
@@ -141,12 +141,12 @@ export default function AssetDetailPage() {
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h1 className="text-3xl font-bold text-white tracking-tight">
+                  <h1 className="text-3xl font-bold text-foreground tracking-tight">
                     {details.name}
                   </h1>
                   <Badge
                     variant="outline"
-                    className="border-white/10 bg-white/5 text-zinc-400 uppercase tracking-widest text-[10px]"
+                    className="border-border bg-overlay-light text-muted-foreground uppercase tracking-widest text-[10px]"
                   >
                     {details.asset_class}
                   </Badge>
@@ -160,11 +160,11 @@ export default function AssetDetailPage() {
                   )}
                 </div>
                 <div className="flex items-center gap-4 mt-1 text-sm">
-                  <span className="text-zinc-500">
+                  <span className="text-muted-foreground">
                     {symbol} • {details.market}
                   </span>
-                  <span className="h-1 w-1 rounded-full bg-zinc-700" />
-                  <span className="text-zinc-400 font-medium">
+                  <span className="h-1 w-1 rounded-full bg-border" />
+                  <span className="text-muted-foreground font-medium">
                     Last Price: {formatCurrency(details.current_price)}
                   </span>
                 </div>
@@ -221,9 +221,9 @@ export default function AssetDetailPage() {
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
             {/* TradingView Widget Integration */}
             <div className="lg:col-span-2 flex flex-col gap-4">
-              <div className="rounded-2xl border border-white/5 bg-zinc-900/50 p-0 shadow-xl relative overflow-hidden h-[500px]">
-                <div className="flex items-center justify-between p-6 border-b border-white/5">
-                  <h3 className="font-medium text-zinc-300 flex items-center gap-2">
+              <div className="rounded-2xl border border-border bg-surface-elevated p-0 shadow-xl relative overflow-hidden h-[500px]">
+                <div className="flex items-center justify-between p-6 border-b border-border">
+                  <h3 className="font-medium text-foreground flex items-center gap-2">
                     <TrendingUp className="h-4 w-4 text-emerald-400" />{" "}
                     Interactive Chart
                   </h3>
@@ -236,22 +236,24 @@ export default function AssetDetailPage() {
 
             {/* Transaction History Sidebar */}
             <div className="flex flex-col gap-4">
-              <div className="rounded-2xl border border-white/5 bg-zinc-900/50 p-0 shadow-xl overflow-hidden flex flex-col h-[500px]">
-                <div className="flex items-center gap-2 p-5 border-b border-white/5 bg-white/[0.02]">
-                  <History className="h-5 w-5 text-zinc-400" />
-                  <h3 className="font-medium text-white">
+              <div className="rounded-2xl border border-border bg-surface-elevated p-0 shadow-xl overflow-hidden flex flex-col h-[500px]">
+                <div className="flex items-center gap-2 p-5 border-b border-border bg-overlay-light">
+                  <History className="h-5 w-5 text-muted-foreground" />
+                  <h3 className="font-medium text-foreground">
                     Recent Transactions
                   </h3>
                 </div>
                 <ScrollArea className="flex-1">
                   <Table>
-                    <TableHeader className="bg-white/[0.01]">
-                      <TableRow className="border-white/5 hover:bg-transparent">
-                        <TableHead className="text-zinc-500 pl-5">
+                    <TableHeader className="bg-overlay-light">
+                      <TableRow className="border-border hover:bg-transparent">
+                        <TableHead className="text-muted-foreground pl-5">
                           Date
                         </TableHead>
-                        <TableHead className="text-zinc-500">Type</TableHead>
-                        <TableHead className="text-zinc-500 text-right pr-5">
+                        <TableHead className="text-muted-foreground">
+                          Type
+                        </TableHead>
+                        <TableHead className="text-muted-foreground text-right pr-5">
                           Amount
                         </TableHead>
                       </TableRow>
@@ -260,9 +262,9 @@ export default function AssetDetailPage() {
                       {transactions.map((tx) => (
                         <TableRow
                           key={tx.id}
-                          className="border-white/5 hover:bg-white/[0.04] transition-colors group"
+                          className="border-border hover:bg-overlay-light transition-colors group"
                         >
-                          <TableCell className="pl-5 text-zinc-400 text-xs py-4">
+                          <TableCell className="pl-5 text-muted-foreground text-xs py-4">
                             {new Date(tx.date).toLocaleDateString()}
                           </TableCell>
                           <TableCell>
@@ -282,10 +284,10 @@ export default function AssetDetailPage() {
                             </span>
                           </TableCell>
                           <TableCell className="text-right pr-5">
-                            <div className="text-sm font-medium text-white">
+                            <div className="text-sm font-medium text-foreground">
                               {tx.quantity} units
                             </div>
-                            <div className="text-[10px] text-zinc-500">
+                            <div className="text-[10px] text-muted-foreground">
                               @ {formatCurrency(tx.price)}
                             </div>
                           </TableCell>
@@ -296,7 +298,7 @@ export default function AssetDetailPage() {
                 </ScrollArea>
                 <Link
                   to={`/portfolio/${portfolioId}/transactions`}
-                  className="p-4 text-center text-xs font-medium text-zinc-500 hover:text-emerald-400 border-t border-white/5 bg-white/[0.01] transition-colors"
+                  className="p-4 text-center text-xs font-medium text-muted-foreground hover:text-emerald-400 border-t border-border bg-overlay-light transition-colors"
                 >
                   View full history{" "}
                   <ChevronRight className="inline h-3 w-3 ml-1" />

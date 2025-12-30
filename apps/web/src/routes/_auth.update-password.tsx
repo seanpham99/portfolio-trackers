@@ -113,12 +113,12 @@ export default function UpdatePassword() {
       }
       className="w-full"
     >
-      <Card className="border-white/[0.15] bg-zinc-900/40 backdrop-blur-2xl shadow-2xl shadow-black/50 overflow-hidden ring-1 ring-white/5">
+      <Card className="glass-card overflow-hidden">
         <CardHeader className="space-y-1 pb-6 pt-8 text-center">
-          <CardTitle className="font-serif text-2xl font-light text-white tracking-tight">
+          <CardTitle className="font-serif text-2xl font-light text-foreground tracking-tight">
             Reset your password
           </CardTitle>
-          <CardDescription className="text-zinc-400">
+          <CardDescription className="text-muted-foreground">
             Enter your new password below
           </CardDescription>
         </CardHeader>
@@ -142,7 +142,7 @@ export default function UpdatePassword() {
                 <Field data-invalid={fieldState.invalid}>
                   <FieldLabel
                     htmlFor="new-password"
-                    className="text-zinc-400 font-normal"
+                    className="text-muted-foreground font-normal"
                   >
                     New Password
                   </FieldLabel>
@@ -154,10 +154,10 @@ export default function UpdatePassword() {
                       autoComplete="new-password"
                       aria-invalid={fieldState.invalid}
                       aria-describedby="password-requirements"
-                      className="pl-10 h-11 border-white/10 bg-white/5 text-white placeholder:text-zinc-600 focus:bg-zinc-900/50 focus:border-emerald-500/50"
+                      className="pl-10 h-11 border-border bg-overlay-light text-foreground placeholder:text-muted-foreground focus:bg-surface-elevated focus:border-emerald-500/50"
                     />
                     <Lock
-                      className="absolute left-3 top-3 h-5 w-5 text-zinc-600 pointer-events-none"
+                      className="absolute left-3 top-3 h-5 w-5 text-muted-foreground pointer-events-none"
                       aria-hidden="true"
                     />
                   </div>
@@ -170,13 +170,13 @@ export default function UpdatePassword() {
                         {[1, 2, 3, 4].map((level) => (
                           <div
                             key={level}
-                            className={`h-1 flex-1 rounded-full transition-colors ${passwordValidation.strength >= level ? (level <= 2 ? "bg-amber-500" : "bg-emerald-500") : "bg-white/10"}`}
+                            className={`h-1 flex-1 rounded-full transition-colors ${passwordValidation.strength >= level ? (level <= 2 ? "bg-amber-500" : "bg-emerald-500") : "bg-border"}`}
                           />
                         ))}
                       </div>
                       <ul className="text-xs space-y-1">
                         <li
-                          className={`flex items-center gap-1.5 ${passwordValidation.checks.minLength ? "text-emerald-400" : "text-zinc-500"}`}
+                          className={`flex items-center gap-1.5 ${passwordValidation.checks.minLength ? "text-emerald-400" : "text-muted-foreground"}`}
                         >
                           {passwordValidation.checks.minLength ? (
                             <Check className="h-3 w-3" />
@@ -186,7 +186,7 @@ export default function UpdatePassword() {
                           At least {PASSWORD_MIN_LENGTH} characters
                         </li>
                         <li
-                          className={`flex items-center gap-1.5 ${passwordValidation.checks.hasUppercase && passwordValidation.checks.hasLowercase ? "text-emerald-400" : "text-zinc-500"}`}
+                          className={`flex items-center gap-1.5 ${passwordValidation.checks.hasUppercase && passwordValidation.checks.hasLowercase ? "text-emerald-400" : "text-muted-foreground"}`}
                         >
                           {passwordValidation.checks.hasUppercase &&
                           passwordValidation.checks.hasLowercase ? (
@@ -197,7 +197,7 @@ export default function UpdatePassword() {
                           Upper & lowercase letters
                         </li>
                         <li
-                          className={`flex items-center gap-1.5 ${passwordValidation.checks.hasNumber ? "text-emerald-400" : "text-zinc-500"}`}
+                          className={`flex items-center gap-1.5 ${passwordValidation.checks.hasNumber ? "text-emerald-400" : "text-muted-foreground"}`}
                         >
                           {passwordValidation.checks.hasNumber ? (
                             <Check className="h-3 w-3" />
@@ -220,7 +220,7 @@ export default function UpdatePassword() {
                 <Field data-invalid={fieldState.invalid}>
                   <FieldLabel
                     htmlFor="confirm-password"
-                    className="text-zinc-400 font-normal"
+                    className="text-muted-foreground font-normal"
                   >
                     Confirm Password
                   </FieldLabel>
@@ -231,10 +231,10 @@ export default function UpdatePassword() {
                       type="password"
                       autoComplete="new-password"
                       aria-invalid={fieldState.invalid}
-                      className="pl-10 h-11 border-white/10 bg-white/5 text-white placeholder:text-zinc-600 focus:bg-zinc-900/50 focus:border-emerald-500/50"
+                      className="pl-10 h-11 border-border bg-overlay-light text-foreground placeholder:text-muted-foreground focus:bg-surface-elevated focus:border-emerald-500/50"
                     />
                     <Lock
-                      className="absolute left-3 top-3 h-5 w-5 text-zinc-600 pointer-events-none"
+                      className="absolute left-3 top-3 h-5 w-5 text-muted-foreground pointer-events-none"
                       aria-hidden="true"
                     />
                   </div>

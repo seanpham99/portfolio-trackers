@@ -28,10 +28,10 @@ export default function SettingsPage() {
   return (
     <div className="mx-auto max-w-2xl px-8 py-6 space-y-6">
       <div>
-        <h2 className="font-serif text-2xl font-light text-white mb-2">
+        <h2 className="font-serif text-2xl font-light text-foreground mb-2">
           Settings
         </h2>
-        <p className="text-sm text-zinc-400">
+        <p className="text-sm text-muted-foreground">
           Manage your preferences and connected accounts
         </p>
       </div>

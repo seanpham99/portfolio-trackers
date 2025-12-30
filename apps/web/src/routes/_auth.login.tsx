@@ -112,12 +112,12 @@ export default function Login() {
       }
       className="w-full"
     >
-      <Card className="border-white/[0.15] bg-zinc-900/40 backdrop-blur-2xl shadow-2xl shadow-black/50 overflow-hidden ring-1 ring-white/5">
+      <Card className="glass-card overflow-hidden">
         <CardHeader className="space-y-1 pb-6 pt-8 text-center">
-          <CardTitle className="font-serif text-2xl font-light text-white tracking-tight">
+          <CardTitle className="font-serif text-2xl font-light text-foreground tracking-tight">
             Welcome back
           </CardTitle>
-          <CardDescription className="text-zinc-400">
+          <CardDescription className="text-muted-foreground">
             Sign in to your account
           </CardDescription>
         </CardHeader>
@@ -128,7 +128,7 @@ export default function Login() {
             <Button
               type="submit"
               variant="outline"
-              className="relative w-full h-11 border-white/10 bg-white/5 text-white hover:bg-white/10 hover:text-white transition-all duration-300 group"
+              className="relative w-full h-11 border-border bg-overlay-light text-foreground hover:bg-overlay-medium hover:text-foreground transition-all duration-300 group"
               disabled={loading}
             >
               <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-r from-emerald-500/10 to-transparent" />
@@ -159,7 +159,7 @@ export default function Login() {
           </fetcher.Form>
 
           <FieldSeparator className="my-6">
-            <span className="text-[10px] uppercase tracking-widest text-zinc-500">
+            <span className="text-[10px] uppercase tracking-widest text-muted-foreground">
               Or continue with email
             </span>
           </FieldSeparator>
@@ -186,7 +186,7 @@ export default function Login() {
                 <Field data-invalid={fieldState.invalid}>
                   <FieldLabel
                     htmlFor="login-email"
-                    className="text-zinc-400 font-normal"
+                    className="text-muted-foreground font-normal"
                   >
                     Email
                   </FieldLabel>
@@ -198,10 +198,10 @@ export default function Login() {
                       placeholder="name@example.com"
                       autoComplete="email"
                       aria-invalid={fieldState.invalid}
-                      className="pl-10 h-11 border-white/10 bg-white/5 text-white placeholder:text-zinc-600 focus:bg-zinc-900/50 focus:border-emerald-500/50 transition-all duration-200"
+                      className="pl-10 h-11 border-border bg-overlay-light text-foreground placeholder:text-muted-foreground focus:bg-surface-elevated focus:border-emerald-500/50 transition-all duration-200"
                     />
                     <Mail
-                      className="absolute left-3 top-3 h-5 w-5 text-zinc-600 pointer-events-none"
+                      className="absolute left-3 top-3 h-5 w-5 text-muted-foreground pointer-events-none"
                       aria-hidden="true"
                     />
                   </div>
@@ -220,13 +220,13 @@ export default function Login() {
                   <div className="flex items-center justify-between">
                     <FieldLabel
                       htmlFor="login-password"
-                      className="text-zinc-400 font-normal"
+                      className="text-muted-foreground font-normal"
                     >
                       Password
                     </FieldLabel>
                     <Link
                       to="/forgot-password"
-                      className="text-xs text-zinc-500 hover:text-emerald-400 transition-colors"
+                      className="text-xs text-muted-foreground hover:text-emerald-400 transition-colors"
                     >
                       Forgot password?
                     </Link>
@@ -238,10 +238,10 @@ export default function Login() {
                       type="password"
                       autoComplete="current-password"
                       aria-invalid={fieldState.invalid}
-                      className="pl-10 h-11 border-white/10 bg-white/5 text-white placeholder:text-zinc-600 focus:bg-zinc-900/50 focus:border-emerald-500/50 transition-all duration-200"
+                      className="pl-10 h-11 border-border bg-overlay-light text-foreground placeholder:text-muted-foreground focus:bg-surface-elevated focus:border-emerald-500/50 transition-all duration-200"
                     />
                     <Lock
-                      className="absolute left-3 top-3 h-5 w-5 text-zinc-600 pointer-events-none"
+                      className="absolute left-3 top-3 h-5 w-5 text-muted-foreground pointer-events-none"
                       aria-hidden="true"
                     />
                   </div>
@@ -291,13 +291,22 @@ export default function Login() {
             </Button>
           </fetcher.Form>
 
-          <div className="mt-6 text-center text-sm text-zinc-500">
+          <div className="mt-6 text-center text-sm text-muted-foreground">
             Don&apos;t have an account?{" "}
             <Link
               to="/sign-up"
               className="text-emerald-400 hover:text-emerald-300 font-medium transition-colors"
             >
               Create one now
+            </Link>
+          </div>
+          <div className="mt-4 text-center text-xs text-muted-foreground">
+            Forgot password?{" "}
+            <Link
+              to="/forgot-password"
+              className="text-emerald-400 hover:text-emerald-300 font-medium transition-colors"
+            >
+              Reset here
             </Link>
           </div>
         </CardContent>

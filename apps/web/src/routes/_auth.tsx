@@ -18,7 +18,7 @@ export default function AuthLayout() {
     : { initial: { opacity: 0 }, animate: { opacity: 1 } };
 
   return (
-    <div className="dark relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-[#050505] text-white">
+    <div className="dark relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-background text-foreground">
       {/* Premium Background Mesh/Gradient */}
       <div className="absolute inset-0 z-0" aria-hidden="true">
         <div className="absolute -left-[10%] -top-[10%] h-[50%] w-[50%] rounded-full bg-emerald-900/20 blur-[120px] opacity-60" />
@@ -38,7 +38,7 @@ export default function AuthLayout() {
           }
           className="mb-8 flex flex-col items-center justify-center"
         >
-          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500/20 to-emerald-900/20 border border-white/10 shadow-2xl shadow-emerald-900/20 backdrop-blur-sm">
+          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500/20 to-emerald-900/20 border border-border shadow-2xl shadow-emerald-900/20 backdrop-blur-sm">
             <span
               className="text-3xl font-bold text-emerald-400"
               aria-hidden="true"
@@ -64,7 +64,7 @@ export default function AuthLayout() {
                 ? { duration: 0 }
                 : { delay: 0.3, duration: 0.5 }
             }
-            className="mt-2 text-center text-sm text-zinc-500"
+            className="mt-2 text-center text-sm text-muted-foreground"
           >
             Consolidated wealth. Calm mind.
           </motion.p>
@@ -90,7 +90,7 @@ export default function AuthLayout() {
               ? { duration: 0 }
               : { delay: 0.4, duration: 0.5 }
           }
-          className="mt-8 text-center text-xs text-zinc-600"
+          className="mt-8 text-center text-xs text-muted-foreground"
         >
           © {new Date().getFullYear()} Portfolios Tracker. All rights reserved.
         </motion.footer>

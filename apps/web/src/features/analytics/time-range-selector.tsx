@@ -17,7 +17,7 @@ const TIME_RANGES: { value: TimeRange; label: string }[] = [
 export function TimeRangeSelector({ value, onChange }: TimeRangeSelectorProps) {
   return (
     <div
-      className="inline-flex rounded-lg border border-white/6 bg-zinc-900/50 p-1"
+      className="inline-flex rounded-lg border border-border bg-surface-elevated p-1"
       role="group"
       aria-label="Time range selector"
     >
@@ -30,7 +30,7 @@ export function TimeRangeSelector({ value, onChange }: TimeRangeSelectorProps) {
           className={
             value === range.value
               ? "bg-emerald-600 hover:bg-emerald-500 text-white"
-              : "text-zinc-400 hover:text-white hover:bg-white/6"
+              : "text-muted-foreground hover:text-foreground hover:bg-overlay-medium"
           }
           aria-pressed={value === range.value}
         >

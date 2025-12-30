@@ -81,8 +81,8 @@ export function PrivacyConsentModal({
             </DialogDescription>
           </DialogHeader>
 
-          <div className="px-6 pb-6 space-y-4 text-sm text-zinc-300">
-            <div className="p-4 rounded-lg bg-white/5 border border-white/10">
+          <div className="px-6 pb-6 space-y-4 text-sm text-foreground">
+            <div className="p-4 rounded-lg bg-overlay-light border border-border">
               <p className="leading-relaxed">
                 By continuing, you agree to our processing of your personal data
                 according to Vietnam&apos;s

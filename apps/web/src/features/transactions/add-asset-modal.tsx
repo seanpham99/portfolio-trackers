@@ -110,16 +110,16 @@ export function AddAssetModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-lg bg-zinc-900 border-white/8 text-white p-0 gap-0 overflow-hidden flex flex-col h-150">
+      <DialogContent className="sm:max-w-lg bg-surface border-border text-foreground p-0 gap-0 overflow-hidden flex flex-col h-150">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-white/8 px-6 py-4 shrink-0">
+        <div className="flex items-center justify-between border-b border-border px-6 py-4 shrink-0">
           <div className="flex items-center gap-3">
             {canGoBack && (
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={handleBack}
-                className="h-10 w-10 rounded-xl bg-white/5 text-zinc-400 hover:bg-white/10 hover:text-white"
+                className="h-10 w-10 rounded-xl bg-overlay-light text-muted-foreground hover:bg-overlay-medium hover:text-foreground"
               >
                 <ChevronLeft className="h-5 w-5" />
               </Button>
@@ -128,7 +128,7 @@ export function AddAssetModal({
               <DialogTitle className="font-serif text-xl font-light">
                 {selectedAsset ? selectedAsset.symbol : "Add Asset"}
               </DialogTitle>
-              <DialogDescription className="text-xs text-zinc-500 capitalize">
+              <DialogDescription className="text-xs text-muted-foreground capitalize">
                 {selectedAsset
                   ? selectedAsset.name_en || selectedAsset.name
                   : stageId.replace("-", " ")}
@@ -142,17 +142,17 @@ export function AddAssetModal({
             <>
               {/* Search State */}
               <div className="relative mb-4 shrink-0">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
                   placeholder="Search by symbol or name..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 bg-white/3 border-white/8 focus-visible:ring-indigo-500/50"
+                  className="pl-10 bg-overlay-light border-border focus-visible:ring-indigo-500/50"
                   autoFocus
                 />
               </div>
 
-              <ScrollArea className="flex-1 w-full rounded-md border border-white/5 max-h-full min-h-0 flex flex-col *:data-[slot=scroll-area-viewport]:flex-1">
+              <ScrollArea className="flex-1 w-full rounded-md border border-border max-h-full min-h-0 flex flex-col *:data-[slot=scroll-area-viewport]:flex-1">
                 {(isSearching && searchQuery.length >= 2) ||
                 (isLoadingPopular && searchQuery.length < 2) ? (
                   <div className="flex items-center justify-center py-8">
@@ -164,9 +164,9 @@ export function AddAssetModal({
                       <button
                         key={asset.id || asset.symbol}
                         onClick={() => setSelectedAsset(asset)}
-                        className="flex w-full items-center gap-3 rounded-xl bg-white/3 p-3 transition-colors hover:bg-white/6"
+                        className="flex w-full items-center gap-3 rounded-xl bg-overlay-light p-3 transition-colors hover:bg-overlay-medium"
                       >
-                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/5 text-sm font-medium text-zinc-300 overflow-hidden">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-overlay-medium text-sm font-medium text-foreground overflow-hidden">
                           {asset.logo_url ? (
                             <img
                               src={asset.logo_url}
@@ -178,14 +178,14 @@ export function AddAssetModal({
                           )}
                         </div>
                         <div className="flex-1 text-left">
-                          <p className="font-medium text-white">
-                            {asset.symbol}
+                          <p className="font-medium text-foreground">
+                            {asset.name}
                           </p>
-                          <p className="text-xs text-zinc-500">
+                          <p className="text-xs text-muted-foreground">
                             {asset.name_en || asset.name}
                           </p>
                         </div>
-                        <Plus className="h-4 w-4 text-zinc-500" />
+                        <Plus className="h-4 w-4 text-muted-foreground" />
                       </button>
                     ))}
                   </div>
@@ -263,7 +263,7 @@ export function AddAssetModal({
                 />
 
                 {totalValue > 0 && (
-                  <div className="rounded-xl bg-white/3 p-4 flex justify-between items-center">
+                  <div className="rounded-xl bg-overlay-light p-4 flex justify-between items-center">
                     <span className="text-sm text-zinc-400">Total Value</span>
                     <span className="text-xl font-semibold text-white">
                       $

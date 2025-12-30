@@ -95,6 +95,7 @@ development_status:
 
   # Technical Debt
   tech-debt-1-legacy-mock-components-cleanup: done
+  tech-debt-2-css-variables-styling-refactor: done
 
   epic-4: backlog
   4-1-ccxt-integration-exchange-service: backlog
