@@ -58,16 +58,16 @@ NFR8: Data Integrity. Append-only event store for audit trails; versioned calcul
 FR1 (Auth): Epic 1 - Secure Account Foundation
 FR2 (Portfolios): Epic 2 - Multi-Asset Portfolio & Manual Tracking
 FR3 (Manual Entry): Epic 2 - Multi-Asset Portfolio & Manual Tracking
-FR4 (Crypto Sync): Epic 3 - Professional Crypto Automation
-FR5 (Price Data): Epic 4 - Institutional Market Intelligence
-FR6 (Analytics Engine): Epic 5 - Transparent Analytics & FX Intelligence
-FR7 (Currency Conv): Epic 5 - Transparent Analytics & FX Intelligence
+FR4 (Crypto Sync): Epic 4 - Professional Crypto Automation (Deferred from Epic 3)
+FR5 (Price Data): Epic 3 - Portfolio Intelligence Foundation (Basic), Epic 5 - Institutional Market Intelligence (Advanced)
+FR6 (Analytics Engine): Epic 3 - Portfolio Intelligence Foundation (Basic), Epic 6 - Transparent Analytics & FX Intelligence (Advanced)
+FR7 (Currency Conv): Epic 6 - Transparent Analytics & FX Intelligence
 FR8 (Dashboard UX): Epic 2 - Multi-Asset Portfolio & Manual Tracking
-FR9 (Charts): Epic 4 - Institutional Market Intelligence
-FR10 (Methodology): Epic 2 & Epic 5 - Methodology Transparency
-FR11 (Payments): Epic 6 - Premium Subscriptions & Billing
-FR12 (Notifications): Epic 7 - Intelligent Alerts & Engagement
-FR13 (Admin/Recon): Epic 6 - Premium Subscriptions & Billing
+FR9 (Charts): Epic 3 - Portfolio Intelligence Foundation (Basic), Epic 5 - Institutional Market Intelligence (Advanced)
+FR10 (Methodology): Epic 2 & Epic 6 - Methodology Transparency
+FR11 (Payments): Epic 7 - Premium Subscriptions & Billing
+FR12 (Notifications): Epic 8 - Intelligent Alerts & Engagement
+FR13 (Admin/Recon): Epic 7 - Premium Subscriptions & Billing
 
 ## Epic List
 
@@ -81,27 +81,34 @@ Users can securely join the platform via Google/Email and manage their identity 
 Users can build a unified view of their wealth by manually logging VN/US/Crypto transactions on a premium tabbed dashboard.
 **FRs covered:** FR2, FR3, FR8, FR10, NFR8
 
-### Epic 3: Professional Crypto Automation
+### Epic 3: Portfolio Intelligence Foundation
+
+Users can understand their portfolio performance with analytics, visualizations, and current market data before scaling to automation.
+**FRs covered:** FR5 (Basic), FR6 (Basic), FR9 (Basic)
+**Status:** ACTIVE - Replaces original Epic 3 following Epic 2 retrospective (Dec 29, 2025)
+
+### Epic 4: Professional Crypto Automation
 
 Users can achieve "magic moment" tracking by syncing Binance and OKX balances effortlessly via read-only API access.
 **FRs covered:** FR4
+**Status:** DEFERRED - Was original Epic 3, moved to Epic 4 to prioritize portfolio intelligence
 
-### Epic 4: Institutional Market Intelligence
+### Epic 5: Institutional Market Intelligence
 
 Users can analyze assets with high-freshness price data and TradingView charts featuring professional indicators (RSI/MACD).
 **FRs covered:** FR5, FR9, NFR1, NFR2, NFR7
 
-### Epic 5: Transparent Analytics & FX Intelligence
+### Epic 6: Transparent Analytics & FX Intelligence
 
 Users can audit their performance with drill-down P&L and separate asset gains from currency fluctuations (VND/USD).
 **FRs covered:** FR6, FR7, FR10
 
-### Epic 6: Premium Subscriptions & Billing
+### Epic 7: Premium Subscriptions & Billing
 
 Users can unlock unlimited assets and AI insights by subscribing via SePay (VND) or Polar (USD).
 **FRs covered:** FR11, FR13, NFR3
 
-### Epic 7: Intelligent Alerts & Engagement
+### Epic 8: Intelligent Alerts & Engagement
 
 Users stay informed with automated holdings snapshots and price alerts via Telegram.
 **FRs covered:** FR12
@@ -262,11 +269,166 @@ So that I have a consistent, trusted experience without "fake" mock data.
 **Then** the new values should be saved to the database (`user_preferences` table) and persisted on reload
 **And** the "Popular Assets" list should be fetched from the API instead of a hardcoded local file.
 
-## Epic 3: Professional Crypto Automation
+## Epic 3: Portfolio Intelligence Foundation
+
+Users can understand their portfolio performance with analytics, visualizations, and current market data before scaling to automation.
+
+**Epic 3 Replan Rationale (Dec 29, 2025):**
+Epic 2 retrospective revealed that while we delivered excellent data entry infrastructure (8/8 stories complete, 44/44 tests passing), we missed 50% of core MVP value: users cannot answer "How is my portfolio performing?" This epic pivots from crypto automation (deferred to Epic 4) to prioritize portfolio intelligence with a mock-first approach.
+
+**Mock Data Strategy:**
+Stories 3-1 through 3-5 will implement UI with mocked/calculated data to validate UX quickly. Story 3-6 wires real price API, replacing mocks. This approach accelerates user feedback and reduces rework risk.
+
+### Story 2.7: Connection Settings & Data Import Improvements
+
+As a User,
+I want improved connection management and data import capabilities,
+So that I can efficiently manage my portfolio data sources.
+
+**Acceptance Criteria:**
+
+**Given** the settings page
+**When** I configure data connections
+**Then** I should see clear connection status and sync history
+**And** I should be able to import bulk transaction data
+**And** the system should validate and deduplicate imported transactions.
+
+**Note:** Story 2-7 was moved from Epic 2 to Epic 3 during Epic 2 retrospective (Dec 29, 2025). It provides foundation for external data sources needed in Epic 3 analytics.
+
+### Story 3.1: Performance Dashboard Foundation
+
+As a User,
+I want to see my portfolio value over time in a line chart,
+So that I can understand if my investments are growing or declining.
+
+**Acceptance Criteria:**
+
+**Given** the dashboard view
+**When** I select the "Performance" tab
+**Then** I should see a line chart showing total portfolio value over time
+**And** I should be able to select time ranges (1M, 3M, 6M, 1Y, ALL)
+**And** the chart should display key metrics: current value, total change ($), percentage change (%)
+**And** the chart should use mocked historical data calculated from current holdings (assume linear growth/decline)
+**And** hover tooltips should show exact value and date.
+
+**Mock Data Strategy:**
+Generate sample performance data in the UI by taking current portfolio value and creating historical points with realistic volatility (±2-5% daily variance). This validates the UX before Story 3-6 wires real price history.
+
+### Story 3.2: Asset Allocation Visualization
+
+As a User,
+I want to see how my portfolio is distributed across different assets,
+So that I can identify concentration risk and rebalance if needed.
+
+**Acceptance Criteria:**
+
+**Given** the dashboard view
+**When** I view the "Allocation" section
+**Then** I should see a donut/pie chart showing asset allocation by current value
+**And** I should see an allocation table with columns: Asset, Value, Percentage, Change (24h)
+**And** assets should be sorted by value (largest to smallest)
+**And** I should be able to hover over chart segments to see detailed tooltips
+**And** the visualization should use current holdings data (quantity × assumed current price).
+
+**Mock Data Strategy:**
+Calculate allocation from existing holdings in the database. Use static "current prices" in the UI initially (e.g., Bitcoin=$45K, AAPL=$180). Story 3-6 will replace with live API prices.
+
+### Story 3.3: Holdings Table Enhancements
+
+As a User,
+I want to see current prices and real-time profit/loss in my holdings table,
+So that I can quickly identify winners and losers in my portfolio.
+
+**Acceptance Criteria:**
+
+**Given** the unified holdings table from Story 2.4
+**When** I view my holdings
+**Then** I should see a "Current Price" column showing the latest market price
+**And** I should see "P/L ($)" and "P/L (%)" columns calculated as: (Current Price × Quantity) - Cost Basis
+**And** I should be able to sort by P/L % to see top gainers/losers
+**And** positive P/L should be displayed in green, negative in red
+**And** the "Current Price" should initially use mocked static prices in the UI.
+
+**Mock Data Strategy:**
+Hard-code representative current prices in a `MOCK_PRICES` constant (Bitcoin: $45,000, Ethereum: $2,500, AAPL: $180, GOOGL: $140, VNM: 76,000 VND). This enables immediate P/L display. Story 3-6 replaces with API.
+
+### Story 3.4: Asset Detail Page Complete
+
+As a User,
+I want to see comprehensive performance data for each asset in my portfolio,
+So that I can make informed decisions about individual holdings.
+
+**Acceptance Criteria:**
+
+**Given** an asset detail page (from Story 2.6)
+**When** I view an individual asset
+**Then** I should see an asset-specific performance chart (price over time)
+**And** I should see a price history table with columns: Date, Open, High, Low, Close
+**And** I should see total return metrics: Absolute Return ($), Percentage Return (%), Total Invested
+**And** I should see transaction history for this asset with complete details
+**And** the chart and price history should use mocked data generated in the UI.
+
+**Mock Data Strategy:**
+Generate sample OHLC (Open-High-Low-Close) data for the past 90 days with realistic price movement around the current mock price (±3% daily variance). This validates chart UX before real API integration.
+
+### Story 3.5: Transaction Completeness
+
+As a User,
+I want to capture all relevant transaction details when logging trades,
+So that I have a complete record for tax reporting and performance analysis.
+
+**Acceptance Criteria:**
+
+**Given** the transaction entry form (from Story 2.3)
+**When** I add or edit a transaction
+**Then** I should see fields for: Transaction Fees, Transaction Time (datetime), Notes (optional), Source (e.g., "Binance", "Vanguard", "Manual")
+**And** the API should accept these fields in the TransactionDto
+**And** a database migration should add columns: `fees`, `transaction_time`, `notes`, `source` to the transactions table
+**And** the holdings table and asset detail should display fee information
+**And** P/L calculations should account for transaction fees.
+
+**Database Schema Update:**
+
+```sql
+ALTER TABLE transactions ADD COLUMN fees DECIMAL(20, 8) DEFAULT 0;
+ALTER TABLE transactions ADD COLUMN transaction_time TIMESTAMP DEFAULT NOW();
+ALTER TABLE transactions ADD COLUMN notes TEXT;
+ALTER TABLE transactions ADD COLUMN source VARCHAR(100);
+```
+
+### Story 3.6: Basic Price Pipeline
+
+As a Developer,
+I want to integrate with an external price API to fetch real market data,
+So that users see live prices instead of mocked data.
+
+**Acceptance Criteria:**
+
+**Given** the NestJS API
+**When** I integrate a price data provider (CoinGecko for crypto, Alpha Vantage or yfinance proxy for stocks)
+**Then** the API should fetch current prices for all assets in user portfolios
+**And** the API should cache prices in Redis (TTL: 5 minutes) to avoid rate limits
+**And** a scheduled job should refresh prices every 5-10 minutes
+**And** the UI should fetch prices from the API endpoint instead of using `MOCK_PRICES`
+**And** a "Last Updated" timestamp should be displayed in the holdings table
+**And** if the API fails, the UI should show a "stale data" badge and fall back to the last cached price.
+
+**API Endpoints:**
+
+- `GET /api/prices/current?symbols=BTC,ETH,AAPL` → Returns current prices
+- `GET /api/prices/history/:symbol?days=90` → Returns historical OHLC data
+
+**Mock Replacement:**
+This story replaces all mocked prices from Stories 3-1 through 3-4 with real API data. The transition should be seamless (same UI components, different data source).
+
+## Epic 4: Professional Crypto Automation (Deferred from Original Epic 3)
+
+**Deferral Note (Dec 29, 2025):**
+Original Epic 3 "Professional Crypto Automation" has been deferred to Epic 4 following Epic 2 retrospective. Portfolio intelligence (analytics, charts, price data) was prioritized over automation to deliver immediate user value. Users need to understand "How is my portfolio performing?" before scaling to automated exchange syncing.
 
 Users can achieve "magic moment" tracking by syncing Binance and OKX balances effortlessly via read-only API access.
 
-### Story 3.1: CCXT Integration & Exchange Service
+### Story 4.1: CCXT Integration & Exchange Service
 
 As a Developer,
 I want a unified service to interact with multiple crypto exchanges,
@@ -279,7 +441,7 @@ So that I can easily fetch balances from Binance and OKX without writing custom 
 **Then** I should have a service that can fetch spot balances from any supported exchange given valid credentials
 **And** the internal response must be normalized into a standard "Balance" format (Asset, Quantity, Value).
 
-### Story 3.2: Crypto Exchange Connection UI
+### Story 4.2: Crypto Exchange Connection UI
 
 As a User,
 I want to securely connect my Binance or OKX accounts via API keys,
@@ -293,7 +455,7 @@ So that I don't have to manually enter my crypto transactions.
 **And** the credentials must be stored securely (encrypted at rest)
 **And** I should clearly see my "Last Synced" status once connected.
 
-### Story 3.3: Automated Spot Balance Syncing
+### Story 4.3: Automated Spot Balance Syncing
 
 As a User,
 I want my crypto balances to update automatically every minute,
@@ -307,11 +469,9 @@ So that my net worth is always accurate.
 **And** any changes in holdings must be updated in the database
 **And** the UI should reflect "Syncing" vs "Up to date" states.
 
-## Epic 4: Institutional Market Intelligence
+## Epic 5: Institutional Market Intelligence
 
 Users can analyze assets with high-freshness price data and TradingView charts featuring professional indicators (RSI/MACD).
-
-### Story 4.1: Multi-Source Price Ingestion Pipeline
 
 As a Developer,
 I want an ETL pipeline that fetches prices from vnstock, yfinance, and CoinGecko,
@@ -324,7 +484,7 @@ So that I have comprehensive market coverage for all asset classes.
 **Then** it should fetch primary prices for VN stocks (vnstock), US stocks (yfinance), and Crypto (CoinGecko)
 **And** it should ingest specifically required tickers into the ClickHouse `market_dwh.fact_stock_daily` table.
 
-### Story 4.2: ClickHouse Materialized Views for Latest Prices
+### Story 5.2: ClickHouse Materialized Views for Latest Prices
 
 As a Developer,
 I want a fast way to query the "as of now" price for thousands of assets,
@@ -337,7 +497,7 @@ So that the dashboard loads in under 200ms.
 **Then** a Materialized View (Using `ReplacingMergeTree`) must maintain only the latest timestamp per ticker
 **And** queries for "Current Price" should target this view for maximum performance.
 
-### Story 4.3: TradingView Chart Component Integration
+### Story 5.3: TradingView Chart Component Integration
 
 As a User,
 I want to see advanced price charts with RSI, MACD, and Moving Averages,
@@ -350,7 +510,7 @@ So that I can perform professional technical analysis on my holdings.
 **Then** a TradingView widget must be embedded and pre-configured with RSI (14), MACD, and MA (50, 200)
 **And** the chart must support light/dark mode and respect "Reduced Motion" settings.
 
-### Story 4.4: Data Freshness Indicators & Staleness Banners
+### Story 5.4: Data Freshness Indicators & Staleness Banners
 
 As a User,
 I want to know if the market data I'm seeing is old,
@@ -363,11 +523,11 @@ So that I don't make decisions based on outdated prices.
 **Then** a color-neutral amber "Stale Data" badge should appear
 **And** a global notification banner should warn if major providers (e.g., vnstock) are experiencing outages.
 
-## Epic 5: Transparent Analytics & FX Intelligence
+## Epic 6: Transparent Analytics & FX Intelligence
 
 Users can audit their performance with drill-down P&L and separate asset gains from currency fluctuations (VND/USD).
 
-### Story 5.1: Portfolio Valuation Engine (Core)
+### Story 6.1: Portfolio Valuation Engine (Core)
 
 As a Developer,
 I want a calculation engine that aggregates holdings with latest prices,
@@ -379,7 +539,7 @@ So that I can deliver real-time net worth and basic P&L metrics.
 **When** the valuation engine runs (triggered by polling or mutation)
 **Then** it must calculate current Net Worth, Allocation %, and Unrealized P&L in the portfolio's native currency.
 
-### Story 5.2: FX Intelligence & Cross-Border Gain Separation
+### Story 6.2: FX Intelligence & Cross-Border Gain Separation
 
 As a User,
 I want to see separate asset gains from currency fluctuations (VND/USD),
@@ -392,7 +552,7 @@ So that I can understand the true source of my portfolio growth.
 **Then** the system must separate Asset Gain (price change) from FX Gain (currency change) based on the exchange rate at the time of trade vs now
 **And** it must fetch latest FX rates from ClickHouse to perform the conversion to the user's chosen base currency.
 
-### Story 5.3: Performance Metrics (TWR/MWR)
+### Story 6.3: Performance Metrics (TWR/MWR)
 
 As a User,
 I want to see my Time-Weighted Return (TWR) and Money-Weighted Return (MWR),
@@ -405,7 +565,7 @@ So that I can accurately assess my investment performance.
 **Then** the engine should calculate TWR and MWR for selected timeframes (1D, 1M, YTD, ALL)
 **And** it should display Total Gain, Realized P&L, and Dividends (if tracked).
 
-### Story 5.4: Hierarchical Drill-down UI
+### Story 6.4: Hierarchical Drill-down UI
 
 As a User,
 I want to click on my net worth to see individual portfolios, and then specific assets and their trades,
@@ -418,11 +578,11 @@ So that I can audit my data in no more than 3 clicks.
 **Then** I should reach the individual trade level within 3 clicks
 **And** the UI must maintain breadcrumb navigation to allow high-speed context switching.
 
-## Epic 6: Premium Subscriptions & Billing
+## Epic 7: Premium Subscriptions & Billing
 
 Users can unlock unlimited assets and AI insights by subscribing via SePay (VND) or Polar (USD).
 
-### Story 6.1: SePay & Polar Webhook Handlers
+### Story 7.1: SePay & Polar Webhook Handlers
 
 As a Developer,
 I want to process payments from SePay and Polar automatically,
@@ -449,7 +609,7 @@ So that I know how to unlock the full power of the app.
 **Then** the action must be blocked
 **And** a premium modal should appear offering the Paid Tier upgrade.
 
-### Story 6.3: Admin Payment Reconciliation Dashboard
+### Story 7.3: Admin Payment Reconciliation Dashboard
 
 As an Administrator,
 I want to see a list of payments and reconcile them against user tiers,
@@ -462,11 +622,11 @@ So that I can ensure the business is running correctly.
 **Then** I should see a ledger of all SePay and Polar events
 **And** any discrepancies (e.g., successful payment but tier not updated) should be flagged for manual review.
 
-## Epic 7: Intelligent Alerts & Engagement
+## Epic 8: Intelligent Alerts & Engagement
 
 Users stay informed with automated holdings snapshots and price alerts via Telegram.
 
-### Story 7.1: Daily Telegram Summary Bot Integration
+### Story 8.1: Daily Telegram Summary Bot Integration
 
 As a User,
 I want to receive a daily snapshot of my portfolio on Telegram,
@@ -479,7 +639,7 @@ So that I stay informed without having to log in to the app every day.
 **Then** the bot should send a clean summary of Net Worth change and top 3 movers
 **And** it should include a link to the "Calm Dashboard" for deeper exploration.
 
-### Story 7.2: Basic Price Alert Configuration UI
+### Story 8.2: Basic Price Alert Configuration UI
 
 As a User,
 I want to set price alerts for my favorite assets,

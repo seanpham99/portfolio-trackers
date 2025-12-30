@@ -72,45 +72,54 @@ development_status:
   prep-6-3-sheriff-import-boundaries: backlog
   prep-6-4-turbo-gen-package-scaffolding: backlog
 
-  epic-2: in-progress
+  epic-2: done
   2-1-portfolio-management-logic-api-database: done
   2-2-unified-portfolio-dashboard-shell: done
   2-3-manual-transaction-entry-with-autocomplete: done
   2-4-unified-holdings-table: done
   2-5-transparent-methodology-basic-panels: done
   2-6-asset-detail-page: done
-  2-7-connection-settings: review
   2-8-portfolio-first-dashboard-navigation: done
   2-9-user-preferences-and-mock-cleanup: done
-  epic-2-retrospective: optional
+  epic-2-retrospective: done
 
   epic-3: backlog
-  3-1-ccxt-integration-exchange-service: backlog
-  3-2-crypto-exchange-connection-ui: backlog
-  3-3-automated-spot-balance-syncing: backlog
+  2-7-connection-settings: backlog
+  3-1-performance-dashboard-foundation: backlog
+  3-2-asset-allocation-visualization: backlog
+  3-3-holdings-table-enhancements: backlog
+  3-4-asset-detail-page-complete: backlog
+  3-5-transaction-completeness: backlog
+  3-6-basic-price-pipeline: backlog
   epic-3-retrospective: optional
 
   epic-4: backlog
-  4-1-multi-source-price-ingestion-pipeline: backlog
-  4-2-clickhouse-materialized-views-for-latest-prices: backlog
-  4-3-tradingview-chart-component-integration: backlog
-  4-4-data-freshness-indicators-staleness-banners: backlog
+  4-1-ccxt-integration-exchange-service: backlog
+  4-2-crypto-exchange-connection-ui: backlog
+  4-3-automated-spot-balance-syncing: backlog
   epic-4-retrospective: optional
 
   epic-5: backlog
-  5-1-portfolio-valuation-engine-core: backlog
-  5-2-fx-intelligence-cross-border-gain-separation: backlog
-  5-3-performance-metrics-twr-mwr: backlog
-  5-4-hierarchical-drill-down-ui: backlog
+  5-1-multi-source-price-ingestion-pipeline: backlog
+  5-2-clickhouse-materialized-views-for-latest-prices: backlog
+  5-3-tradingview-chart-component-integration: backlog
+  5-4-data-freshness-indicators-staleness-banners: backlog
   epic-5-retrospective: optional
 
   epic-6: backlog
-  6-1-sepay-polar-webhook-handlers: backlog
-  6-2-subscription-tier-enforcement: backlog
-  6-3-admin-payment-reconciliation-dashboard: backlog
+  6-1-portfolio-valuation-engine-core: backlog
+  6-2-fx-intelligence-cross-border-gain-separation: backlog
+  6-3-performance-metrics-twr-mwr: backlog
+  6-4-hierarchical-drill-down-ui: backlog
   epic-6-retrospective: optional
 
   epic-7: backlog
-  7-1-daily-telegram-summary-bot-integration: backlog
-  7-2-basic-price-alert-configuration-ui: backlog
+  7-1-sepay-polar-webhook-handlers: backlog
+  7-2-subscription-tier-enforcement: backlog
+  7-3-admin-payment-reconciliation-dashboard: backlog
   epic-7-retrospective: optional
+
+  epic-8: backlog
+  8-1-daily-telegram-summary-bot-integration: backlog
+  8-2-basic-price-alert-configuration-ui: backlog
+  epic-8-retrospective: optional
