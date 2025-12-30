@@ -12,7 +12,7 @@ So that I can trust the accuracy of the platform without losing screen space.
 
 1. **Given** a holding in the `UnifiedHoldingsTable`
 2. **When** I hover over (desktop) or tap (mobile) the info icon next to the P/L column header or value
-3. **Then** a **HoverCard** must appear using the `@repo/ui` HoverCard component (Radix UI)
+3. **Then** a **HoverCard** must appear using the `@workspace/ui` HoverCard component (Radix UI)
 4. **And** the hover card must display the calculation formula (FIFO/Weighted Avg) and the **Asset Data Source** (e.g., "Binance via CCXT", "vnstock", "Manual Entry")
 5. **And** the hover card must have smooth fade-in animation (respecting `prefers-reduced-motion`)
 6. **And** methodology data must be server-driven via the `HoldingDto` to ensure consistency
@@ -24,7 +24,7 @@ So that I can trust the accuracy of the platform without losing screen space.
 **Previous Approach:** Row expansion panels with Framer Motion animations.
 **Issue:** Takes significant vertical space, pushes content down, creates jarring layout shifts.
 **Intermediate Approach:** Tooltip components (v2 initial implementation).
-**Final Approach:** Info icon with hover card (using Radix UI HoverCard via `@repo/ui`).
+**Final Approach:** Info icon with hover card (using Radix UI HoverCard via `@workspace/ui`).
 **Benefits:**
 
 - Zero layout shift
@@ -52,7 +52,7 @@ So that I can trust the accuracy of the platform without losing screen space.
 
 - [x] **Task 2: Implement HoverCard-Based Methodology**
   - [x] Add info icon (`Info` from `lucide-react`) to P/L column header or individual cells
-  - [x] Wrap icon with `HoverCard`, `HoverCardTrigger`, `HoverCardContent` from `@repo/ui`
+  - [x] Wrap icon with `HoverCard`, `HoverCardTrigger`, `HoverCardContent` from `@workspace/ui`
   - [x] Create `MethodologyHoverCardContent` component to display:
     - Calculation method title (e.g., "Weighted Average Cost Basis")
     - Formula (e.g., "Avg Cost = Total Cost / Total Quantity")
@@ -84,7 +84,7 @@ So that I can trust the accuracy of the platform without losing screen space.
 - Zero layout shift
 - Better space efficiency
 - Industry-standard pattern
-- Consistent with design system (`@repo/ui`)
+- Consistent with design system (`@workspace/ui`)
 
 **Status:** ✅ Complete (2025-12-29) → Superseded by v3 HoverCard implementation
 
@@ -92,7 +92,7 @@ So that I can trust the accuracy of the platform without losing screen space.
 
 - ✅ Removed TanStack Table row expansion logic (`getExpandedRowModel`, `ExpandedState`, expansion column)
 - ✅ Added info icon tooltips to P/L column (header + individual cells)
-- ✅ Integrated `@repo/ui/components/tooltip` (Radix UI Tooltip)
+- ✅ Integrated `@workspace/ui/components/tooltip` (Radix UI Tooltip)
 - ✅ Methodology content helper function for displaying calculation methods
 - ✅ Full accessibility support (`aria-label`, `tabIndex={0}`, keyboard focusable)
 - ✅ Zero layout shift - tooltips overlay content without pushing rows
@@ -114,7 +114,7 @@ So that I can trust the accuracy of the platform without losing screen space.
 
 **Implementation Summary:**
 
-- ✅ Created `hover-card.tsx` component in `@repo/ui` package
+- ✅ Created `hover-card.tsx` component in `@workspace/ui` package
 - ✅ Installed `@radix-ui/react-hover-card` dependency
 - ✅ Replaced all Tooltip components with HoverCard in:
   - `UnifiedHoldingsTable` P/L column header
@@ -137,7 +137,7 @@ So that I can trust the accuracy of the platform without losing screen space.
 - packages/api-types/src/index.ts
 - services/api/src/portfolios/portfolios.service.ts
 - services/api/src/portfolios/portfolios.service.spec.ts
-- apTooltip Pattern:\*\* Use `@repo/ui/components/tooltip` (Radix UI) for consistent, accessible tooltips across the app.
+- apTooltip Pattern:\*\* Use `@workspace/ui/components/tooltip` (Radix UI) for consistent, accessible tooltips across the app.
 - **Icon Placement:** Add info icon next to P/L column header or in each cell (TBD based on UX testing).
 - **Content:** Keep tooltip content concise (3-4 lines max) to avoid overwhelming users.
 - **A11y:** Ensure icon is keyboard focusable (`tabIndex={0}`) and has descriptive `aria-label`.
@@ -153,10 +153,10 @@ So that I can trust the accuracy of the platform without losing screen space.
 ## Change Log
 
 - 2025-12-28: Story 2.5 implemented - Added methodology transparency with row expansion panels
-- 2025-12-28: (Review Fix) Replaced plain empty state with shared Empty component from @repo/ui with proper CTA
+- 2025-12-28: (Review Fix) Replaced plain empty state with shared Empty component from @workspace/ui with proper CTA
 - 2025-12-28: (Code Review) Fixed 4 issues: prefers-reduced-motion support, React Fragment keys, import cleanup, animation constants
 - 2025-12-29: (UX Rework) Replaced row expansion with tooltip-based methodology for space efficiency and zero layout shift
-- 2025-12-29: Integrated Radix UI Tooltip via @repo/ui; archived methodology-panel.tsx; all tests passing
+- 2025-12-29: Integrated Radix UI Tooltip via @workspace/ui; archived methodology-panel.tsx; all tests passing
 
 ## Dev Notes
 

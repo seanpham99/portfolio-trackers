@@ -56,7 +56,7 @@ so that I can securely access my portfolio data.
   - [x] User ran `pnpm db:gen-types` - types generated.
   - [x] Updated `apps/web/src/lib/supabase/client.ts` with `Database` type.
   - [x] Updated `apps/web/src/lib/supabase/server.ts` with `Database` type.
-  - [x] Added `@repo/database-types` dependency to `apps/web/package.json`.
+  - [x] Added `@workspace/database-types` dependency to `apps/web/package.json`.
 
 ## Dev Notes
 
@@ -125,4 +125,4 @@ Claude 3.5 Sonnet (Amelia)
 - `apps/web/src/routes/_auth.sign-up.tsx` (modified - Google OAuth)
 - `apps/web/src/lib/supabase/client.ts` (modified - Database type)
 - `apps/web/src/lib/supabase/server.ts` (modified - Database type)
-- `apps/web/package.json` (modified - @repo/database-types dep)
+- `apps/web/package.json` (modified - @workspace/database-types dep)

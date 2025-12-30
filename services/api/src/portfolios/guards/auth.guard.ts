@@ -6,7 +6,7 @@ import {
   Inject,
 } from '@nestjs/common';
 import { SupabaseClient, User } from '@supabase/supabase-js';
-import { Database } from '@repo/database-types';
+import { Database } from '@workspace/database-types';
 import { Request } from 'express';
 
 // Extend Express Request to include user

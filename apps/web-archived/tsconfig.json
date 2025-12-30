@@ -13,9 +13,9 @@
     "paths": {
       "@/*": ["./src/*"],
       "@test/*": ["./test/*"],
-      "@repo/ui/*": ["../../packages/ui/src/*"],
-      "@repo/database-types": ["../../packages/database-types/src/index.ts"],
-      "@repo/api-types": ["../../packages/api-types/src/index.ts"]
+      "@workspace/ui/*": ["../../packages/ui/src/*"],
+      "@workspace/database-types": ["../../packages/database-types/src/index.ts"],
+      "@workspace/api-types": ["../../packages/api-types/src/index.ts"]
     }
   }
 }

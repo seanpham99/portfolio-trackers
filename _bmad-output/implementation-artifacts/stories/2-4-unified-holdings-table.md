@@ -28,8 +28,8 @@ _(No entries)_
 
 - Implemented `GET /portfolios/holdings` with in-memory aggregation of transactions (using Weighted Average Cost Basis).
 - **Core Improvements (Code Review):**
-  - Refactored `HoldingDto` and `Holding` interface into shared `@repo/api-types`.
-  - Updated `Asset` type in frontend to extend `Database['public']['Tables']['assets']['Row']` from `@repo/database-types`.
+  - Refactored `HoldingDto` and `Holding` interface into shared `@workspace/api-types`.
+  - Updated `Asset` type in frontend to extend `Database['public']['Tables']['assets']['Row']` from `@workspace/database-types`.
   - Implemented interactive filtering by Asset Class (All, VN, US, Crypto) in the Holdings table.
 - Setup `apps/web/src/api` structure with `client.ts` and `hooks/use-holdings.ts`.
 - Configured React Query `QueryClientProvider` in `root.tsx` with 60s stale time.

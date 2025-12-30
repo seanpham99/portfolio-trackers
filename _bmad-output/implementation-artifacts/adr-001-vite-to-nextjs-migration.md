@@ -141,9 +141,9 @@ Browser → Next.js Server → Supabase SSR → httpOnly cookies → API
 
 These packages remain framework-agnostic:
 
-- `@repo/ui` - React components
-- `@repo/api-types` - TypeScript DTOs
-- `@repo/database-types` - Supabase types
+- `@workspace/ui` - React components
+- `@workspace/api-types` - TypeScript DTOs
+- `@workspace/database-types` - Supabase types
 
 ## References
 

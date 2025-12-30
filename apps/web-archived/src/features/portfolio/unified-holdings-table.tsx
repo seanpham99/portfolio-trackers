@@ -18,12 +18,12 @@ import {
 } from "lucide-react";
 import { Link } from "react-router";
 import { useHoldings } from "@/features/portfolio/hooks/use-holdings";
-import { HoldingDto as Holding, CalculationMethod } from "@repo/api-types";
+import { HoldingDto as Holding, CalculationMethod } from "@workspace/api-types";
 import {
   HoverCard,
   HoverCardTrigger,
   HoverCardContent,
-} from "@repo/ui/components/hover-card";
+} from "@workspace/ui/components/hover-card";
 import {
   Empty,
   EmptyHeader,
@@ -31,8 +31,8 @@ import {
   EmptyTitle,
   EmptyDescription,
   EmptyContent,
-} from "@repo/ui/components/empty";
-import { Button } from "@repo/ui/components/button";
+} from "@workspace/ui/components/empty";
+import { Button } from "@workspace/ui/components/button";
 
 const columnHelper = createColumnHelper<Holding>();
 

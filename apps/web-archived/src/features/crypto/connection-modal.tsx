@@ -15,13 +15,13 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@repo/ui/components/dialog";
-import { Button } from "@repo/ui/components/button";
-import { Input } from "@repo/ui/components/input";
-import { Label } from "@repo/ui/components/label";
-import { Alert, AlertDescription } from "@repo/ui/components/alert";
+} from "@workspace/ui/components/dialog";
+import { Button } from "@workspace/ui/components/button";
+import { Input } from "@workspace/ui/components/input";
+import { Label } from "@workspace/ui/components/label";
+import { Alert, AlertDescription } from "@workspace/ui/components/alert";
 import { Loader2, ShieldCheck, AlertCircle, CheckCircle2 } from "lucide-react";
-import { ExchangeId } from "@repo/api-types";
+import { ExchangeId } from "@workspace/api-types";
 import { useValidateConnection, useCreateConnection } from "./use-connections";
 
 const EXCHANGE_NAMES: Record<ExchangeId, string> = {

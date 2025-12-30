@@ -63,7 +63,7 @@
   "versionGroups": [
     {
       "label": "Use workspace protocol for internal packages",
-      "dependencies": ["@repo/**"],
+      "dependencies": ["@workspace/**"],
       "dependencyTypes": ["!peer"],
       "packages": ["**"],
       "pinVersion": "workspace:*"

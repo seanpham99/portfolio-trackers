@@ -66,10 +66,10 @@ So that I can organize my investments according to my strategy.
 
 ### Code Review Fixes (Automated)
 
-- **Shared Configs**: Refactored `tsconfig.json` and `eslint.config.mjs` to extend `@repo/typescript-config` and `@repo/eslint-config`.
-- **Type Safety**: Refactored `SupabaseModule` and `PortfoliosService` to use `SupabaseClient<Database>` from `@repo/database-types` for complete type safety.
+- **Shared Configs**: Refactored `tsconfig.json` and `eslint.config.mjs` to extend `@workspace/typescript-config` and `@workspace/eslint-config`.
+- **Type Safety**: Refactored `SupabaseModule` and `PortfoliosService` to use `SupabaseClient<Database>` from `@workspace/database-types` for complete type safety.
 - **Entity Definition**: Replaced manual `Portfolio` interface with `Database['public']['Tables']['portfolios']['Row']`.
-- **Build**: Rebuilt `@repo/database-types` to ensure `portfolios` table matches schema.
+- **Build**: Rebuilt `@workspace/database-types` to ensure `portfolios` table matches schema.
 
 ### Completion Notes
 

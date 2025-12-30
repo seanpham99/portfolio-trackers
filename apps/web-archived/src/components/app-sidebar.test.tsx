@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeAll } from "vitest";
 import { BrowserRouter } from "react-router";
-import { SidebarProvider } from "@repo/ui/components/sidebar";
+import { SidebarProvider } from "@workspace/ui/components/sidebar";
 import { AppSidebar } from "./app-sidebar";
 import type { User } from "@supabase/supabase-js";
 

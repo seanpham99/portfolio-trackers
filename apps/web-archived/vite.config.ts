@@ -1,7 +1,7 @@
 import path from "path";
 import { reactRouter } from "@react-router/dev/vite";
 import { defineConfig, mergeConfig } from "vite";
-import { getBaseViteConfig } from "@repo/vite-config";
+import { getBaseViteConfig } from "@workspace/vite-config";
 import type { UserConfig } from "vite";
 
 // https://vite.dev/config/

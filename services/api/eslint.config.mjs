@@ -1,12 +1,12 @@
 // @ts-check
 import { defineConfig } from 'eslint/config';
-import sharedConfig from '@repo/eslint-config';
+import sharedConfig from '@workspace/eslint-config';
 
 export default defineConfig([
   {
     ignores: ['eslint.config.mjs', 'dist/**'],
   },
-  // Load shared config from @repo/eslint-config
+  // Load shared config from @workspace/eslint-config
   ...sharedConfig,
 
   // Local overrides

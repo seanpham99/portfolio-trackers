@@ -38,7 +38,7 @@ So that I can begin migrating routes and components.
 **Then** the project should be created with App Router enabled  
 **And** TypeScript strict mode should be configured  
 **And** Tailwind CSS 4 should be configured  
-**And** existing shared packages (`@repo/ui`, `@repo/api-types`, `@repo/database-types`) should be importable  
+**And** existing shared packages (`@workspace/ui`, `@workspace/api-types`, `@workspace/database-types`) should be importable  
 **And** `pnpm dev --filter web` should start the dev server on a different port (3001)  
 **And** the following structure should be established:
 

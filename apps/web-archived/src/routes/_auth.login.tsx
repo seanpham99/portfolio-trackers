@@ -1,19 +1,19 @@
 import { createClient } from "@/lib/supabase/server";
-import { Button } from "@repo/ui/components/button";
+import { Button } from "@workspace/ui/components/button";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
   CardDescription,
-} from "@repo/ui/components/card";
-import { Input } from "@repo/ui/components/input";
+} from "@workspace/ui/components/card";
+import { Input } from "@workspace/ui/components/input";
 import {
   Field,
   FieldLabel,
   FieldError,
   FieldSeparator,
-} from "@repo/ui/components/field";
+} from "@workspace/ui/components/field";
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, Loader2, Mail, Lock } from "lucide-react";
 import { useForm, Controller } from "react-hook-form";

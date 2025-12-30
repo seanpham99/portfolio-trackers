@@ -189,7 +189,7 @@ git checkout -b feat/add-portfolio-export
 
 # 3. Create a changeset
 pnpm changeset
-# Select: @repo/api-types, @repo/web
+# Select: @workspace/api-types, @workspace/web
 # Type: minor
 # Summary: "Add portfolio export to CSV functionality"
 
@@ -229,7 +229,7 @@ If your change affects multiple packages, the changeset CLI will let you select 
 ```bash
 pnpm changeset
 # Select multiple packages with arrow keys + spacebar
-# Example: both @repo/api-types and apps/web might be affected
+# Example: both @workspace/api-types and apps/web might be affected
 ```
 
 ## Commit Conventions
@@ -441,7 +441,7 @@ shadcn/ui components provide these features out of the box.
 ### TypeScript
 
 - Use strict mode (enabled in tsconfig)
-- Use path aliases: `@/*` for src files, `@repo/*` for workspace packages
+- Use path aliases: `@/*` for src files, `@workspace/*` for workspace packages
 - Use `import type` for type-only imports
 - Avoid `any` type (use `unknown` with type guards)
 
@@ -548,7 +548,7 @@ When adding a new dependency that's already used in other packages:
    ```json
    {
      "dependencies": {
-       "@repo/ui": "workspace:*"
+       "@workspace/ui": "workspace:*"
      }
    }
    ```
@@ -618,7 +618,7 @@ We use [Knip](https://knip.dev/) to detect unused files, exports, dependencies, 
 
 Traditional linters like ESLint can't detect project-wide dead code. For example:
 
-- An unused export in `@repo/ui` that no other package imports
+- An unused export in `@workspace/ui` that no other package imports
 - Dependencies installed but never used
 - Files that are no longer referenced anywhere
 - Types and exports that are defined but never consumed
@@ -708,7 +708,7 @@ When Knip reports issues:
 
    ```bash
    # Example: Remove unused dependencies
-   pnpm remove @radix-ui/react-accordion --filter @repo/web
+   pnpm remove @radix-ui/react-accordion --filter @workspace/web
    ```
 
 3. **Delete unused files:**

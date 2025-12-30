@@ -5,7 +5,7 @@ import {
   ConflictException,
 } from '@nestjs/common';
 import { SupabaseClient, PostgrestError } from '@supabase/supabase-js';
-import { Database } from '@repo/database-types';
+import { Database } from '@workspace/database-types';
 import { CreatePortfolioDto, UpdatePortfolioDto } from './dto';
 import {
   HoldingDto,
@@ -13,7 +13,7 @@ import {
   PortfolioSummaryDto,
   CreateTransactionDto,
   AssetDetailsResponseDto,
-} from '@repo/api-types';
+} from '@workspace/api-types';
 import { Portfolio } from './portfolio.entity';
 import { CacheService } from '../common/cache';
 

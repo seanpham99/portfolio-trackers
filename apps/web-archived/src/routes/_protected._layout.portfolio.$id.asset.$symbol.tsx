@@ -19,9 +19,9 @@ import {
   BreadcrumbLink,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@repo/ui/components/breadcrumb";
-import { Badge } from "@repo/ui/components/badge";
-import { Button } from "@repo/ui/components/button";
+} from "@workspace/ui/components/breadcrumb";
+import { Badge } from "@workspace/ui/components/badge";
+import { Button } from "@workspace/ui/components/button";
 import {
   Table,
   TableBody,
@@ -29,15 +29,15 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@repo/ui/components/table";
-import { ScrollArea } from "@repo/ui/components/scroll-area";
+} from "@workspace/ui/components/table";
+import { ScrollArea } from "@workspace/ui/components/scroll-area";
 import {
   HoverCard,
   HoverCardTrigger,
   HoverCardContent,
-} from "@repo/ui/components/hover-card";
+} from "@workspace/ui/components/hover-card";
 import TradingViewWidget from "@/features/portfolio/trading-view-widget";
-import { CalculationMethod } from "@repo/api-types";
+import { CalculationMethod } from "@workspace/api-types";
 
 export default function AssetDetailPage() {
   const { id: portfolioId, symbol } = useParams<{

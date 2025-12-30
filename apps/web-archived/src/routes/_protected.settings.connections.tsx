@@ -6,15 +6,15 @@
 import { useState } from "react";
 import { Link } from "react-router";
 import { ArrowLeft, Link as LinkIcon } from "lucide-react";
-import { ExchangeId, type ConnectionDto } from "@repo/api-types";
+import { ExchangeId, type ConnectionDto } from "@workspace/api-types";
 import {
   useConnections,
   useDeleteConnection,
 } from "@/features/crypto/use-connections";
 import { IntegrationCard, ConnectionModal } from "@/features/crypto";
-import { Button } from "@repo/ui/components/button";
-import { Card, CardContent } from "@repo/ui/components/card";
-import { Spinner } from "@repo/ui/components/spinner";
+import { Button } from "@workspace/ui/components/button";
+import { Card, CardContent } from "@workspace/ui/components/card";
+import { Spinner } from "@workspace/ui/components/spinner";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,7 +24,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@repo/ui/components/alert-dialog";
+} from "@workspace/ui/components/alert-dialog";
 
 export default function ConnectionsSettingsPage() {
   const [selectedExchange, setSelectedExchange] = useState<ExchangeId | null>(

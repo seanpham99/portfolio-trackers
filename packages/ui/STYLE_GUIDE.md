@@ -547,7 +547,7 @@ Extend base components using composition, not duplication:
 
 ```tsx
 // ✅ Good: Extend Button with composition
-import { Button } from "@repo/ui/components/button";
+import { Button } from "@workspace/ui/components/button";
 
 export function IconButton({ icon: Icon, ...props }) {
   return (
@@ -573,7 +573,7 @@ import {
   CardDescription,
   CardContent,
   CardFooter,
-} from "@repo/ui/components/card";
+} from "@workspace/ui/components/card";
 
 // Portfolio Summary Card
 <Card className="surface-elevated-hover">
@@ -599,9 +599,9 @@ import {
 ### Form Patterns
 
 ```tsx
-import { Input } from '@repo/ui/components/input';
-import { Label } from '@repo/ui/components/label';
-import { Button } from '@repo/ui/components/button';
+import { Input } from '@workspace/ui/components/input';
+import { Label } from '@workspace/ui/components/label';
+import { Button } from '@workspace/ui/components/button';
 
 // Form field with label
 <div className="space-y-2">
@@ -640,7 +640,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-} from "@repo/ui/components/dialog";
+} from "@workspace/ui/components/dialog";
 
 // Modal with form
 <Dialog open={open} onOpenChange={setOpen}>
@@ -666,7 +666,7 @@ import {
   TableRow,
   TableHead,
   TableCell,
-} from "@repo/ui/components/table";
+} from "@workspace/ui/components/table";
 
 // Holdings table
 <Table>
@@ -698,7 +698,7 @@ import {
 ### Badge Patterns
 
 ```tsx
-import { Badge } from '@repo/ui/components/badge';
+import { Badge } from '@workspace/ui/components/badge';
 
 // Status badges
 <Badge variant="default">Active</Badge>
@@ -717,7 +717,7 @@ import { Badge } from '@repo/ui/components/badge';
 ### Skeleton Loading Patterns
 
 ```tsx
-import { Skeleton } from '@repo/ui/components/skeleton';
+import { Skeleton } from '@workspace/ui/components/skeleton';
 
 // Loading card
 <Card className="surface-primary animate-pulse">
@@ -1196,7 +1196,7 @@ import {
 ### Progress & Allocation Indicators
 
 ```tsx
-import { Progress } from '@repo/ui/components/progress';
+import { Progress } from '@workspace/ui/components/progress';
 
 // Asset allocation bar
 <div className="space-y-2">
@@ -1485,7 +1485,7 @@ import {
   CardHeader,
   CardTitle,
   CardContent,
-} from "@repo/ui/components/card";
+} from "@workspace/ui/components/card";
 
 <Card className="surface-elevated-hover">
   <CardHeader>
@@ -1500,7 +1500,7 @@ import {
 ### Loading Skeleton
 
 ```tsx
-import { Skeleton } from "@repo/ui/components/skeleton";
+import { Skeleton } from "@workspace/ui/components/skeleton";
 
 <Card className="surface-primary animate-pulse">
   <CardHeader>

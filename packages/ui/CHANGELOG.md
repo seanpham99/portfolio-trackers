@@ -1,4 +1,4 @@
-# @repo/ui
+# @workspace/ui
 
 ## 0.0.1
 

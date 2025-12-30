@@ -45,7 +45,7 @@ So that I can analyze why I'm making or losing money on this specific holding wi
 - **Route Context:** This route MUST be a child of `_layout` to maintain navigation and sidebar.
 - **Performance:** Ensure query keys for `/portfolios/:id/holdings` and `/portfolios/:id/assets/:symbol/details` are consistent to allow partial cache sharing.
 - **FX Logic:** Asset Gain = `(Current Price - Avg Cost) * Qty` (in Asset Currency). FX Gain = `Value in Base Currency - (Avg Cost * Qty * Historical FX Rate) - Asset Gain in Base Currency`.
-- **Methodology Display (v3):** ✅ Complete - Info icon hover cards in stat cards (e.g., next to "Avg Cost" or "P/L" labels). Uses `@repo/ui/components/hover-card` (Radix UI HoverCard).
+- **Methodology Display (v3):** ✅ Complete - Info icon hover cards in stat cards (e.g., next to "Avg Cost" or "P/L" labels). Uses `@workspace/ui/components/hover-card` (Radix UI HoverCard).
 
 ### Rework Notes (2025-12-29)
 

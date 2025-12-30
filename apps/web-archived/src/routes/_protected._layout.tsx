@@ -1,7 +1,7 @@
 import { Outlet, useLoaderData, useNavigate } from "react-router";
 import type { LoaderFunctionArgs } from "react-router";
 import { requireAuth } from "@/lib/auth";
-import { SidebarProvider, SidebarTrigger } from "@repo/ui/components/sidebar";
+import { SidebarProvider, SidebarTrigger } from "@workspace/ui/components/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 
 export async function loader({ request }: LoaderFunctionArgs) {

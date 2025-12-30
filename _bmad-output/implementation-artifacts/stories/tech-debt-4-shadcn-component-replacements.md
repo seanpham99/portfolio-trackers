@@ -118,7 +118,7 @@ This creates accessibility gaps, increases maintenance burden, and misses out on
 2. Create new implementation:
 
    ```tsx
-   import { Tabs, TabsList, TabsTrigger } from "@repo/ui/components/tabs";
+   import { Tabs, TabsList, TabsTrigger } from "@workspace/ui/components/tabs";
 
    interface TimeRangeSelectorProps {
      value: string;
@@ -199,8 +199,8 @@ This creates accessibility gaps, increases maintenance burden, and misses out on
      SidebarMenu,
      SidebarMenuButton,
      SidebarMenuItem,
-   } from "@repo/ui/components/sidebar";
-   import { Avatar, AvatarFallback } from "@repo/ui/components/avatar";
+   } from "@workspace/ui/components/sidebar";
+   import { Avatar, AvatarFallback } from "@workspace/ui/components/avatar";
    import {
      LayoutDashboard,
      Briefcase,
@@ -287,7 +287,7 @@ This creates accessibility gaps, increases maintenance burden, and misses out on
    import {
      SidebarProvider,
      SidebarTrigger,
-   } from "@repo/ui/components/sidebar";
+   } from "@workspace/ui/components/sidebar";
    import { AppSidebar } from "@/components/app-sidebar";
 
    export default function ProtectedLayout() {
@@ -343,7 +343,7 @@ This creates accessibility gaps, increases maintenance burden, and misses out on
 **Replacement:**
 
 ```tsx
-import { Button } from "@repo/ui/components/button";
+import { Button } from "@workspace/ui/components/button";
 import { RefreshCw } from "lucide-react";
 import { cn } from "@/lib/utils";
 

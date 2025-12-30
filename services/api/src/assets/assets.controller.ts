@@ -8,7 +8,7 @@ import {
 } from '@nestjs/swagger';
 import { AssetsService } from './assets.service';
 import { AuthGuard } from '../portfolios/guards/auth.guard';
-import { PopularAssetDto } from '@repo/api-types';
+import { PopularAssetDto } from '@workspace/api-types';
 
 @ApiTags('assets')
 @ApiBearerAuth()

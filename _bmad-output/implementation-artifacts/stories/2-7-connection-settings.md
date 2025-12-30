@@ -48,7 +48,7 @@ So that I can keep my crypto portfolio synced automatically without manual entry
   - [x] Unit tests (11/11 passing)
 
 - [x] **Task 3: API Types & Frontend Hooks**
-  - [x] DTOs in `@repo/api-types` (`connection.dto.ts`)
+  - [x] DTOs in `@workspace/api-types` (`connection.dto.ts`)
   - [x] React Query hooks (`use-connections.ts`)
 
 - [x] **Task 4: Frontend UI**

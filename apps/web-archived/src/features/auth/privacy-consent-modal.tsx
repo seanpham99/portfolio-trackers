@@ -7,8 +7,8 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-} from "@repo/ui/components/dialog";
-import { Button } from "@repo/ui/components/button";
+} from "@workspace/ui/components/dialog";
+import { Button } from "@workspace/ui/components/button";
 import { ShieldCheck, ShieldAlert, Loader2 } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
 

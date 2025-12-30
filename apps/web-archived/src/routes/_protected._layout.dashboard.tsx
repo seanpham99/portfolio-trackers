@@ -9,8 +9,8 @@ import {
   EmptyDescription,
   EmptyContent,
   EmptyMedia,
-} from "@repo/ui/components/empty";
-import { Button } from "@repo/ui/components/button";
+} from "@workspace/ui/components/empty";
+import { Button } from "@workspace/ui/components/button";
 import { Plus, Briefcase } from "lucide-react";
 
 export default function Dashboard() {

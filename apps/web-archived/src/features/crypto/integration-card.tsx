@@ -10,15 +10,15 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@repo/ui/components/card";
-import { Button } from "@repo/ui/components/button";
-import { Badge } from "@repo/ui/components/badge";
+} from "@workspace/ui/components/card";
+import { Button } from "@workspace/ui/components/button";
+import { Badge } from "@workspace/ui/components/badge";
 import {
   ExchangeId,
   ConnectionStatus,
   type ConnectionDto,
-} from "@repo/api-types";
-import { cn } from "@repo/ui/lib/utils";
+} from "@workspace/api-types";
+import { cn } from "@workspace/ui/lib/utils";
 
 // Exchange logos as simple SVG icons
 const EXCHANGE_LOGOS: Record<ExchangeId, React.ReactNode> = {

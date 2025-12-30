@@ -1,11 +1,11 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { SupabaseClient } from '@supabase/supabase-js';
-import { Database } from '@repo/database-types';
+import { Database } from '@workspace/database-types';
 import {
   UserSettingsDto,
   UpdateUserSettingsDto,
   Currency,
-} from '@repo/api-types';
+} from '@workspace/api-types';
 
 @Injectable()
 export class UsersService {

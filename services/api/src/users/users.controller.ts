@@ -6,7 +6,7 @@ import {
   ApiResponse,
 } from '@nestjs/swagger';
 import { UsersService } from './users.service';
-import { UserSettingsDto, UpdateUserSettingsDto } from '@repo/api-types';
+import { UserSettingsDto, UpdateUserSettingsDto } from '@workspace/api-types';
 import { AuthGuard } from '../portfolios/guards/auth.guard';
 import { UserId } from '../portfolios/decorators/user-id.decorator';
 

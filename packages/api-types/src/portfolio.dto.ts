@@ -1,4 +1,4 @@
-import { type Database } from "@repo/database-types";
+import { type Database } from "@workspace/database-types";
 
 export type Portfolio = Database["public"]["Tables"]["portfolios"]["Row"];
 

@@ -50,10 +50,10 @@ _This file contains critical rules and patterns that AI agents must follow when 
 
 - Use TypeScript strict mode (configured in tsconfig)
 - Import with `@/*` path aliases for src files: `import { X } from '@/api/hooks/use-portfolios'`
-- Import workspace packages with `@repo/*`: `import { Button } from '@repo/ui'`
+- Import workspace packages with `@workspace/*`: `import { Button } from '@workspace/ui'`
 - Use `import type` for type-only imports to optimize bundles
 - Run `react-router typegen` before type-checking to generate route types
-- Place shared types in `@repo/database-types` or `@repo/api-types` packages
+- Place shared types in `@workspace/database-types` or `@workspace/api-types` packages
 - Co-locate feature-specific types next to implementation files
 - Use named exports (`export const`, `export function`) rather than default exports
 
@@ -61,7 +61,7 @@ _This file contains critical rules and patterns that AI agents must follow when 
 
 - Use implicit `any` types (strict mode prevents this)
 - Duplicate types that exist in shared packages
-- Import from relative paths when `@/*` or `@repo/*` aliases are available
+- Import from relative paths when `@/*` or `@workspace/*` aliases are available
 - Mix default and named exports in the same file
 
 ### React 19 + React Router 7 Patterns
@@ -119,7 +119,7 @@ _This file contains critical rules and patterns that AI agents must follow when 
 **API Client:**
 
 - Use `apiFetch` wrapper from `@/lib/api` for all API calls
-- Define response types in `@repo/api-types` package
+- Define response types in `@workspace/api-types` package
 - Return typed responses: `apiFetch<Portfolio[]>('/api/portfolios')`
 
 **Code Style:**
@@ -128,7 +128,7 @@ _This file contains critical rules and patterns that AI agents must follow when 
 - Functions/variables: camelCase (`createPortfolio`, `portfolioData`)
 - Classes/types: PascalCase (`Portfolio`, `CreatePortfolioDto`)
 - Organize by feature domain (group related code together)
-- Follow ESLint config (@repo/eslint-config/react for frontend)
+- Follow ESLint config (@workspace/eslint-config/react for frontend)
 
 **NEVER:**
 

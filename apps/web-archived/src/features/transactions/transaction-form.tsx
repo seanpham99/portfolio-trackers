@@ -6,18 +6,18 @@ import {
   useId,
 } from "react";
 import { AssetAutocomplete } from "./asset-autocomplete";
-import { Assets } from "@repo/database-types";
-import { Button } from "@repo/ui/components/button";
-import { Input } from "@repo/ui/components/input";
-import { Label } from "@repo/ui/components/label";
+import { Assets } from "@workspace/database-types";
+import { Button } from "@workspace/ui/components/button";
+import { Input } from "@workspace/ui/components/input";
+import { Label } from "@workspace/ui/components/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@repo/ui/components/select";
-import { cn } from "@repo/ui/lib/utils";
+} from "@workspace/ui/components/select";
+import { cn } from "@workspace/ui/lib/utils";
 import { apiFetch } from "@/lib/api";
 
 interface Transaction {

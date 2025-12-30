@@ -38,7 +38,7 @@ So that I can select which portfolio to view in detail and understand my wealth 
 
 5. **Given** no portfolios exist
    **When** the dashboard loads
-   **Then** I should see an Empty state with "Create Your First Portfolio" CTA using the `@repo/ui/components/empty` component ✅
+   **Then** I should see an Empty state with "Create Your First Portfolio" CTA using the `@workspace/ui/components/empty` component ✅
 
 6. **Given** the backend API
    **When** fetching holdings for a specific portfolio
@@ -69,7 +69,7 @@ So that I can select which portfolio to view in detail and understand my wealth 
   - [x] Refactor `apps/web/src/routes/_protected._layout.dashboard.tsx` to replace current view.
   - [x] Use `usePortfolios()` to fetch data.
   - [x] Render grid of `PortfolioCard` components.
-  - [x] **Empty State:** If no portfolios, show "Create Your First Portfolio" CTA (use `@repo/ui/components/empty`).
+  - [x] **Empty State:** If no portfolios, show "Create Your First Portfolio" CTA (use `@workspace/ui/components/empty`).
   - [x] **Cleanup:** Refactor or remove `portfolio-selector.tsx` if it becomes obsolete.
 
 - [x] **Task 4: Create Portfolio Detail Route (`/portfolio/:id`)**

@@ -22,7 +22,7 @@ So that every package starts with correct tsconfig, eslint, and package.json con
 
 2. **Given** a package template
    **When** generation completes
-   **Then** the new package should include: package.json with workspace:\* deps, tsconfig.json extending @repo/typescript-config, README.md
+   **Then** the new package should include: package.json with workspace:\* deps, tsconfig.json extending @workspace/typescript-config, README.md
 
 3. **Given** template configuration
    **When** creating a new package
@@ -44,10 +44,10 @@ So that every package starts with correct tsconfig, eslint, and package.json con
 - [ ] **Task 3: Configure React Library Template**
   - [ ] Template files:
     - `package.json` with name, version, main, types, scripts
-    - `tsconfig.json` extending `@repo/typescript-config/base.json`
+    - `tsconfig.json` extending `@workspace/typescript-config/base.json`
     - `src/index.ts` with sample export
     - `README.md` with usage instructions
-    - `.eslintrc.js` extending `@repo/eslint-config/react`
+    - `.eslintrc.js` extending `@workspace/eslint-config/react`
   - [ ] Variables: `{{ packageName }}`, `{{ description }}`
 
 - [ ] **Task 4: Configure Node.js Service Template**

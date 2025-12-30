@@ -132,7 +132,7 @@ Implemented Syncpack for version consistency enforcement across the monorepo fol
 **Initial Audit Findings:**
 
 - TypeScript version mismatches: 3 packages using ~5.0.0, 3 using ~5.9.3
-- Radix UI component mismatches: 15 packages with older versions in @repo/ui
+- Radix UI component mismatches: 15 packages with older versions in @workspace/ui
 - React Router range mismatch: @react-router/serve using exact version instead of caret range
 
 **Resolution:**

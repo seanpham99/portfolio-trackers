@@ -81,7 +81,7 @@
 
 3.  **Refactor Vite Config**
     - **Owner:** Son / Charlie
-    - **Task:** Extract shared Vite configuration to `@repo/config` or `@repo/vite-config` for future scalability (mobile app).
+    - **Task:** Extract shared Vite configuration to `@workspace/config` or `@workspace/vite-config` for future scalability (mobile app).
     - **Deadline:** Parallel with early Epic 2 work.
 
 4.  **UI 1080p Verification**

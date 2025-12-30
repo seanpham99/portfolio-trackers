@@ -1,5 +1,5 @@
 {
-  "name": "@repo/api-types",
+  "name": "@workspace/api-types",
   "version": "0.0.2",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -9,7 +9,7 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@repo/database-types": "workspace:*",
+    "@workspace/database-types": "workspace:*",
     "class-validator": "^0.14.3"
   },
   "devDependencies": {

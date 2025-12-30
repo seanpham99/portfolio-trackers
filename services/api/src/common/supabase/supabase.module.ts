@@ -1,7 +1,7 @@
 import { Module, Global } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import { Database } from '@repo/database-types';
+import { Database } from '@workspace/database-types';
 
 /**
  * Global module providing Supabase client

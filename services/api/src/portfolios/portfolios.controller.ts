@@ -18,7 +18,7 @@ import {
   HoldingDto,
   PortfolioSummaryDto,
   AssetDetailsResponseDto,
-} from '@repo/api-types';
+} from '@workspace/api-types';
 import { Portfolio } from './portfolio.entity';
 import { AuthGuard } from './guards/auth.guard';
 import { UserId } from './decorators/user-id.decorator';

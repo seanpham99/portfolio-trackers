@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import { PortfolioCard } from "./portfolio-card";
-import { PortfolioSummaryDto } from "@repo/api-types";
+import { PortfolioSummaryDto } from "@workspace/api-types";
 
 describe("PortfolioCard", () => {
   const mockPortfolio: PortfolioSummaryDto = {

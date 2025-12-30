@@ -853,7 +853,7 @@ So that every package starts with correct tsconfig, eslint, and package.json con
 
 2. **Given** a package template
    **When** generation completes
-   **Then** the new package should include: package.json with workspace:\* deps, tsconfig.json extending @repo/typescript-config, README.md
+   **Then** the new package should include: package.json with workspace:\* deps, tsconfig.json extending @workspace/typescript-config, README.md
 
 3. **Given** template configuration
    **When** creating a new package

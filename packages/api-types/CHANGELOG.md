@@ -1,4 +1,4 @@
-# @repo/api-types
+# @workspace/api-types
 
 ## 0.0.2
 

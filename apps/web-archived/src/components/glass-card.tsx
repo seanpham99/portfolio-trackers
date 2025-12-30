@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-import { cn } from "@repo/ui/lib/utils";
+import { cn } from "@workspace/ui/lib/utils";
 import { motion } from "framer-motion";
 
 interface GlassCardProps {

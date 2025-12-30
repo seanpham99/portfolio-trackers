@@ -1,17 +1,17 @@
 import { useSettings, useUpdateSettings } from "@/api/hooks/use-settings";
-import { Currency } from "@repo/api-types";
+import { Currency } from "@workspace/api-types";
 import { ArrowRight, Link as LinkIcon } from "lucide-react";
 import { Link } from "react-router";
-import { Button } from "@repo/ui/components/button";
+import { Button } from "@workspace/ui/components/button";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
   CardDescription,
-} from "@repo/ui/components/card";
-import { Spinner } from "@repo/ui/components/spinner";
-import { Slider } from "@repo/ui/components/slider";
+} from "@workspace/ui/components/card";
+import { Spinner } from "@workspace/ui/components/spinner";
+import { Slider } from "@workspace/ui/components/slider";
 
 export default function SettingsPage() {
   const { data: settings, isLoading } = useSettings();

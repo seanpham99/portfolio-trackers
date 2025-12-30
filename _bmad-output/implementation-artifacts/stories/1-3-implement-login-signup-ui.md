@@ -38,7 +38,7 @@ so that I can enter the app with a sense of security and trust.
   - [x] Ensure validation logic is robust and accessible.
 
 - [x] **Task 4: Shared Auth Components (AC: 1, 2)**
-  - [x] Create/Update shared UI components in `@repo/ui` or local `components/` if they need auth-specific styling (e.g., `AuthInput`, `SocialButton`).
+  - [x] Create/Update shared UI components in `@workspace/ui` or local `components/` if they need auth-specific styling (e.g., `AuthInput`, `SocialButton`).
   - [x] Implement "Calm" color tokens in Tailwind configuration for consistent use.
 
 ## Dev Notes
@@ -55,7 +55,7 @@ so that I can enter the app with a sense of security and trust.
 
 - Auth routes exist at `apps/web/src/routes/_auth.*.tsx`.
 - Layout wrapper is `apps/web/src/routes/_auth.tsx`.
-- Shared components should be placed in `apps/web/src/components/auth` or `@repo/ui` if reusable across the monorepo.
+- Shared components should be placed in `apps/web/src/components/auth` or `@workspace/ui` if reusable across the monorepo.
 
 ### References
 

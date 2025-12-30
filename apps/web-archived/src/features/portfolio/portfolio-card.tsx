@@ -5,11 +5,11 @@ import {
   CardHeader,
   CardTitle,
   CardDescription,
-} from "@repo/ui/components/card";
-import { Skeleton } from "@repo/ui/components/skeleton";
-import { PortfolioSummaryDto } from "@repo/api-types";
+} from "@workspace/ui/components/card";
+import { Skeleton } from "@workspace/ui/components/skeleton";
+import { PortfolioSummaryDto } from "@workspace/api-types";
 import { ArrowUpRight, ArrowDownRight, Briefcase } from "lucide-react";
-import { cn } from "@repo/ui/lib/utils";
+import { cn } from "@workspace/ui/lib/utils";
 
 interface PortfolioCardProps {
   portfolio: PortfolioSummaryDto;

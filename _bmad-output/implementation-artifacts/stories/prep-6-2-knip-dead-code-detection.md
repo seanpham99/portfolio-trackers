@@ -11,7 +11,7 @@ So that the codebase stays lean and maintainable.
 ## Context
 
 **Sprint Context:** Prep Sprint 6 - Monorepo Quality & Architecture Enforcement
-**Problem:** Traditional linters (ESLint) can't detect "project-wide" dead code - an unused export in `@repo/ui` that no other package imports
+**Problem:** Traditional linters (ESLint) can't detect "project-wide" dead code - an unused export in `@workspace/ui` that no other package imports
 **Goal:** Use Knip to analyze the entire workspace dependency graph and identify truly unused code
 
 ## Acceptance Criteria
@@ -145,7 +145,7 @@ Implemented Knip for dead code detection across the monorepo following all tasks
 
 **Unused devDependencies (12):**
 
-- @repo/eslint-config (4 packages)
+- @workspace/eslint-config (4 packages)
 - @testing-library/user-event, @vitejs/plugin-react-swc, tw-animate-css
 - API testing tools: @types/supertest, supertest, ts-loader, source-map-support, globals
 
@@ -161,7 +161,7 @@ Implemented Knip for dead code detection across the monorepo following all tasks
 **Categorization:**
 
 - **Safe to Delete:** Unused files that are legacy/deprecated
-- **Needs Investigation:** Radix UI dependencies (may be used indirectly via @repo/ui)
+- **Needs Investigation:** Radix UI dependencies (may be used indirectly via @workspace/ui)
 - **False Positives:** Some dependencies used in build configs, eslint configs
 
 **Recommendations:**

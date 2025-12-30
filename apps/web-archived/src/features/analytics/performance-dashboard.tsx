@@ -5,7 +5,7 @@ import { PerformanceMetricsPanel } from "./performance-metrics";
 import { TimeRangeSelector } from "./time-range-selector";
 import { usePortfolio } from "@/features/portfolio/hooks/use-portfolios";
 import type { TimeRange } from "./analytics.types";
-import { Button } from "@repo/ui/components/button";
+import { Button } from "@workspace/ui/components/button";
 import { Plus } from "lucide-react";
 import {
   Empty,
@@ -13,7 +13,7 @@ import {
   EmptyTitle,
   EmptyDescription,
   EmptyMedia,
-} from "@repo/ui/components/empty";
+} from "@workspace/ui/components/empty";
 import { Link } from "react-router";
 
 interface PerformanceDashboardProps {

@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getAssetDetails } from "@/api/client";
-import { AssetDetailsResponseDto, HoldingDto } from "@repo/api-types";
+import { AssetDetailsResponseDto, HoldingDto } from "@workspace/api-types";
 
 export const useAssetDetails = (portfolioId: string, symbol: string) => {
   const queryClient = useQueryClient();

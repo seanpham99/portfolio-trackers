@@ -51,7 +51,7 @@ So that I can track changes across packages and publish releases with confidence
 
 - [x] **Task 4: Create Sample Changeset**
   - [x] Run `pnpm changeset add` for test change
-  - [x] Select `@repo/api-types` package
+  - [x] Select `@workspace/api-types` package
   - [x] Choose `patch` bump
   - [x] Verify `.changeset/[random-name].md` created
 
@@ -90,7 +90,7 @@ Implemented automated version management using Changesets CLI for the Turborepo 
 
 1. **Base Branch Configuration:** Updated config to use `master` (not `main`) to match repository's actual branch structure
 2. **Package Detection:** Verified all 9 workspace packages are correctly detected (apps/web, services/api, packages/\*)
-3. **Version Workflow:** Successfully tested patch bump on @repo/api-types (0.0.1 → 0.0.2)
+3. **Version Workflow:** Successfully tested patch bump on @workspace/api-types (0.0.1 → 0.0.2)
 4. **Documentation:** Created comprehensive CONTRIBUTING.md with changeset workflow, conventional commits mapping, and examples
 5. **CI Integration:** Added GitHub Actions workflow to validate changeset presence on PRs for feat/fix commits
 
@@ -116,7 +116,7 @@ Implemented automated version management using Changesets CLI for the Turborepo 
 **Testing:**
 
 - Installed @changesets/cli successfully
-- Created sample changeset for @repo/api-types
+- Created sample changeset for @workspace/api-types
 - Ran changeset:version to verify version bump (0.0.1 → 0.0.2)
 - Verified CHANGELOG.md generation
 - Committed with "chore: test changeset workflow"

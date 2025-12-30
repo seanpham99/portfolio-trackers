@@ -1,5 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { UserPreferences } from "@repo/database-types";
+import type { UserPreferences } from "@workspace/database-types";
 
 // Type-safe audit metadata structure for PDPA compliance
 export interface AuditMetadata {

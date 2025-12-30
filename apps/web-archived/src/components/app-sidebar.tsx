@@ -9,14 +9,14 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
-} from "@repo/ui/components/sidebar";
-import { Avatar, AvatarFallback } from "@repo/ui/components/avatar";
+} from "@workspace/ui/components/sidebar";
+import { Avatar, AvatarFallback } from "@workspace/ui/components/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@repo/ui/components/dropdown-menu";
+} from "@workspace/ui/components/dropdown-menu";
 import {
   LayoutDashboard,
   History,

@@ -1,5 +1,5 @@
 import type { TimeRange } from "./analytics.types";
-import { Tabs, TabsList, TabsTrigger } from "@repo/ui/components/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@workspace/ui/components/tabs";
 
 interface TimeRangeSelectorProps {
   value: TimeRange;

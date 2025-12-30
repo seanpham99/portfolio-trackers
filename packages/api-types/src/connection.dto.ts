@@ -2,7 +2,7 @@
  * DTOs for Connection Settings
  * Story: 2.7 Connection Settings
  *
- * NOTE: This package is shared between @repo/web (frontend) and @repo/api (backend).
+ * NOTE: This package is shared between @workspace/web (frontend) and @workspace/api (backend).
  * DO NOT import @nestjs/swagger or any backend-specific dependencies here.
  * Use only plain TypeScript and framework-agnostic validation decorators.
  */

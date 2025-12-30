@@ -6,13 +6,13 @@ import { PortfolioHistoryChart } from "@/features/portfolio/portfolio-history-ch
 import { AllocationDonut } from "@/features/portfolio/allocation-donut";
 import { AddAssetModal } from "@/features/transactions/add-asset-modal";
 import { PerformanceDashboard } from "@/features/analytics/performance-dashboard";
-import { Button } from "@repo/ui/components/button";
+import { Button } from "@workspace/ui/components/button";
 import {
   Tabs,
   TabsList,
   TabsTrigger,
   TabsContent,
-} from "@repo/ui/components/tabs";
+} from "@workspace/ui/components/tabs";
 import { ChevronLeft, AlertCircle, Plus } from "lucide-react";
 import {
   Empty,
@@ -20,7 +20,7 @@ import {
   EmptyTitle,
   EmptyDescription,
   EmptyMedia,
-} from "@repo/ui/components/empty";
+} from "@workspace/ui/components/empty";
 import {
   Breadcrumb,
   BreadcrumbList,
@@ -28,7 +28,7 @@ import {
   BreadcrumbLink,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@repo/ui/components/breadcrumb";
+} from "@workspace/ui/components/breadcrumb";
 
 export default function PortfolioDetailPage() {
   const { id } = useParams<{ id: string }>();

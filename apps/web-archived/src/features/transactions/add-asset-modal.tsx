@@ -5,22 +5,22 @@ import { useForm, useWatch, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Loader2, Plus, Search, ChevronLeft } from "lucide-react";
-import { Button } from "@repo/ui/components/button";
+import { Button } from "@workspace/ui/components/button";
 import {
   useSearchAssets,
   useAddTransaction,
 } from "@/features/portfolio/hooks/use-portfolios";
 import { usePopularAssets } from "@/api/hooks/use-popular-assets";
-import { TransactionType } from "@repo/api-types";
+import { TransactionType } from "@workspace/api-types";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogTitle,
-} from "@repo/ui/components/dialog";
-import { Field, FieldLabel, FieldError } from "@repo/ui/components/field";
-import { Input } from "@repo/ui/components/input";
-import { ScrollArea } from "@repo/ui/components/scroll-area";
+} from "@workspace/ui/components/dialog";
+import { Field, FieldLabel, FieldError } from "@workspace/ui/components/field";
+import { Input } from "@workspace/ui/components/input";
+import { ScrollArea } from "@workspace/ui/components/scroll-area";
 
 // --- Types & Data ---
 

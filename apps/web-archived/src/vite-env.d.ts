@@ -14,7 +14,7 @@ declare module "*.css" {
   export default content;
 }
 
-declare module "@repo/ui/styles/globals.css" {
+declare module "@workspace/ui/styles/globals.css" {
   const content: string;
   export default content;
 }

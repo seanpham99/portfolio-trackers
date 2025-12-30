@@ -61,7 +61,7 @@ So that I spend less than 30 seconds per entry.
   - Generated `AssetsModule` with `AssetsService` and `AssetsController`.
   - Implemented `search(query)` using Supabase client.
   - Updated `PortfoliosService` to include `addTransaction`.
-  - Defined `CreateTransactionDto` in `@repo/api-types`.
+  - Defined `CreateTransactionDto` in `@workspace/api-types`.
 - **Frontend:**
   - Implemented `AssetAutocomplete` using `cmdk`.
   - Implemented `TransactionForm` using React 19 `useActionState`.

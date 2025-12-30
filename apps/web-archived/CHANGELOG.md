@@ -1,4 +1,4 @@
-# @repo/web
+# @workspace/web
 
 ## 0.0.1
 
@@ -12,4 +12,4 @@
   - Improve sidebar visual distinction with updated CSS variables
 
 - Updated dependencies
-  - @repo/ui@0.0.1
+  - @workspace/ui@0.0.1
