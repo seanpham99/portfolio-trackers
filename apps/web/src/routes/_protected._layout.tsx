@@ -1,7 +1,5 @@
 import { Outlet, Link, useLoaderData } from "react-router";
 import type { LoaderFunctionArgs } from "react-router";
-import { LiveIndicator } from "@/components/live-indicator";
-import { NotificationCenter } from "@/components/notification-center";
 import { getUser } from "@/lib/auth";
 
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -56,9 +54,7 @@ export default function Layout() {
             <div className="h-5 w-px bg-white/10" />
 
             <div className="flex items-center gap-4">
-              <LiveIndicator />
-              <NotificationCenter />
-              <div className="flex items-center gap-3 pl-2">
+              <div className="flex items-center gap-3">
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white/5 text-xs font-medium text-zinc-400">
                   {user?.email?.charAt(0).toUpperCase()}
                 </div>

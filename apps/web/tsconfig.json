@@ -12,6 +12,7 @@
     "rootDirs": [".", "./.react-router/types"],
     "paths": {
       "@/*": ["./src/*"],
+      "@test/*": ["./test/*"],
       "@repo/ui/*": ["../../packages/ui/src/*"],
       "@repo/database-types": ["../../packages/database-types/src/index.ts"],
       "@repo/api-types": ["../../packages/api-types/src/index.ts"]

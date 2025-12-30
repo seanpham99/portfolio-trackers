@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import { screen } from "@testing-library/react";
-import { render } from "../../test/test-utils";
+import { render } from "@test/test-utils";
 import Dashboard from "@/routes/_protected._layout.dashboard";
 import { usePortfolios } from "@/features/portfolio/hooks/use-portfolios";
 

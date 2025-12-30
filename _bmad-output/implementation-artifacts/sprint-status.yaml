@@ -83,15 +83,18 @@ development_status:
   2-9-user-preferences-and-mock-cleanup: done
   epic-2-retrospective: done
 
-  epic-3: backlog
+  epic-3: in-progress
   2-7-connection-settings: backlog
-  3-1-performance-dashboard-foundation: backlog
+  3-1-performance-dashboard-foundation: review
   3-2-asset-allocation-visualization: backlog
   3-3-holdings-table-enhancements: backlog
   3-4-asset-detail-page-complete: backlog
   3-5-transaction-completeness: backlog
   3-6-basic-price-pipeline: backlog
   epic-3-retrospective: optional
+
+  # Technical Debt
+  tech-debt-1-legacy-mock-components-cleanup: done
 
   epic-4: backlog
   4-1-ccxt-integration-exchange-service: backlog

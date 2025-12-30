@@ -5,7 +5,14 @@ import { UnifiedHoldingsTable } from "@/features/portfolio/unified-holdings-tabl
 import { PortfolioHistoryChart } from "@/features/portfolio/portfolio-history-chart";
 import { AllocationDonut } from "@/features/portfolio/allocation-donut";
 import { AddAssetModal } from "@/features/transactions/add-asset-modal";
+import { PerformanceDashboard } from "@/features/analytics/performance-dashboard";
 import { Button } from "@repo/ui/components/button";
+import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+} from "@repo/ui/components/tabs";
 import { ChevronLeft, AlertCircle, Plus } from "lucide-react";
 import {
   Empty,
@@ -72,7 +79,7 @@ export default function PortfolioDetailPage() {
   return (
     <div className="flex h-full flex-col">
       {/* Top Bar: Portfolio Header */}
-      <div className="border-b border-white/[0.06] px-8 py-6">
+      <div className="border-b border-white/6 py-6">
         <div className="mx-auto max-w-7xl">
           <Breadcrumb className="mb-4">
             <BreadcrumbList>
@@ -126,24 +133,48 @@ export default function PortfolioDetailPage() {
 
       {/* Main Content: Scrollable */}
       <div className="flex-1 overflow-y-auto p-8">
-        <div className="mx-auto max-w-7xl space-y-6">
-          {/* Top Row: Charts */}
-          <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-            <div className="lg:col-span-2">
-              <PortfolioHistoryChart portfolioId={id} />
-            </div>
-            <div>
-              <AllocationDonut portfolioId={id} />
-            </div>
-          </div>
+        <div className="mx-auto max-w-7xl">
+          <Tabs defaultValue="overview" className="space-y-6">
+            <TabsList>
+              <TabsTrigger value="overview">Overview</TabsTrigger>
+              <TabsTrigger value="performance">Performance</TabsTrigger>
+              <TabsTrigger value="holdings">Holdings</TabsTrigger>
+            </TabsList>
 
-          {/* Bottom Row: Holdings Table */}
-          <div>
-            <UnifiedHoldingsTable
-              portfolioId={id}
-              onAddAsset={() => setIsAddAssetOpen(true)}
-            />
-          </div>
+            <TabsContent value="overview" className="space-y-6">
+              {/* Top Row: Charts */}
+              <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+                <div className="lg:col-span-2">
+                  <PortfolioHistoryChart portfolioId={id} />
+                </div>
+                <div>
+                  <AllocationDonut portfolioId={id} />
+                </div>
+              </div>
+
+              {/* Bottom Row: Holdings Table */}
+              <div>
+                <UnifiedHoldingsTable
+                  portfolioId={id}
+                  onAddAsset={() => setIsAddAssetOpen(true)}
+                />
+              </div>
+            </TabsContent>
+
+            <TabsContent value="performance">
+              <PerformanceDashboard
+                portfolioId={id!}
+                onAddAsset={() => setIsAddAssetOpen(true)}
+              />
+            </TabsContent>
+
+            <TabsContent value="holdings">
+              <UnifiedHoldingsTable
+                portfolioId={id}
+                onAddAsset={() => setIsAddAssetOpen(true)}
+              />
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
 

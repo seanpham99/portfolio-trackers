@@ -15,6 +15,7 @@ export default defineConfig({
       "src/api/**/*.test.{ts,tsx}",
       "src/hooks/**/*.test.{ts,tsx}",
       "src/routes/**/*.test.{ts,tsx}",
+      "src/features/**/*.test.{ts,tsx}",
     ],
   },
 });
