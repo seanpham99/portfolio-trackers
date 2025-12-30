@@ -1,10 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { Database } from "@repo/database-types";
-
-export type UserPreferences =
-  Database["public"]["Tables"]["user_preferences"]["Row"];
-export type UserPreferencesUpdate =
-  Database["public"]["Tables"]["user_preferences"]["Update"];
+import type { UserPreferences } from "@repo/database-types";
 
 // Type-safe audit metadata structure for PDPA compliance
 export interface AuditMetadata {
@@ -18,7 +13,7 @@ export interface AuditMetadata {
  * Fetches user preferences for a specific user.
  */
 export async function getUserPreferences(
-  supabase: SupabaseClient<Database>,
+  supabase: SupabaseClient,
   userId: string,
 ) {
   const { data, error } = await supabase
@@ -39,7 +34,7 @@ export async function getUserPreferences(
  * Upserts user preferences (used for privacy consent).
  */
 export async function upsertUserPreferences(
-  supabase: SupabaseClient<Database>,
+  supabase: SupabaseClient,
   userId: string,
   preferences: Partial<
     Omit<UserPreferences, "id" | "user_id" | "created_at" | "updated_at">

@@ -70,7 +70,7 @@ export function AssetAutocomplete({
       </PopoverPrimitive.Trigger>
 
       <PopoverPrimitive.Content
-        className="w-[300px] p-0 z-50 bg-popover text-popover-foreground shadow-md outline-none border rounded-md bg-white dark:bg-zinc-950"
+        className="w-75 p-0 z-50 bg-popover text-popover-foreground shadow-md outline-none border rounded-md dark:bg-zinc-950"
         align="start"
       >
         <Command
@@ -87,7 +87,7 @@ export function AssetAutocomplete({
               aria-label="Search assets"
             />
           </div>
-          <Command.List className="max-h-[300px] overflow-y-auto overflow-x-hidden p-1">
+          <Command.List className="max-h-75 overflow-y-auto overflow-x-hidden p-1">
             {loading && (
               <div className="py-6 text-center text-sm text-muted-foreground">
                 Loading...

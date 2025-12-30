@@ -1,5 +1,5 @@
 import { defineConfig } from "eslint/config";
-import sharedReactConfig from "@repo/eslint-config/react";
+import { config as sharedReactConfig } from "@repo/eslint-config/react";
 
 export default defineConfig([
   {
