@@ -34,18 +34,18 @@ export function PerformanceMetricsPanel({
       className="grid grid-cols-1 gap-4 md:grid-cols-3"
     >
       {/* Current Value */}
-      <div className="rounded-xl border border-white/6 bg-zinc-900/50 p-6">
-        <div className="mb-2 text-sm font-medium text-zinc-500">
+      <div className="rounded-xl border border-border-subtle bg-surface-glass p-6">
+        <div className="mb-2 text-sm font-medium text-muted-foreground">
           Current Value
         </div>
-        <div className="font-serif text-3xl font-light tracking-tight text-white">
+        <div className="font-serif text-3xl font-light tracking-tight text-foreground">
           {formatCurrency(metrics.currentValue)}
         </div>
       </div>
 
       {/* Total Change */}
-      <div className="rounded-xl border border-white/6 bg-zinc-900/50 p-6">
-        <div className="mb-2 flex items-center gap-2 text-sm font-medium text-zinc-500">
+      <div className="rounded-xl border border-border-subtle bg-surface-glass p-6">
+        <div className="mb-2 flex items-center gap-2 text-sm font-medium text-muted-foreground">
           <span>Total Change</span>
           {isPositive ? (
             <TrendingUp className="h-4 w-4 text-green-600" />
@@ -63,8 +63,10 @@ export function PerformanceMetricsPanel({
       </div>
 
       {/* Percentage Change */}
-      <div className="rounded-xl border border-white/6 bg-zinc-900/50 p-6">
-        <div className="mb-2 text-sm font-medium text-zinc-500">Return (%)</div>
+      <div className="rounded-xl border border-border-subtle bg-surface-glass p-6">
+        <div className="mb-2 text-sm font-medium text-muted-foreground">
+          Return (%)
+        </div>
         <div
           className={`font-serif text-3xl font-light tracking-tight ${
             isPositive ? "text-green-600" : "text-red-600"

@@ -320,6 +320,44 @@ git config commit.template .gitmessage
 
 ## Code Quality Standards
 
+### Styling Guidelines
+
+We use a **semantic CSS variable system** with Tailwind v4 for consistent, maintainable styling across the application.
+
+#### Key Principles
+
+- ✅ **Use semantic tokens**: `text-foreground` instead of `text-white`
+- ✅ **Use component utilities**: `.glass-card`, `.surface-elevated-hover`
+- ✅ **Theme-aware**: Components automatically adapt to light/dark mode
+- ❌ **No hardcoded colors**: Never use `bg-zinc-900`, `text-white`, etc.
+- ❌ **No arbitrary opacity**: Don't use `bg-white/[0.08]`
+
+#### Quick Reference
+
+```tsx
+// ❌ Bad - Hardcoded colors
+<Card className="bg-zinc-900 border-zinc-800 text-white">
+  <CardTitle className="text-zinc-400">Title</CardTitle>
+</Card>
+
+// ✅ Good - Semantic tokens
+<Card className="surface-elevated-hover">
+  <CardTitle className="text-muted-foreground">Title</CardTitle>
+</Card>
+```
+
+#### Common Replacements
+
+| Avoid             | Use Instead             | Purpose          |
+| ----------------- | ----------------------- | ---------------- |
+| `bg-zinc-900`     | `bg-surface`            | Standard surface |
+| `text-white`      | `text-foreground`       | Primary text     |
+| `text-zinc-400`   | `text-muted-foreground` | Secondary text   |
+| `border-zinc-800` | `border-border`         | Standard borders |
+| `border-white/6`  | `border-border-subtle`  | Subtle borders   |
+
+**📖 Full Style Guide**: See [`packages/ui/STYLE_GUIDE.md`](../packages/ui/STYLE_GUIDE.md) for complete documentation, token reference, and examples.
+
 ### TypeScript
 
 - Use strict mode (enabled in tsconfig)
