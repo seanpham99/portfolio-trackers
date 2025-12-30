@@ -179,6 +179,84 @@ We use Tailwind's responsive container with custom max-widths:
 </div>
 ```
 
+### Container Pattern Decision Matrix
+
+Choose the appropriate container pattern based on your page type:
+
+| Page Type          | Max Width    | Padding Pattern             | Use Case                                  | Example Pages                  |
+| ------------------ | ------------ | --------------------------- | ----------------------------------------- | ------------------------------ |
+| **Dashboard/List** | `max-w-7xl`  | `px-4 sm:px-6 lg:px-8 py-6` | Primary content with cards, tables, grids | Dashboard, Portfolio List      |
+| **Settings/Forms** | `max-w-2xl`  | `px-4 sm:px-6 lg:px-8 py-6` | Narrow focused content                    | Settings, Login, Sign Up       |
+| **Detail Pages**   | `max-w-7xl`  | `px-4 sm:px-6 lg:px-8 py-6` | Asset details, portfolio details          | Asset Detail, Portfolio Detail |
+| **Full-Width**     | No max-width | `px-4 sm:px-6 lg:px-8 py-0` | Charts, data visualizations (rare)        | Data Viz Pages                 |
+
+**Implementation Examples:**
+
+```tsx
+// ✅ Primary Content Pages (Dashboard, Portfolio List)
+export default function Dashboard() {
+  return (
+    <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
+      <div className="space-y-6">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <h1 className="text-2xl font-semibold text-foreground sm:text-3xl lg:text-4xl">
+            Portfolios
+          </h1>
+          <Button variant="outline" className="w-full sm:w-auto">
+            <Plus className="mr-2 h-4 w-4" /> New Portfolio
+          </Button>
+        </div>
+        <div className="grid grid-cols-12 gap-6">
+          {portfolios.map((p) => (
+            <div key={p.id} className="col-span-12 sm:col-span-6 lg:col-span-4">
+              <PortfolioCard portfolio={p} />
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ✅ Settings/Form Pages (Narrow Content)
+export default function SettingsPage() {
+  return (
+    <div className="container mx-auto max-w-2xl px-4 sm:px-6 lg:px-8 py-6">
+      <div className="space-y-6">
+        <div>
+          <h2 className="font-serif text-2xl font-light text-foreground sm:text-3xl mb-2">
+            Settings
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            Manage your preferences
+          </p>
+        </div>
+        {/* Settings cards */}
+      </div>
+    </div>
+  );
+}
+
+// ✅ Connections Page (Full-Width with Container)
+export default function ConnectionsPage() {
+  return (
+    <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-semibold text-foreground sm:text-3xl lg:text-4xl">
+            Exchange Connections
+          </h1>
+          <p className="text-muted-foreground mt-2">
+            Connect your crypto exchange accounts
+          </p>
+        </div>
+        {/* Connection cards */}
+      </div>
+    </div>
+  );
+}
+```
+
 ### Breakpoints
 
 Tailwind v4 default breakpoints (mobile-first):
@@ -193,13 +271,61 @@ Tailwind v4 default breakpoints (mobile-first):
 
 ### Grid Layouts
 
+**12-Column Grid System:**
+
+All complex layouts should use a 12-column grid base for consistency and predictability:
+
 ```tsx
-// Responsive card grid
-<div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-  {portfolios.map(p => <PortfolioCard key={p.id} {...p} />)}
+// ✅ Responsive card grid using 12-column base
+<div className="grid grid-cols-12 gap-6">
+  {portfolios.map((p) => (
+    <div key={p.id} className="col-span-12 sm:col-span-6 lg:col-span-4">
+      <PortfolioCard portfolio={p} />
+    </div>
+  ))}
 </div>
 
-// Dashboard 2-column layout
+// ✅ Sidebar + content split (3 + 9 columns)
+<div className="grid grid-cols-12 gap-8">
+  {/* Sidebar */}
+  <aside className="col-span-12 lg:col-span-3">
+    <Nav />
+  </aside>
+
+  {/* Main content */}
+  <main className="col-span-12 lg:col-span-9">
+    <Outlet />
+  </main>
+</div>
+
+// ✅ Dashboard metrics (3 equal columns = 4 cols each)
+<div className="grid grid-cols-12 gap-6">
+  <div className="col-span-12 md:col-span-4">
+    <MetricCard title="Total Value" value="$65,450" />
+  </div>
+  <div className="col-span-12 md:col-span-4">
+    <MetricCard title="Total Gain" value="+$3,450" />
+  </div>
+  <div className="col-span-12 md:col-span-4">
+    <MetricCard title="Return" value="+5.5%" />
+  </div>
+</div>
+
+// ❌ Don't use arbitrary column counts
+<div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+  {/* Use 12-column system instead */}
+</div>
+```
+
+**Standard Gap Values:**
+
+- Cards/items: `gap-6` (1.5rem / 24px)
+- Sections: `gap-8` (2rem / 32px)
+- Tight spacing: `gap-4` (1rem / 16px)
+
+**Dashboard 2-column layout:**
+
+```tsx
 <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
   {/* Main content: 8 columns on large screens */}
   <div className="lg:col-span-8">
@@ -211,8 +337,11 @@ Tailwind v4 default breakpoints (mobile-first):
     <AssetAllocation />
   </div>
 </div>
+```
 
-// Holdings table with metrics (3 equal columns)
+**Holdings table with metrics:**
+
+```tsx
 <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
   <MetricCard title="Total Value" value="$65,450" />
   <MetricCard title="Total Gain" value="+$3,450" />
@@ -240,7 +369,33 @@ Tailwind v4 default breakpoints (mobile-first):
   <Card />
   <Card />
 </div>
+
+// ✅ Responsive header with full-width button on mobile
+<div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+  <h1 className="text-2xl font-semibold text-foreground sm:text-3xl lg:text-4xl">
+    Portfolios
+  </h1>
+  <Button variant="outline" className="w-full sm:w-auto">
+    <Plus className="mr-2 h-4 w-4" /> New Portfolio
+  </Button>
+</div>
 ```
+
+### Layout vs Grid vs Flex Decision Matrix
+
+Choose the right layout approach:
+
+| Pattern            | Use When                                                            | Example                                                   |
+| ------------------ | ------------------------------------------------------------------- | --------------------------------------------------------- |
+| **12-Column Grid** | Complex layouts with multiple items, card grids, dashboard sections | Portfolio cards, metrics panels, sidebar + content        |
+| **Flex**           | Simple linear arrangements, toolbars, headers, small groups         | Header with title + button, icon + label, vertical stacks |
+| **Container**      | Page-level structure, max-width constraints                         | All page wrappers (`max-w-7xl`, `max-w-2xl`)              |
+
+**Rule of thumb:**
+
+- Single-axis alignment → Flex
+- Multi-item grid → 12-column Grid
+- Page structure → Container
 
 ---
 
