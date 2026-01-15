@@ -1,0 +1,108 @@
+{
+  "$schema": "./node_modules/syncpack/dist/schema.json",
+  "dependencyTypes": ["dev", "prod", "peer"],
+  "indent": "  ",
+  "semverGroups": [
+    {
+      "label": "Pin React ecosystem to exact major.minor versions",
+      "dependencies": [
+        "react",
+        "react-dom",
+        "@types/react",
+        "@types/react-dom"
+      ],
+      "packages": ["**"],
+      "range": "^"
+    },
+    {
+      "label": "Pin TypeScript to exact minor version across workspace",
+      "dependencies": ["typescript"],
+      "packages": ["**"],
+      "range": "~"
+    },
+    {
+      "label": "Pin Vite to exact major.minor version",
+      "dependencies": [
+        "vite",
+        "@vitejs/plugin-react",
+        "@vitejs/plugin-react-swc"
+      ],
+      "packages": ["**"],
+      "range": "^"
+    },
+    {
+      "label": "Pin React Router to exact major.minor version",
+      "dependencies": [
+        "react-router",
+        "@react-router/dev",
+        "@react-router/node",
+        "@react-router/serve",
+        "@react-router/fs-routes"
+      ],
+      "packages": ["**"],
+      "range": "^"
+    },
+    {
+      "label": "Pin TanStack Query to exact major.minor version",
+      "dependencies": ["@tanstack/react-query", "@tanstack/react-table"],
+      "packages": ["**"],
+      "range": "^"
+    },
+    {
+      "label": "Pin testing libraries to same versions",
+      "dependencies": [
+        "vitest",
+        "@testing-library/react",
+        "@testing-library/jest-dom",
+        "@testing-library/user-event"
+      ],
+      "packages": ["**"],
+      "range": "^"
+    }
+  ],
+  "versionGroups": [
+    {
+      "label": "Use workspace protocol for internal packages",
+      "dependencies": ["@workspace/**"],
+      "dependencyTypes": ["!peer"],
+      "packages": ["**"],
+      "pinVersion": "workspace:*"
+    },
+    {
+      "label": "Ensure React has same version everywhere",
+      "dependencies": ["react", "react-dom"],
+      "packages": ["**"],
+      "policy": "sameRange"
+    },
+    {
+      "label": "Ensure TypeScript has same version everywhere",
+      "dependencies": ["typescript"],
+      "packages": ["**"],
+      "policy": "sameRange"
+    },
+    {
+      "label": "Ensure Vite has same version everywhere",
+      "dependencies": ["vite"],
+      "packages": ["**"],
+      "policy": "sameRange"
+    },
+    {
+      "label": "Ensure React Router has same version everywhere",
+      "dependencies": [
+        "react-router",
+        "@react-router/dev",
+        "@react-router/node",
+        "@react-router/serve",
+        "@react-router/fs-routes"
+      ],
+      "packages": ["**"],
+      "policy": "sameRange"
+    },
+    {
+      "label": "Ensure @types packages match their runtime versions",
+      "dependencies": ["@types/**"],
+      "packages": ["**"],
+      "policy": "sameRange"
+    }
+  ]
+}

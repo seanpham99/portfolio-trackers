@@ -1,0 +1,2 @@
+pnpm syncpack:check
+pnpm lint-staged

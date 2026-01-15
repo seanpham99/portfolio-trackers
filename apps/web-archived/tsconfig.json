@@ -1,0 +1,21 @@
+{
+  "files": [],
+  "references": [
+    {
+      "path": "./tsconfig.app.json"
+    },
+    {
+      "path": "./tsconfig.node.json"
+    }
+  ],
+  "compilerOptions": {
+    "rootDirs": [".", "./.react-router/types"],
+    "paths": {
+      "@/*": ["./src/*"],
+      "@test/*": ["./test/*"],
+      "@workspace/ui/*": ["../../packages/ui/src/*"],
+      "@workspace/database-types": ["../../packages/database-types/src/index.ts"],
+      "@workspace/api-types": ["../../packages/api-types/src/index.ts"]
+    }
+  }
+}

@@ -1,0 +1,160 @@
+# generated: 2025-12-26
+# project: fin-sight
+# project_key: finsight
+# tracking_system: file-system
+# story_location: _bmad-output/implementation-artifacts
+
+# STATUS DEFINITIONS:
+# ==================
+# Epic Status:
+#   - backlog: Epic not yet started
+#   - in-progress: Epic actively being worked on
+#   - done: All stories in epic completed
+#
+# Epic Status Transitions:
+#   - backlog → in-progress: Automatically when first story is created (via create-story)
+#   - in-progress → done: Manually when all stories reach 'done' status
+#
+# Story Status:
+#   - backlog: Story only exists in epic file
+#   - ready-for-dev: Story file created in stories folder
+#   - in-progress: Developer actively working on implementation
+#   - review: Ready for code review (via Dev's code-review workflow)
+#   - done: Story completed
+#
+# Retrospective Status:
+#   - optional: Can be completed but not required
+#   - done: Retrospective has been completed
+#
+# WORKFLOW NOTES:
+# ===============
+# - Epic transitions to 'in-progress' automatically when first story is created
+# - Stories can be worked in parallel if team capacity allows
+# - SM typically creates next story after previous one is 'done' to incorporate learnings
+# - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
+
+generated: 2025-12-30
+project: fin-sight
+project_key: finsight
+tracking_system: file-system
+story_location: _bmad-output/implementation-artifacts
+
+# MIGRATION DECISION (2025-12-30):
+# - Vite → Next.js 16 migration approved
+# - Epic 3 paused, stories dropped for rework post-migration
+# - See ADR: adr-001-vite-to-nextjs-migration.md
+# - See Epic: epic-migration-nextjs.md
+
+development_status:
+  epic-1: done
+  1-1-initialize-nestjs-api-shared-packages: done
+  1-2-configure-supabase-auth-google-oauth: done
+  1-3-implement-login-signup-ui: done
+  1-4-privacy-consent-pdpa-compliance: done
+  epic-1-retrospective: done
+
+  # Preparation Sprint
+  prep-1-fix-ci-pipeline: done
+  prep-2-extract-vite-config: done
+  prep-3-seed-asset-data: done
+
+  # Repository Quality & Automation
+  prep-4-repository-quality-automation: done
+  prep-4-1-changesets-version-management: done
+  prep-4-2-lint-staged-husky-pre-commit: done
+  prep-4-3-conventional-commits-commitlint: done
+
+  # Security Hardening & Compliance
+  prep-5-security-hardening-compliance: backlog
+  prep-5-1-csrf-protection-security-headers: backlog
+  prep-5-2-rate-limiting-ddos-protection: backlog
+  prep-5-3-input-validation-sanitization-audit: backlog
+  prep-5-4-secrets-management-rotation-policy: backlog
+
+  # Monorepo Quality & Architecture Enforcement
+  prep-6-monorepo-quality-architecture: in-progress
+  prep-6-1-syncpack-version-consistency: done
+  prep-6-2-knip-dead-code-detection: done
+  prep-6-3-architecture-migration: done
+  prep-6-4-turbo-gen-package-scaffolding: backlog
+
+  epic-2: done
+  2-1-portfolio-management-logic-api-database: done
+  2-2-unified-portfolio-dashboard-shell: done
+  2-3-manual-transaction-entry-with-autocomplete: done
+  2-4-unified-holdings-table: done
+  2-5-transparent-methodology-basic-panels: done
+  2-6-asset-detail-page: done
+  2-8-portfolio-first-dashboard-navigation: done
+  2-9-user-preferences-and-mock-cleanup: done
+  epic-2-retrospective: done
+
+  # Epic 3 PAUSED for Next.js Migration (2025-12-30)
+  # Stories 3-1 and tech-debt-4 were in review but dropped - will rework on Next.js
+  epic-3: paused
+  2-7-connection-settings: dropped-rework
+  3-1-performance-dashboard-foundation: dropped-rework # Was: review
+  3-2-asset-allocation-visualization: backlog
+  3-3-holdings-table-enhancements: backlog
+  3-4-asset-detail-page-complete: backlog
+  3-5-transaction-completeness: backlog
+  3-6-basic-price-pipeline: backlog
+  epic-3-retrospective: optional
+
+  # Tech Debt - Paused for migration
+  tech-debt-1-legacy-mock-components-cleanup: done
+  tech-debt-2-css-variables-styling-refactor: done
+  tech-debt-3-layout-component-consistency: done
+  tech-debt-4-shadcn-component-replacements: dropped-rework # Was: review
+
+  # ==========================================
+  # MIGRATION EPIC: Vite → Next.js 16 (ACTIVE)
+  # ==========================================
+  # Priority: P0 - Blocking future development
+  # ADR: adr-001-vite-to-nextjs-migration.md
+  # Total: 50 story points over 3 sprints
+
+  epic-migration: in-progress
+  m-1-initialize-nextjs-turborepo: backlog
+  m-2-supabase-ssr-authentication: backlog
+  m-3-migrate-auth-routes: backlog
+  m-4-migrate-layouts-navigation: backlog
+  m-5-migrate-dashboard-portfolio-routes: backlog
+  m-6-react-query-ssr-hydration: backlog
+  m-7-migrate-settings-connections: backlog
+  m-8-create-seo-landing-page: backlog
+  m-9-blog-marketing-structure: backlog
+  m-10-deployment-switch-cicd: backlog
+  m-11-remove-vite-update-docs: backlog
+  epic-migration-retrospective: optional
+
+  epic-4: backlog
+  4-1-ccxt-integration-exchange-service: backlog
+  4-2-crypto-exchange-connection-ui: backlog
+  4-3-automated-spot-balance-syncing: backlog
+  epic-4-retrospective: optional
+
+  epic-5: backlog
+  5-1-multi-source-price-ingestion-pipeline: backlog
+  5-2-clickhouse-materialized-views-for-latest-prices: backlog
+  5-3-tradingview-chart-component-integration: backlog
+  5-4-data-freshness-indicators-staleness-banners: backlog
+  epic-5-retrospective: optional
+
+  epic-6: backlog
+  6-1-portfolio-valuation-engine-core: backlog
+  6-2-fx-intelligence-cross-border-gain-separation: backlog
+  6-3-performance-metrics-twr-mwr: backlog
+  6-4-hierarchical-drill-down-ui: backlog
+  epic-6-retrospective: optional
+
+  epic-7: backlog
+  7-1-sepay-polar-webhook-handlers: backlog
+  7-2-subscription-tier-enforcement: backlog
+  7-3-admin-payment-reconciliation-dashboard: backlog
+  epic-7-retrospective: optional
+
+  epic-8: backlog
+  8-1-daily-telegram-summary-bot-integration: backlog
+  8-2-basic-price-alert-configuration-ui: backlog
+  epic-8-retrospective: optional

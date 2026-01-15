@@ -1,47 +1,167 @@
+# ==========================================
+# Node.js / JavaScript / TypeScript
+# ==========================================
+**/node_modules/
+**/.turbo/
+**/dist/
+**/build/
+**/.next/
+**/.expo/
+.pnpm-store/
+.yarn/
+*.tsbuildinfo
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# ==========================================
 # Python
+# ==========================================
 __pycache__/
 *.py[cod]
 *$py.class
+*.so
+
+# Distribution / packaging
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+.eggs/
+lib64/
+parts/
+sdist/
+wheels/
+*.whl
+
+# Testing
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+coverage.xml
+*.cover
+.hypothesis/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb
 
 # Virtual Environment
 venv/
 .venv/
 env/
+ENV/
+env.bak/
+venv.bak/
+
+# Type checking
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+.pytype/
+
+# ==========================================
+# Environment & Secrets
+# ==========================================
 .env
+.env.*
+!.env.example
+template.env
+*.pem
+*.key
+*.cert
 
-# Distribution / Packaging
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
+# ==========================================
+# Database
+# ==========================================
+*.db
+*.sqlite
+*.sqlite3
+*.db-shm
+*.db-wal
 
-# Jupyter Notebooks
-.ipynb_checkpoints
+# Airflow
+services/data-pipeline/logs/
+services/data-pipeline/plugins/__pycache__/
+airflow.db
+airflow.cfg
+webserver_config.py
 
-# IDEs
-.vscode/
+# ==========================================
+# Docker
+# ==========================================
+docker-compose.override.yml
+.dockerignore
+
+# ==========================================
+# Operating Systems
+# ==========================================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+Desktop.ini
+
+# Linux
+.directory
+.Trash-*
+
+# ==========================================
+# Editors / IDEs
+# ==========================================
+# VSCode
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+
+# JetBrains (PyCharm, WebStorm, IntelliJ)
 .idea/
+*.iml
+*.iws
+*.ipr
 
-# Logs
-*.log
-logs/
+# Other editors
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*.swp
+*.swo
+*~
 
-# Testing
-.coverage
-htmlcov/
-.pytest_cache/
-coverage.xml
+# ==========================================
+# Supabase
+# ==========================================
+.branches/
+supabase/.temp/
 
-# data
-data/
+# ==========================================
+# Project Specific
+# ==========================================
+# BMAD output archives (keep current, ignore old)
+_bmad-output/archive/
+
+# Test artifacts
+test-results/
+playwright-report/
+*.spec.js.snap

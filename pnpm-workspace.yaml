@@ -1,0 +1,14 @@
+packages:
+  - apps/*
+  - packages/*
+  - services/*
+
+onlyBuiltDependencies:
+  - "@nestjs/core"
+  - "@scarf/scarf"
+  - "@swc/core"
+  - ccxt
+  - core-js-pure
+  - esbuild
+  - supabase
+  - unrs-resolver

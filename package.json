@@ -1,0 +1,63 @@
+{
+  "name": "fin-sight",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Portfolio intelligence platform",
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "services/*"
+  ],
+  "scripts": {
+    "build": "turbo build",
+    "dev": "turbo dev",
+    "lint": "turbo lint",
+    "type-check": "turbo type-check",
+    "test": "turbo test",
+    "clean": "turbo clean && rm -rf node_modules",
+    "format": "prettier --write \"**/*.{ts,tsx,md,json}\"",
+    "db:gen-types": "npx supabase gen types --local --lang=typescript --schema public > packages/database-types/src/supabase-types.ts && npx better-supabase-types -i ./packages/database-types/src/supabase-types.ts -o ./packages/database-types/src/supabase-types.ts",
+    "changeset": "changeset",
+    "changeset:version": "changeset version",
+    "changeset:publish": "changeset publish",
+    "changelog": "conventional-changelog -p conventionalcommits -i CHANGELOG.md -s",
+    "prepare": "husky",
+    "commit": "cz",
+    "syncpack:check": "syncpack list-mismatches",
+    "syncpack:fix": "syncpack fix-mismatches",
+    "syncpack:format": "syncpack format",
+    "knip": "knip",
+    "knip:ci": "knip --reporter json --no-exit-code",
+    "knip:fix": "knip --fix"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.29.8",
+    "@commitlint/cli": "^20.2.0",
+    "@commitlint/config-conventional": "^20.2.0",
+    "@workspace/eslint-config": "workspace:*",
+    "@workspace/typescript-config": "workspace:*",
+    "@turbo/gen": "^2.7.2",
+    "better-supabase-types": "^2.7.6",
+    "commitizen": "^4.3.1",
+    "conventional-changelog-cli": "^5.0.0",
+    "cz-conventional-changelog": "^3.3.0",
+    "eslint": "^9.39.2",
+    "husky": "^9.1.7",
+    "knip": "^5.78.0",
+    "lint-staged": "^16.2.7",
+    "prettier": "^3.7.4",
+    "supabase": "2.70.5",
+    "syncpack": "^13.0.4",
+    "turbo": "^2.7.2"
+  },
+  "packageManager": "pnpm@10.26.2",
+  "config": {
+    "commitizen": {
+      "path": "cz-conventional-changelog"
+    }
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=10.0.0"
+  }
+}

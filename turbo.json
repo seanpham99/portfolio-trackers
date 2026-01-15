@@ -1,0 +1,42 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "ui": "tui",
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "outputs": ["dist/**", ".next/**", "build/**", "out/**"]
+    },
+    "dev": {
+      "dependsOn": ["^build"],
+      "cache": false,
+      "persistent": true
+    },
+    "lint": {
+      "dependsOn": ["^lint"],
+      "inputs": ["$TURBO_DEFAULT$", ".eslintrc*", "eslint.config.*"]
+    },
+    "type-check": {
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$", "tsconfig.json", "tsconfig.*.json"]
+    },
+    "test": {
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$", "vitest.config.*", "jest.config.*"],
+      "outputs": ["coverage/**"]
+    },
+    "clean": {
+      "cache": false
+    }
+  },
+  "globalEnv": [
+    "NODE_ENV",
+    "DATABASE_URL",
+    "CLICKHOUSE_HOST",
+    "CLICKHOUSE_PORT",
+    "REDIS_HOST",
+    "REDIS_PORT",
+    "VITE_SUPABASE_URL",
+    "VITE_SUPABASE_PUBLISHABLE_OR_ANON_KEY"
+  ]
+}

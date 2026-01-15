@@ -1,0 +1,18 @@
+{
+  "name": "@workspace/api-types",
+  "version": "0.0.2",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@workspace/database-types": "workspace:*",
+    "class-validator": "^0.14.3"
+  },
+  "devDependencies": {
+    "typescript": "~5.9.3"
+  }
+}

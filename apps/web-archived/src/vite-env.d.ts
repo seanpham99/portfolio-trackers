@@ -1,0 +1,20 @@
+/// <reference types="vite/client" />
+
+interface ImportMetaEnv {
+  readonly VITE_SUPABASE_URL: string;
+  readonly VITE_SUPABASE_PUBLISHABLE_OR_ANON_KEY: string;
+}
+
+interface ImportMeta {
+  readonly env: ImportMetaEnv;
+}
+
+declare module "*.css" {
+  const content: string;
+  export default content;
+}
+
+declare module "@workspace/ui/styles/globals.css" {
+  const content: string;
+  export default content;
+}

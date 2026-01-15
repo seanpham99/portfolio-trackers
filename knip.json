@@ -1,0 +1,116 @@
+{
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "ignoreExportsUsedInFile": true,
+  "eslint": false,
+  "workspaces": {
+    ".": {
+      "entry": ["turbo.json", "commitlint.config.js"],
+      "project": ["**/*.{js,ts}"],
+      "ignore": [
+        "**/*.test.{ts,tsx}",
+        "**/*.spec.{ts,tsx}",
+        "**/test/**",
+        "**/tests/**",
+        "**/__tests__/**",
+        "**/coverage/**",
+        "**/dist/**",
+        "**/build/**",
+        "**/.turbo/**"
+      ]
+    },
+    "apps/web": {
+      "entry": [
+        "src/root.tsx",
+        "src/routes.ts",
+        "src/routes/**/*.tsx",
+        "vite.config.ts",
+        "vitest.config.ts",
+        "react-router.config.ts"
+      ],
+      "project": ["src/**/*.{ts,tsx}", "test/**/*.ts"],
+      "ignore": [
+        "src/**/*.test.{ts,tsx}",
+        "src/**/*.spec.{ts,tsx}",
+        "src/__tests__/**",
+        "test/**",
+        "eslint.config.js"
+      ]
+    },
+    "services/api": {
+      "entry": ["src/main.ts", "src/**/*.module.ts", "src/**/*.controller.ts"],
+      "project": ["src/**/*.ts", "test/**/*.ts"],
+      "ignore": ["src/**/*.spec.ts", "test/**", "eslint.config.mjs"]
+    },
+    "packages/ui": {
+      "entry": [
+        "src/components/**/*.tsx",
+        "src/lib/**/*.ts",
+        "src/hooks/**/*.ts"
+      ],
+      "project": ["src/**/*.{ts,tsx}", "!eslint.config.js"],
+      "ignore": [
+        "src/**/*.test.{ts,tsx}",
+        "src/**/*.stories.tsx",
+        "eslint.config.js"
+      ]
+    },
+    "packages/api-types": {
+      "entry": ["src/index.ts"],
+      "project": ["src/**/*.ts"]
+    },
+    "packages/database-types": {
+      "entry": ["src/index.ts"],
+      "project": ["src/**/*.ts"]
+    },
+    "packages/vite-config": {
+      "entry": ["index.ts", "src/index.ts"],
+      "project": ["src/**/*.ts", "*.ts"],
+      "ignore": ["eslint.config.js"]
+    },
+    "packages/eslint-config": {
+      "entry": ["index.js", "react.js"],
+      "project": ["*.js"]
+    },
+    "packages/typescript-config": {
+      "entry": ["*.json"],
+      "project": ["*.json"]
+    }
+  },
+  "ignore": [
+    "**/*.config.{js,ts,mjs}",
+    "**/eslint.config.*",
+    "**/*.d.ts",
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/build/**",
+    "**/.turbo/**",
+    "**/coverage/**"
+  ],
+  "ignoreDependencies": [
+    "@types/node",
+    "@types/react",
+    "@types/react-dom",
+    "typescript",
+    "prettier",
+    "eslint",
+    "vitest",
+    "jest",
+    "@nestjs/cli",
+    "@nestjs/schematics",
+    "@react-router/dev",
+    "turbo",
+    "@turbo/gen",
+    "husky",
+    "lint-staged",
+    "commitizen",
+    "cz-conventional-changelog",
+    "@commitlint/cli",
+    "@commitlint/config-conventional",
+    "conventional-changelog-cli",
+    "@changesets/cli",
+    "supabase",
+    "syncpack",
+    "knip"
+  ],
+  "ignoreBinaries": ["turbo", "supabase", "changeset"]
+}

@@ -31,15 +31,22 @@
 
 ```bash
 fin-sight/
-├── dags/                       # Airflow DAGs (Workflows)
-│   ├── market_data_evening_batch.py  # EOD Data Pipeline
-│   ├── market_news_morning.py        # Morning News Pipeline
-│   └── etl_modules/                  # Shared Python Modules (Extract/Transform)
-├── sql/                        # SQL Scripts for Schema Initialization
-├── scripts/                    # Utility Scripts (e.g., Init ClickHouse)
-├── docker-compose.yaml         # Service Orchestration
-├── requirements.txt            # Python Dependencies
-└── .env.template               # Environment Variables Template
+├── apps/
+│   └── web/                    # React + TypeScript + Vite app (portfolio tracking UI)
+│       ├── package.json
+│       ├── src/
+│       └── vite.config.ts
+├── services/
+│   └── data-pipelines/         # Airflow + ClickHouse data platform
+│       ├── docker-compose.yaml # Orchestration for Airflow, ClickHouse, Postgres, Redis
+│       ├── Dockerfile          # Custom Airflow image with deps
+│       ├── dags/
+│       ├── scripts/
+│       └── sql/
+├── docs/
+│   └── TECHNICAL.md            # Deep-dive architecture & operations
+└── supabase/
+  └── config.toml
 ```
 
 ---
@@ -57,28 +64,47 @@ fin-sight/
    cd fin-sight
    ```
 
-2. **Configure Environment**
-   Create a `.env` file from the template and add your credentials.
-   ```bash
-   cp .env.template .env
-   ```
-   *Update the following variables in `.env`:*
+2. **Configure Environment (services/data-pipelines)**
+  Create a `.env` file in the data pipeline folder and add your credentials.
+  ```bash
+  cd services/data-pipelines
+  # If you have a template, copy it; otherwise create a new .env
+  [ -f template.env ] && cp template.env .env || printf "TELEGRAM_BOT_TOKEN=\nTELEGRAM_CHAT_ID=\nGEMINI_API_KEY=\nCLICKHOUSE_HOST=clickhouse-server\nCLICKHOUSE_PORT=8123\nCLICKHOUSE_USER=default\nCLICKHOUSE_PASSWORD=\nAIRFLOW_UID=$(id -u)\n" > .env
+  ```
+  *Update the following variables in `.env`:*
    - `TELEGRAM_BOT_TOKEN`: Your Telegram Bot Token.
    - `TELEGRAM_CHAT_ID`: Your Telegram Chat ID.
    - `GEMINI_API_KEY`: (Optional) For AI-powered analysis.
 
-3. **Start Services**
-   Launch the entire stack using Docker Compose.
-   ```bash
-   docker-compose up -d
-   ```
-   *This will start Airflow (Webserver, Scheduler), ClickHouse, and Postgres (for Airflow server metadata storage).*
+3. **Start Services (data pipelines)**
+  Launch the data platform stack from the `services/data-pipelines` folder.
+  ```bash
+  cd services/data-pipelines
+  docker compose up -d --build
+  ```
+  *This will start Airflow services, ClickHouse, PostgreSQL, and Redis.*
 
 4. **Access Interfaces**
-   - **Airflow UI**: [http://localhost:8080](http://localhost:8080)
-     - **Username**: `admin`
-     - **Password**: `admin`
+  - **Airflow API**: http://localhost:8080 (API server)
+    - Check version: http://localhost:8080/api/v2/version
+    - Note: If you want the Web UI, add/expose an Airflow webserver service.
    - **ClickHouse HTTP**: [http://localhost:8123](http://localhost:8123)
+
+---
+
+## 🖥️ Web App (apps/web)
+
+The React app is the intended UI for tracking portfolios and visualizing insights.
+
+### Run locally
+
+```bash
+cd apps/web
+npm install
+npm run dev
+```
+
+The dev server will print the local URL (typically http://localhost:5173).
 
 ---
 

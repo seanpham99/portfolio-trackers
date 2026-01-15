@@ -1,0 +1,77 @@
+name: Changeset Check
+
+on:
+  pull_request:
+    branches:
+      - master
+      - develop
+
+jobs:
+  changeset-check:
+    name: Validate Changeset Presence
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.26.2
+      
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      
+      - name: Get commit messages
+        id: commit-check
+        run: |
+          # Get all commit messages in this PR
+          COMMITS=$(git log --format=%s origin/${{ github.base_ref }}..HEAD)
+          echo "commits<<EOF" >> $GITHUB_OUTPUT
+          echo "$COMMITS" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          
+          # Check if any commits require a changeset
+          # Include refactor and style to catch API surface changes without feature/fix labels
+          if echo "$COMMITS" | grep -qE "^(feat|fix|perf|refactor|style)(\(.+\))?:"; then
+            echo "requires_changeset=true" >> $GITHUB_OUTPUT
+          else
+            echo "requires_changeset=false" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Check for changesets
+        if: steps.commit-check.outputs.requires_changeset == 'true'
+        run: |
+          # Check if changeset files exist (excluding README.md and config.json)
+          CHANGESET_COUNT=$(find .changeset -name '*.md' ! -name 'README.md' | wc -l)
+          
+          if [ "$CHANGESET_COUNT" -eq 0 ]; then
+            echo "❌ No changeset found!"
+            echo ""
+            echo "This PR contains commits that require a changeset:"
+            echo "${{ steps.commit-check.outputs.commits }}"
+            echo ""
+            echo "Please run 'pnpm changeset' to create one."
+            echo "See CONTRIBUTING.md for more information."
+            exit 1
+          else
+            echo "✅ Changeset found ($CHANGESET_COUNT file(s))"
+          fi
+      
+      - name: Validate changeset format
+        if: steps.commit-check.outputs.requires_changeset == 'true'
+        run: pnpm changeset status
+      
+      - name: Skip changeset check
+        if: steps.commit-check.outputs.requires_changeset == 'false'
+        run: |
+          echo "✅ No changeset required"
+          echo "This PR only contains chore/docs/test commits."
