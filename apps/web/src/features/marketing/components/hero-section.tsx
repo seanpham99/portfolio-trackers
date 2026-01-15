@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@workspace/ui/components/button";
 import { ArrowRight, CheckCircle2, Play, TrendingUp, Wallet, BarChart3 } from "lucide-react";
 import { motion, useMotionValue, useTransform, animate, useMotionTemplate } from "framer-motion";
@@ -56,14 +57,26 @@ export function HeroSection() {
 
   return (
     <section
-      className="relative pt-32 pb-24 md:pt-44 md:pb-32 overflow-hidden group"
+      className="relative pt-32 pb-24 md:pt-44 md:pb-32 overflow-hidden group bg-black"
       onMouseMove={handleMouseMove}
     >
-      {/* Animated Background Gradients */}
-      <div className="absolute inset-0 -z-10">
+      {/* Background Layer (Z-0) */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <Image
+          src="/hero-bg.png"
+          alt="Fintech Data Background"
+          fill
+          className="object-cover opacity-100"
+          priority
+          quality={100}
+        />
+
+        {/* Gradient overlay to ensure text contrast while keeping image visible */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/20 to-black" />
+
         {/* Mouse Spotlight */}
         <motion.div
-          className="pointer-events-none absolute -inset-px opacity-0 transition duration-300 group-hover:opacity-100"
+          className="absolute -inset-px opacity-0 transition duration-300 group-hover:opacity-100"
           style={{
             background: useMotionTemplate`
               radial-gradient(
@@ -74,51 +87,10 @@ export function HeroSection() {
             `,
           }}
         />
-        {/* Primary gradient orb */}
-        <motion.div
-          className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] rounded-full opacity-30"
-          style={{
-            background:
-              "radial-gradient(circle, rgba(16, 185, 129, 0.4) 0%, rgba(6, 182, 212, 0.2) 50%, transparent 70%)",
-          }}
-          animate={{
-            scale: [1, 1.1, 1],
-            opacity: [0.3, 0.4, 0.3],
-          }}
-          transition={{
-            duration: 8,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
-        {/* Secondary gradient orb */}
-        <motion.div
-          className="absolute bottom-0 right-0 w-[600px] h-[600px] rounded-full opacity-20"
-          style={{
-            background: "radial-gradient(circle, rgba(139, 92, 246, 0.3) 0%, transparent 60%)",
-          }}
-          animate={{
-            scale: [1, 1.15, 1],
-            x: [0, 30, 0],
-          }}
-          transition={{
-            duration: 10,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
-        {/* Grid overlay */}
-        <div
-          className="absolute inset-0 opacity-[0.02]"
-          style={{
-            backgroundImage: `linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
-                              linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)`,
-            backgroundSize: "60px 60px",
-          }}
-        />
       </div>
 
-      <div className="container mx-auto px-4 md:px-6">
+      {/* Content Layer (Z-10) */}
+      <div className="container relative z-10 mx-auto px-4 md:px-6">
         <div className="text-center max-w-4xl mx-auto">
           {/* Announcement Badge */}
           <motion.div
