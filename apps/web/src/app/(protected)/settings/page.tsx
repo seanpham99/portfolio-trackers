@@ -1,21 +1,40 @@
+"use client";
+
+import { ProfileForm } from "@/features/settings/components/profile-form";
+import { PreferenceForm } from "@/features/settings/components/preference-form";
+import { Separator } from "@workspace/ui/components/separator";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@workspace/ui/components/tabs";
+
 export default function SettingsPage() {
   return (
-    <div className="container mx-auto px-4 md:px-6 lg:px-8">
-      <div className="mb-8">
-        <h1 className="font-serif text-3xl font-light tracking-tight text-foreground">
-          Settings
-        </h1>
-        <p className="text-muted-foreground mt-2">
-          Manage your account and preferences
+    <div className="space-y-6 container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
+      <div>
+        <h3 className="text-lg font-medium">Settings</h3>
+        <p className="text-sm text-muted-foreground">
+          Manage your account settings and preferences.
         </p>
       </div>
-
-      <div className="glass-card p-6 rounded-xl">
-        <h2 className="text-lg font-medium mb-4">Account Settings</h2>
-        <p className="text-muted-foreground">
-          Settings page content will be migrated here.
-        </p>
-      </div>
+      <Separator />
+      
+      <Tabs defaultValue="profile" className="space-y-6">
+        <TabsList>
+          <TabsTrigger value="profile">Profile</TabsTrigger>
+          <TabsTrigger value="preferences">Preferences</TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="profile" className="max-w-xl">
+           <ProfileForm />
+        </TabsContent>
+        
+        <TabsContent value="preferences" className="max-w-xl">
+           <PreferenceForm />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
