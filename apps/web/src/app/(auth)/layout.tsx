@@ -1,77 +1,85 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
+import Image from "next/image";
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   const prefersReducedMotion = useReducedMotion();
 
   // Reduced motion variants
-  const logoVariants = prefersReducedMotion
-    ? { initial: { opacity: 1 }, animate: { opacity: 1 } }
-    : { initial: { opacity: 0, y: -20 }, animate: { opacity: 1, y: 0 } };
-
-  const contentVariants = prefersReducedMotion
-    ? { initial: { opacity: 1 }, animate: { opacity: 1 } }
-    : { initial: { opacity: 0, y: 20 }, animate: { opacity: 1, y: 0 } };
-
-  const fadeVariants = prefersReducedMotion
+  const fadeIn = prefersReducedMotion
     ? { initial: { opacity: 1 }, animate: { opacity: 1 } }
     : { initial: { opacity: 0 }, animate: { opacity: 1 } };
 
   return (
-    <div className="dark relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-background text-foreground">
-      {/* Premium Background Mesh/Gradient */}
-      <div className="absolute inset-0 z-0" aria-hidden="true">
-        <div className="absolute -left-[10%] -top-[10%] h-[50%] w-[50%] rounded-full bg-emerald-900/20 blur-[120px] opacity-60" />
-        <div className="absolute -bottom-[10%] -right-[10%] h-[50%] w-[50%] rounded-full bg-indigo-900/15 blur-[120px] opacity-50" />
-        {/* Subtle grid pattern */}
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:64px_64px] opacity-50" />
-      </div>
+    <div className="flex min-h-screen w-full font-sans selection:bg-emerald-500/30 overflow-hidden">
+      {/* Left Panel - Branding & Visuals (Visible on Desktop) */}
+      <motion.div
+        {...fadeIn}
+        transition={{ duration: 0.8 }}
+        className="relative hidden w-1/2 flex-col justify-between bg-[#09090b] p-10 lg:flex overflow-hidden border-r border-white/5"
+      >
+        {/* Animated Background Image */}
+        <div className="absolute inset-0 z-0">
+          <Image
+            src="/auth-bg.png"
+            alt="Premium Portfolio Analytics"
+            fill
+            className="object-cover opacity-80 mix-blend-normal"
+            priority
+            quality={100}
+          />
+          {/* Gradient Overlay for Text Readability */}
+          <div className="absolute inset-0 bg-gradient-to-t from-[#09090b] via-[#09090b]/40 to-[#09090b]/30" />
+        </div>
 
-      <main className="relative z-10 w-full max-w-md px-6" role="main">
-        {/* Animated Logo */}
-        <motion.header
-          {...logoVariants}
-          transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.5, ease: "easeOut" }}
-          className="mb-8 flex flex-col items-center justify-center"
-        >
-          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500/20 to-emerald-900/20 border border-border shadow-2xl shadow-emerald-900/20 backdrop-blur-sm">
-            <span className="text-3xl font-bold text-emerald-400" aria-hidden="true">
-              F
+        {/* Content Layer */}
+        <div className="relative z-10">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 border border-white/10 backdrop-blur-md shadow-lg">
+              <span className="text-xl font-bold text-white font-serif">P</span>
+            </div>
+            <span className="text-xl font-medium tracking-tight text-white font-serif">
+              Portfolios Tracker
             </span>
           </div>
-          <motion.h1
-            {...fadeVariants}
-            transition={prefersReducedMotion ? { duration: 0 } : { delay: 0.2, duration: 0.5 }}
-            className="mt-4 font-serif text-3xl font-medium tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-white to-white/70"
-          >
-            Portfolios Tracker
-          </motion.h1>
-          <motion.p
-            {...fadeVariants}
-            transition={prefersReducedMotion ? { duration: 0 } : { delay: 0.3, duration: 0.5 }}
-            className="mt-2 text-center text-sm text-muted-foreground"
-          >
-            Consolidated wealth. Calm mind.
-          </motion.p>
-        </motion.header>
+        </div>
 
-        {/* Auth page content */}
-        <motion.div
-          {...contentVariants}
-          transition={prefersReducedMotion ? { duration: 0 } : { delay: 0.1, duration: 0.4 }}
-        >
+        <div className="relative z-10 max-w-md">
+          <blockquote className="space-y-4">
+            <p className="text-3xl font-light leading-snug text-white font-serif tracking-tight drop-shadow-xl">
+              &ldquo;Consolidated wealth. Total clarity. The peace of mind needed for bold
+              decisions.&rdquo;
+            </p>
+          </blockquote>
+        </div>
+      </motion.div>
+
+      {/* Right Panel - Auth Forms */}
+      <main className="flex w-full flex-col items-center justify-center bg-[#09090b] px-4 py-8 lg:w-1/2 sm:px-6 lg:px-8 relative overflow-y-auto">
+        {/* Mobile Background Elements (So it's not plain black on mobile) */}
+        <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none lg:hidden">
+          <div className="absolute top-[-10%] right-[-10%] h-[400px] w-[400px] rounded-full bg-emerald-500/10 blur-[80px] opacity-30" />
+          <div className="absolute bottom-[-10%] left-[-10%] h-[300px] w-[300px] rounded-full bg-teal-500/10 blur-[80px] opacity-20" />
+        </div>
+
+        <div className="w-full max-w-[400px] space-y-6 relative z-10">
+          {/* Logo only visible on mobile */}
+          <div className="flex flex-col items-center gap-2 mb-8 lg:hidden">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500/20 to-emerald-900/20 border border-emerald-500/20 backdrop-blur-sm">
+              <span className="text-2xl font-bold text-emerald-400 font-serif">P</span>
+            </div>
+            <span className="text-xl font-medium tracking-tight text-white font-serif">
+              Portfolios Tracker
+            </span>
+          </div>
+
           {children}
-        </motion.div>
 
-        {/* Footer */}
-        <motion.footer
-          {...fadeVariants}
-          transition={prefersReducedMotion ? { duration: 0 } : { delay: 0.4, duration: 0.5 }}
-          className="mt-8 text-center text-xs text-muted-foreground"
-        >
-          © {new Date().getFullYear()} Portfolios Tracker. All rights reserved.
-        </motion.footer>
+          <div className="text-center text-xs text-zinc-500 pt-4">
+            © {new Date().getFullYear()} Portfolios Tracker. All rights reserved.
+          </div>
+        </div>
       </main>
     </div>
   );
