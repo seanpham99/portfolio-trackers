@@ -25,9 +25,7 @@ interface PortfolioHistoryChartProps {
   portfolioId?: string;
 }
 
-export function PortfolioHistoryChart({
-  portfolioId,
-}: PortfolioHistoryChartProps) {
+export function PortfolioHistoryChart({ portfolioId }: PortfolioHistoryChartProps) {
   // Generate unique gradient ID to avoid conflicts when multiple charts are rendered
   const gradientId = `colorValue-${portfolioId || "default"}`;
 
@@ -35,21 +33,15 @@ export function PortfolioHistoryChart({
     <div className="h-[400px] w-full rounded-xl border border-white/5 bg-zinc-900/50 p-6">
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h3 className="font-serif text-lg font-light text-white">
-            Net Worth History
-          </h3>
-          <p className="text-sm text-zinc-500">
-            Placeholder data - real history coming soon
-          </p>
+          <h3 className="font-serif text-lg font-light text-white">Net Worth History</h3>
+          <p className="text-sm text-zinc-500">Placeholder data - real history coming soon</p>
         </div>
         <div className="flex gap-2">
           {["1D", "1W", "1M", "3M", "1Y", "ALL"].map((range) => (
             <button
               key={range}
               className={`rounded-md px-3 py-1 text-xs font-medium transition-colors ${
-                range === "1Y"
-                  ? "bg-white/10 text-white"
-                  : "text-zinc-500 hover:text-white"
+                range === "1Y" ? "bg-white/10 text-white" : "text-zinc-500 hover:text-white"
               }`}
             >
               {range}
@@ -67,11 +59,7 @@ export function PortfolioHistoryChart({
                 <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
               </linearGradient>
             </defs>
-            <CartesianGrid
-              strokeDasharray="3 3"
-              stroke="#27272a"
-              vertical={false}
-            />
+            <CartesianGrid strokeDasharray="3 3" stroke="#27272a" vertical={false} />
             <XAxis
               dataKey="date"
               stroke="#52525b"
@@ -93,10 +81,7 @@ export function PortfolioHistoryChart({
                 color: "#fff",
               }}
               itemStyle={{ color: "#fff" }}
-              formatter={(value: number) => [
-                `$${value.toLocaleString()}`,
-                "Net Worth",
-              ]}
+              formatter={(value: number) => [`$${value.toLocaleString()}`, "Net Worth"]}
             />
             <Area
               type="monotone"

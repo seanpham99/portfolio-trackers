@@ -13,16 +13,12 @@ import {
 } from "@workspace/ui/components/card";
 import { Button } from "@workspace/ui/components/button";
 import { Badge } from "@workspace/ui/components/badge";
-import {
-  ExchangeId,
-  ConnectionStatus,
-  type ConnectionDto,
-} from "@workspace/shared-types/api";
+import { ExchangeId, ConnectionStatus, type ConnectionDto } from "@workspace/shared-types/api";
 import { cn } from "@workspace/ui/lib/utils";
 
 // Exchange logos as simple SVG icons
 const EXCHANGE_LOGOS: Record<ExchangeId, React.ReactNode> = {
-  [ExchangeId.BINANCE]: (
+  [ExchangeId.binance]: (
     <svg viewBox="0 0 126.61 126.61" className="h-8 w-8">
       <g fill="currentColor">
         <polygon points="38.17 53.54 63.3 28.41 88.44 53.54 103.44 38.54 63.3 -1.6 23.17 38.54 38.17 53.54" />
@@ -33,7 +29,7 @@ const EXCHANGE_LOGOS: Record<ExchangeId, React.ReactNode> = {
       </g>
     </svg>
   ),
-  [ExchangeId.OKX]: (
+  [ExchangeId.okx]: (
     <svg viewBox="0 0 256 256" className="h-8 w-8">
       <g fill="currentColor">
         <rect x="0" y="0" width="76" height="76" rx="4" />
@@ -50,15 +46,13 @@ const EXCHANGE_LOGOS: Record<ExchangeId, React.ReactNode> = {
 };
 
 const EXCHANGE_NAMES: Record<ExchangeId, string> = {
-  [ExchangeId.BINANCE]: "Binance",
-  [ExchangeId.OKX]: "OKX",
+  [ExchangeId.binance]: "Binance",
+  [ExchangeId.okx]: "OKX",
 };
 
 const EXCHANGE_DESCRIPTIONS: Record<ExchangeId, string> = {
-  [ExchangeId.BINANCE]:
-    "Connect your Binance account to automatically sync spot balances.",
-  [ExchangeId.OKX]:
-    "Connect your OKX account to automatically sync spot balances.",
+  [ExchangeId.binance]: "Connect your Binance account to automatically sync spot balances.",
+  [ExchangeId.okx]: "Connect your OKX account to automatically sync spot balances.",
 };
 
 interface IntegrationCardProps {
@@ -77,20 +71,18 @@ export function IntegrationCard({
   isLoading = false,
 }: IntegrationCardProps) {
   const isConnected = !!connection;
-  const status = connection?.status ?? ConnectionStatus.DISCONNECTED;
+  const status = connection?.status ?? ConnectionStatus.disconnected;
 
   const statusColors: Record<ConnectionStatus, string> = {
-    [ConnectionStatus.ACTIVE]:
-      "bg-green-500/10 text-green-500 border-green-500/20",
-    [ConnectionStatus.INVALID]: "bg-red-500/10 text-red-500 border-red-500/20",
-    [ConnectionStatus.DISCONNECTED]:
-      "bg-muted text-muted-foreground border-muted",
+    [ConnectionStatus.active]: "bg-green-500/10 text-green-500 border-green-500/20",
+    [ConnectionStatus.invalid]: "bg-red-500/10 text-red-500 border-red-500/20",
+    [ConnectionStatus.disconnected]: "bg-muted text-muted-foreground border-muted",
   };
 
   const statusLabels: Record<ConnectionStatus, string> = {
-    [ConnectionStatus.ACTIVE]: "Connected",
-    [ConnectionStatus.INVALID]: "Error",
-    [ConnectionStatus.DISCONNECTED]: "Not Connected",
+    [ConnectionStatus.active]: "Connected",
+    [ConnectionStatus.invalid]: "Error",
+    [ConnectionStatus.disconnected]: "Not Connected",
   };
 
   return (
@@ -100,31 +92,21 @@ export function IntegrationCard({
           {EXCHANGE_LOGOS[exchange]}
         </div>
         <div className="flex-1">
-          <CardTitle className="text-lg text-white">
-            {EXCHANGE_NAMES[exchange]}
-          </CardTitle>
+          <CardTitle className="text-lg text-white">{EXCHANGE_NAMES[exchange]}</CardTitle>
           <CardDescription className="text-sm text-zinc-400">
             {EXCHANGE_DESCRIPTIONS[exchange]}
           </CardDescription>
         </div>
-        <Badge
-          variant="outline"
-          className={cn("capitalize", statusColors[status])}
-        >
+        <Badge variant="outline" className={cn("capitalize", statusColors[status])}>
           {statusLabels[status]}
         </Badge>
       </CardHeader>
       <CardContent className="pt-2">
         {isConnected && (
           <div className="mb-3 space-y-1 text-xs text-zinc-500">
-            {connection.apiKeyMasked && (
-              <p>API Key: {connection.apiKeyMasked}</p>
-            )}
+            {connection.apiKeyMasked && <p>API Key: {connection.apiKeyMasked}</p>}
             {connection.lastSyncedAt && (
-              <p>
-                Last synced:{" "}
-                {new Date(connection.lastSyncedAt).toLocaleString()}
-              </p>
+              <p>Last synced: {new Date(connection.lastSyncedAt).toLocaleString()}</p>
             )}
           </div>
         )}

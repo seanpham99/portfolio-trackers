@@ -27,10 +27,9 @@ describe("usePerformanceData", () => {
       isError: false,
     } as any);
 
-    const { result } = renderHook(
-      () => usePerformanceData("portfolio-1", "1M"),
-      { wrapper: AllTheProviders },
-    );
+    const { result } = renderHook(() => usePerformanceData("portfolio-1", "1M"), {
+      wrapper: AllTheProviders,
+    });
 
     await waitFor(() => {
       expect(result.current.data).toBeDefined();
@@ -58,10 +57,9 @@ describe("usePerformanceData", () => {
       isError: false,
     } as any);
 
-    const { result } = renderHook(
-      () => usePerformanceData("portfolio-1", "3M"),
-      { wrapper: AllTheProviders },
-    );
+    const { result } = renderHook(() => usePerformanceData("portfolio-1", "3M"), {
+      wrapper: AllTheProviders,
+    });
 
     await waitFor(() => {
       expect(result.current.data).toBeDefined();
@@ -77,10 +75,9 @@ describe("usePerformanceData", () => {
       isError: false,
     } as any);
 
-    const { result } = renderHook(
-      () => usePerformanceData("portfolio-1", "1M"),
-      { wrapper: AllTheProviders },
-    );
+    const { result } = renderHook(() => usePerformanceData("portfolio-1", "1M"), {
+      wrapper: AllTheProviders,
+    });
 
     expect(result.current.data).toBeUndefined();
   });
@@ -97,10 +94,9 @@ describe("usePerformanceData", () => {
       isError: false,
     } as any);
 
-    const { result } = renderHook(
-      () => usePerformanceData("portfolio-1", "1M"),
-      { wrapper: AllTheProviders },
-    );
+    const { result } = renderHook(() => usePerformanceData("portfolio-1", "1M"), {
+      wrapper: AllTheProviders,
+    });
 
     await waitFor(() => {
       expect(result.current.data).toBeDefined();
@@ -133,10 +129,9 @@ describe("usePerformanceData", () => {
       isError: false,
     } as any);
 
-    const { result } = renderHook(
-      () => usePerformanceData("portfolio-1", "1M"),
-      { wrapper: AllTheProviders },
-    );
+    const { result } = renderHook(() => usePerformanceData("portfolio-1", "1M"), {
+      wrapper: AllTheProviders,
+    });
 
     await waitFor(() => {
       expect(result.current.data).toBeDefined();
@@ -178,10 +173,9 @@ describe("usePerformanceData", () => {
     ];
 
     for (const [range, expectedLength] of timeRanges) {
-      const { result } = renderHook(
-        () => usePerformanceData("portfolio-1", range),
-        { wrapper: AllTheProviders },
-      );
+      const { result } = renderHook(() => usePerformanceData("portfolio-1", range), {
+        wrapper: AllTheProviders,
+      });
 
       await waitFor(() => {
         expect(result.current.data).toBeDefined();

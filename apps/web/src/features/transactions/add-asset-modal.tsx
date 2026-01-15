@@ -6,10 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Loader2, Plus, Search, ChevronLeft } from "lucide-react";
 import { Button } from "@workspace/ui/components/button";
-import {
-  useSearchAssets,
-  useAddTransaction,
-} from "@/features/portfolio/hooks/use-portfolios";
+import { useSearchAssets, useAddTransaction } from "@/features/portfolio/hooks/use-portfolios";
 import { usePopularAssets } from "@/api/hooks/use-popular-assets";
 import { TransactionType } from "@workspace/shared-types/api";
 import {
@@ -32,24 +29,15 @@ interface AddAssetModalProps {
 }
 
 const addAssetSchema = z.object({
-  quantity: z
-    .string()
-    .refine((val) => !isNaN(Number(val)) && Number(val) > 0, "Ctq > 0"),
-  pricePerUnit: z
-    .string()
-    .refine((val) => !isNaN(Number(val)) && Number(val) > 0, "Price > 0"),
+  quantity: z.string().refine((val) => !isNaN(Number(val)) && Number(val) > 0, "Ctq > 0"),
+  pricePerUnit: z.string().refine((val) => !isNaN(Number(val)) && Number(val) > 0, "Price > 0"),
 });
 
 type AddAssetFormValues = z.infer<typeof addAssetSchema>;
 
 // --- Main Component ---
 
-export function AddAssetModal({
-  isOpen,
-  onClose,
-  stageId,
-  portfolioId,
-}: AddAssetModalProps) {
+export function AddAssetModal({ isOpen, onClose, stageId, portfolioId }: AddAssetModalProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedAsset, setSelectedAsset] = useState<any | null>(null);
 
@@ -65,10 +53,8 @@ export function AddAssetModal({
   const totalValue = Number(qty || 0) * Number(price || 0);
 
   // Hooks
-  const { data: searchResults = [], isLoading: isSearching } =
-    useSearchAssets(searchQuery);
-  const { data: popularAssets = [], isLoading: isLoadingPopular } =
-    usePopularAssets();
+  const { data: searchResults = [], isLoading: isSearching } = useSearchAssets(searchQuery);
+  const { data: popularAssets = [], isLoading: isLoadingPopular } = usePopularAssets();
   const addTransaction = useAddTransaction(portfolioId);
 
   // Filter assets - show popular when not searching, search results when user types
@@ -178,9 +164,7 @@ export function AddAssetModal({
                           )}
                         </div>
                         <div className="flex-1 text-left">
-                          <p className="font-medium text-foreground">
-                            {asset.name}
-                          </p>
+                          <p className="font-medium text-foreground">{asset.name}</p>
                           <p className="text-xs text-muted-foreground">
                             {asset.name_en || asset.name}
                           </p>
@@ -195,8 +179,8 @@ export function AddAssetModal({
                       No assets found for &quot;{searchQuery}&quot;
                     </p>
                     <p className="mt-2 text-xs text-zinc-600">
-                      Try a different search term or contact support to request
-                      tracking for a new asset.
+                      Try a different search term or contact support to request tracking for a new
+                      asset.
                     </p>
                   </div>
                 )}
@@ -207,19 +191,13 @@ export function AddAssetModal({
             <div className="space-y-6">
               {/* Removed the asset info card that had the Change button as it's now in header */}
 
-              <form
-                onSubmit={addForm.handleSubmit(handleAddAsset)}
-                className="space-y-4"
-              >
+              <form onSubmit={addForm.handleSubmit(handleAddAsset)} className="space-y-4">
                 <Controller
                   control={addForm.control}
                   name="quantity"
                   render={({ field, fieldState }) => (
                     <Field data-invalid={fieldState.invalid}>
-                      <FieldLabel
-                        htmlFor={field.name}
-                        className="text-zinc-400 font-normal"
-                      >
+                      <FieldLabel htmlFor={field.name} className="text-zinc-400 font-normal">
                         Quantity
                       </FieldLabel>
                       <Input
@@ -230,9 +208,7 @@ export function AddAssetModal({
                         placeholder="0.00"
                         aria-invalid={fieldState.invalid}
                       />
-                      {fieldState.invalid && (
-                        <FieldError errors={[fieldState.error]} />
-                      )}
+                      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                     </Field>
                   )}
                 />
@@ -241,10 +217,7 @@ export function AddAssetModal({
                   name="pricePerUnit"
                   render={({ field, fieldState }) => (
                     <Field data-invalid={fieldState.invalid}>
-                      <FieldLabel
-                        htmlFor={field.name}
-                        className="text-zinc-400 font-normal"
-                      >
+                      <FieldLabel htmlFor={field.name} className="text-zinc-400 font-normal">
                         Price per unit ($)
                       </FieldLabel>
                       <Input
@@ -255,9 +228,7 @@ export function AddAssetModal({
                         placeholder="0.00"
                         aria-invalid={fieldState.invalid}
                       />
-                      {fieldState.invalid && (
-                        <FieldError errors={[fieldState.error]} />
-                      )}
+                      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                     </Field>
                   )}
                 />
@@ -276,9 +247,7 @@ export function AddAssetModal({
 
                 <Button
                   type="submit"
-                  disabled={
-                    !addForm.formState.isValid || addTransaction.isPending
-                  }
+                  disabled={!addForm.formState.isValid || addTransaction.isPending}
                   className="w-full bg-emerald-600 hover:bg-emerald-500 text-white py-6 text-lg"
                 >
                   {addTransaction.isPending ? (

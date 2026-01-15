@@ -6,9 +6,7 @@ import { apiFetch } from "@/lib/api";
 vi.mock("@/lib/api", () => ({
   apiFetch: vi.fn(),
   getApiUrl: vi.fn().mockReturnValue("http://localhost:3000"),
-  getAuthHeaders: vi
-    .fn()
-    .mockResolvedValue({ Authorization: "Bearer test-token" }),
+  getAuthHeaders: vi.fn().mockResolvedValue({ Authorization: "Bearer test-token" }),
 }));
 
 describe("API Client", () => {
@@ -18,9 +16,7 @@ describe("API Client", () => {
 
   describe("getPortfolios", () => {
     it("should fetch portfolios from /portfolios", async () => {
-      const mockPortfolios = [
-        { id: "1", name: "Main", netWorth: 1000, change24h: 50 },
-      ];
+      const mockPortfolios = [{ id: "1", name: "Main", netWorth: 1000, change24h: 50 }];
       (apiFetch as any).mockResolvedValue({
         ok: true,
         json: async () => mockPortfolios,
@@ -44,9 +40,7 @@ describe("API Client", () => {
 
       const result = await client.getPortfolioHoldings(portfolioId);
 
-      expect(apiFetch).toHaveBeenCalledWith(
-        `/portfolios/${portfolioId}/holdings`,
-      );
+      expect(apiFetch).toHaveBeenCalledWith(`/portfolios/${portfolioId}/holdings`);
       expect(result).toEqual(mockHoldings);
     });
   });

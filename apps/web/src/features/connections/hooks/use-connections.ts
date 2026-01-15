@@ -35,7 +35,7 @@ export const useValidateConnection = () => {
     mutationFn: (data: CreateConnectionDto) => validateConnection(data),
     onError: (error: Error) => {
       // Validation errors are handled in the UI usually, but toast here just in case
-      // toast.error(error.message); 
+      // toast.error(error.message);
       // We might not want to toast on validation failure if it's just a form check
     },
   });

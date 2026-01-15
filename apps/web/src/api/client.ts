@@ -35,9 +35,7 @@ export async function getPortfolio(id: string): Promise<PortfolioSummaryDto> {
 /**
  * Fetch holdings for a specific portfolio
  */
-export async function getPortfolioHoldings(
-  portfolioId: string,
-): Promise<HoldingDto[]> {
+export async function getPortfolioHoldings(portfolioId: string): Promise<HoldingDto[]> {
   const response = await apiFetch(`/portfolios/${portfolioId}/holdings`);
   if (!response.ok) {
     throw new Error("Failed to fetch portfolio holdings");
@@ -61,11 +59,9 @@ export async function getAllHoldings(): Promise<HoldingDto[]> {
  */
 export async function getAssetDetails(
   portfolioId: string,
-  symbol: string,
+  symbol: string
 ): Promise<AssetDetailsResponseDto> {
-  const response = await apiFetch(
-    `/portfolios/${portfolioId}/assets/${symbol}/details`,
-  );
+  const response = await apiFetch(`/portfolios/${portfolioId}/assets/${symbol}/details`);
   if (!response.ok) {
     throw new Error(`Failed to fetch asset details for ${symbol}`);
   }
@@ -75,9 +71,7 @@ export async function getAssetDetails(
  * Search for assets by symbol or name
  */
 export async function searchAssets(query: string): Promise<any[]> {
-  const response = await apiFetch(
-    `/assets/search?q=${encodeURIComponent(query)}`,
-  );
+  const response = await apiFetch(`/assets/search?q=${encodeURIComponent(query)}`);
   if (!response.ok) {
     throw new Error("Failed to search assets");
   }
@@ -87,10 +81,7 @@ export async function searchAssets(query: string): Promise<any[]> {
 /**
  * Add a transaction to a portfolio
  */
-export async function addTransaction(
-  portfolioId: string,
-  transaction: any,
-): Promise<any> {
+export async function addTransaction(portfolioId: string, transaction: any): Promise<any> {
   const response = await apiFetch(`/portfolios/${portfolioId}/transactions`, {
     method: "POST",
     body: JSON.stringify(transaction),
@@ -118,9 +109,7 @@ export async function getConnections(): Promise<ConnectionDto[]> {
 /**
  * Create a new connection
  */
-export async function createConnection(
-  data: CreateConnectionDto,
-): Promise<ConnectionDto> {
+export async function createConnection(data: CreateConnectionDto): Promise<ConnectionDto> {
   const response = await apiFetch("/connections", {
     method: "POST",
     body: JSON.stringify(data),
@@ -135,9 +124,7 @@ export async function createConnection(
 /**
  * Validate connection credentials (dry-run)
  */
-export async function validateConnection(
-  data: CreateConnectionDto,
-): Promise<ValidationResultDto> {
+export async function validateConnection(data: CreateConnectionDto): Promise<ValidationResultDto> {
   const response = await apiFetch("/connections/validate", {
     method: "POST",
     body: JSON.stringify(data),

@@ -48,10 +48,7 @@ export function DashboardClient() {
               </EmptyDescription>
             </EmptyHeader>
             <EmptyContent>
-              <Button
-                className="w-full sm:w-auto"
-                onClick={() => setIsCreateModalOpen(true)}
-              >
+              <Button className="w-full sm:w-auto" onClick={() => setIsCreateModalOpen(true)}>
                 <Plus className="mr-2 h-4 w-4" /> Create Portfolio
               </Button>
             </EmptyContent>

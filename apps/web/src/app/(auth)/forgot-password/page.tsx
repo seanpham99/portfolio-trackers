@@ -25,7 +25,11 @@ export default function ForgotPasswordPage() {
     : { initial: { opacity: 0, scale: 0.95 }, animate: { opacity: 1, scale: 1 } };
 
   return (
-    <motion.div {...cardVariants} transition={{ duration: prefersReducedMotion ? 0 : 0.4 }} className="w-full">
+    <motion.div
+      {...cardVariants}
+      transition={{ duration: prefersReducedMotion ? 0 : 0.4 }}
+      className="w-full"
+    >
       <Card className="glass-card overflow-hidden">
         <CardHeader className="space-y-1 pb-6 pt-8 text-center">
           <CardTitle className="font-serif text-2xl font-light text-foreground tracking-tight">
@@ -56,7 +60,10 @@ export default function ForgotPasswordPage() {
             </div>
 
             {state?.error && (
-              <div role="alert" className="rounded-md bg-rose-500/10 border border-rose-500/20 px-3 py-2 text-sm text-rose-400">
+              <div
+                role="alert"
+                className="rounded-md bg-rose-500/10 border border-rose-500/20 px-3 py-2 text-sm text-rose-400"
+              >
                 {state.error}
               </div>
             )}
@@ -71,7 +78,10 @@ export default function ForgotPasswordPage() {
           </form>
 
           <div className="mt-6 text-center">
-            <Link href="/login" className="text-sm text-muted-foreground hover:text-emerald-400 inline-flex items-center">
+            <Link
+              href="/login"
+              className="text-sm text-muted-foreground hover:text-emerald-400 inline-flex items-center"
+            >
               <ArrowLeft className="mr-2 h-4 w-4" /> Back to login
             </Link>
           </div>

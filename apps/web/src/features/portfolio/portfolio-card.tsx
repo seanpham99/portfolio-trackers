@@ -53,7 +53,7 @@ export function PortfolioCard({ portfolio }: PortfolioCardProps) {
             <div
               className={cn(
                 "flex items-center text-xs font-medium",
-                isPositive ? "text-emerald-500" : "text-red-500",
+                isPositive ? "text-emerald-500" : "text-red-500"
               )}
             >
               {isPositive ? (
@@ -66,11 +66,7 @@ export function PortfolioCard({ portfolio }: PortfolioCardProps) {
             </div>
             <div className="text-xs text-zinc-500">
               ({isPositive ? "+" : ""}
-              {formatCurrency(
-                portfolio.change24h,
-                portfolio.base_currency,
-              )}{" "}
-              today)
+              {formatCurrency(portfolio.change24h, portfolio.base_currency)} today)
             </div>
           </div>
 

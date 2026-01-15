@@ -39,13 +39,18 @@ export function usePerformanceData(portfolioId: string, timeRange: TimeRange) {
     queryFn: (): PerformanceData => {
       const currentValue = portfolio?.netWorth || 0;
       const days = getTimeRangeDays(timeRange);
-      const dataPoints = generateMockPerformanceData(currentValue, days);
+      const dataPoints = generateMockPerformanceData(currentValue, days).map(
+        (point, index, array) => ({
+          date: new Date(point.date),
+          value: point.value,
+          changeFromPrevious: index > 0 ? point.value - array[index - 1].value : 0,
+        })
+      );
 
       // Calculate metrics
       const startValue = dataPoints[0]?.value || 0;
       const totalChange = currentValue - startValue;
-      const percentageChange =
-        startValue > 0 ? (totalChange / startValue) * 100 : 0;
+      const percentageChange = startValue > 0 ? (totalChange / startValue) * 100 : 0;
 
       return {
         dataPoints,

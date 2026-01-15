@@ -14,7 +14,7 @@ import {
   EmptyDescription,
   EmptyMedia,
 } from "@workspace/ui/components/empty";
-import Link from "next/navigation";
+import Link from "next/link";
 
 interface PerformanceDashboardProps {
   portfolioId: string;
@@ -26,10 +26,7 @@ function PerformanceChartSkeleton() {
     <div className="space-y-6">
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         {[1, 2, 3].map((i) => (
-          <div
-            key={i}
-            className="h-32 animate-pulse rounded-xl bg-zinc-900/50"
-          />
+          <div key={i} className="h-32 animate-pulse rounded-xl bg-zinc-900/50" />
         ))}
       </div>
       <div className="h-100 animate-pulse rounded-xl bg-zinc-900/50" />
@@ -43,8 +40,7 @@ function ErrorCard({ onRetry }: { onRetry: () => void }) {
       <EmptyHeader>
         <EmptyTitle>Failed to load performance data</EmptyTitle>
         <EmptyDescription>
-          There was an error loading your portfolio performance. Please try
-          again.
+          There was an error loading your portfolio performance. Please try again.
         </EmptyDescription>
       </EmptyHeader>
       <div className="mt-6 flex justify-center">
@@ -56,15 +52,12 @@ function ErrorCard({ onRetry }: { onRetry: () => void }) {
   );
 }
 
-export function PerformanceDashboard({
-  portfolioId,
-  onAddAsset,
-}: PerformanceDashboardProps) {
+export function PerformanceDashboard({ portfolioId, onAddAsset }: PerformanceDashboardProps) {
   const [timeRange, setTimeRange] = useState<TimeRange>("3M");
   const { data: portfolio } = usePortfolio(portfolioId);
   const { data, isLoading, isFetching, isError, refetch } = usePerformanceData(
     portfolioId,
-    timeRange,
+    timeRange
   );
 
   // Check if portfolio has any holdings
@@ -90,20 +83,16 @@ export function PerformanceDashboard({
           </EmptyMedia>
           <EmptyTitle>No performance data yet</EmptyTitle>
           <EmptyDescription>
-            Add your first transaction to start tracking your portfolio
-            performance over time.
+            Add your first transaction to start tracking your portfolio performance over time.
           </EmptyDescription>
         </EmptyHeader>
         <div className="mt-6 flex justify-center gap-3">
           {onAddAsset ? (
-            <Button
-              onClick={onAddAsset}
-              className="bg-emerald-600 hover:bg-emerald-500 text-white"
-            >
+            <Button onClick={onAddAsset} className="bg-emerald-600 hover:bg-emerald-500 text-white">
               <Plus className="mr-2 h-4 w-4" /> Add Transaction
             </Button>
           ) : (
-            <Link to={`/portfolio/${portfolioId}`}>
+            <Link href={`/portfolio/${portfolioId}`}>
               <Button className="bg-emerald-600 hover:bg-emerald-500 text-white">
                 <Plus className="mr-2 h-4 w-4" /> Add Transaction
               </Button>
@@ -123,12 +112,8 @@ export function PerformanceDashboard({
       {/* Header with Time Range Selector */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-semibold text-white tracking-tight">
-            Performance
-          </h2>
-          <p className="text-sm text-zinc-500">
-            Track your portfolio value over time
-          </p>
+          <h2 className="text-2xl font-semibold text-white tracking-tight">Performance</h2>
+          <p className="text-sm text-zinc-500">Track your portfolio value over time</p>
         </div>
         <div className="relative">
           <TimeRangeSelector value={timeRange} onChange={setTimeRange} />
@@ -147,10 +132,7 @@ export function PerformanceDashboard({
       />
 
       {/* Chart */}
-      <PerformanceChart
-        data={data.dataPoints}
-        currency={portfolio?.base_currency || "USD"}
-      />
+      <PerformanceChart data={data.dataPoints} currency={portfolio?.base_currency || "USD"} />
     </div>
   );
 }

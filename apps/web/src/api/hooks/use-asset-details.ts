@@ -13,10 +13,7 @@ export const useAssetDetails = (portfolioId: string, symbol: string) => {
     gcTime: 5 * 60 * 1000,
     initialData: () => {
       // Attempt to hydrate from the holdings cache
-      const holdings = queryClient.getQueryData<HoldingDto[]>([
-        "holdings",
-        portfolioId,
-      ]);
+      const holdings = queryClient.getQueryData<HoldingDto[]>(["holdings", portfolioId]);
       if (holdings) {
         const holding = holdings.find((h) => h.symbol === symbol);
         if (holding) {

@@ -10,8 +10,7 @@ function TradingViewWidget({ symbol }: { symbol: string }) {
     container.current.innerHTML = "";
 
     const script = document.createElement("script");
-    script.src =
-      "https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js";
+    script.src = "https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js";
     script.type = "text/javascript";
     script.async = true;
     const getTradingViewSymbol = () => {
@@ -45,12 +44,7 @@ function TradingViewWidget({ symbol }: { symbol: string }) {
     container.current.appendChild(script);
   }, [symbol]);
 
-  return (
-    <div
-      className="tradingview-widget-container h-full w-full"
-      ref={container}
-    />
-  );
+  return <div className="tradingview-widget-container h-full w-full" ref={container} />;
 }
 
 export default memo(TradingViewWidget);

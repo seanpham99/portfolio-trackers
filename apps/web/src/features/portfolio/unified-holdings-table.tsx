@@ -19,11 +19,7 @@ import {
 import Link from "next/link";
 import { useHoldings } from "@/features/portfolio/hooks/use-holdings";
 import { HoldingDto as Holding, CalculationMethod } from "@workspace/shared-types/api";
-import {
-  HoverCard,
-  HoverCardTrigger,
-  HoverCardContent,
-} from "@workspace/ui/components/hover-card";
+import { HoverCard, HoverCardTrigger, HoverCardContent } from "@workspace/ui/components/hover-card";
 import {
   Empty,
   EmptyHeader,
@@ -41,15 +37,8 @@ interface UnifiedHoldingsTableProps {
   onAddAsset?: () => void;
 }
 
-export function UnifiedHoldingsTable({
-  portfolioId,
-  onAddAsset,
-}: UnifiedHoldingsTableProps) {
-  const {
-    data: allHoldings = [],
-    isLoading,
-    isError,
-  } = useHoldings(portfolioId);
+export function UnifiedHoldingsTable({ portfolioId, onAddAsset }: UnifiedHoldingsTableProps) {
+  const { data: allHoldings = [], isLoading, isError } = useHoldings(portfolioId);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [filter, setFilter] = useState<"ALL" | "VN" | "US" | "CRYPTO">("ALL");
 
@@ -60,22 +49,15 @@ export function UnifiedHoldingsTable({
       const market = (h.market || "").toUpperCase();
 
       if (filter === "VN") return market === "VN" || type.includes("stock");
-      if (filter === "US")
-        return (
-          market === "US" || type.includes("us") || type.includes("equity")
-        );
-      if (filter === "CRYPTO")
-        return market === "CRYPTO" || type.includes("crypto");
+      if (filter === "US") return market === "US" || type.includes("us") || type.includes("equity");
+      if (filter === "CRYPTO") return market === "CRYPTO" || type.includes("crypto");
       return true;
     });
   }, [allHoldings, filter]);
 
   // Methodology content helper
   const getMethodologyContent = (calculationMethod?: CalculationMethod) => {
-    const METHODOLOGY_CONTENT: Record<
-      CalculationMethod,
-      { title: string; formula: string }
-    > = {
+    const METHODOLOGY_CONTENT: Record<CalculationMethod, { title: string; formula: string }> = {
       [CalculationMethod.WEIGHTED_AVG]: {
         title: "Weighted Average Cost Basis",
         formula: "Avg Cost = Total Cost / Total Quantity",
@@ -105,9 +87,7 @@ export function UnifiedHoldingsTable({
               <div className="font-medium text-white group-hover:text-emerald-400 transition-colors">
                 {info.getValue()}
               </div>
-              <div className="text-xs text-zinc-500">
-                {info.row.original.name}
-              </div>
+              <div className="text-xs text-zinc-500">{info.row.original.name}</div>
             </div>
           </Link>
         ),
@@ -159,8 +139,7 @@ export function UnifiedHoldingsTable({
         header: () => <div className="text-right">24h Change</div>,
         cell: (info) => {
           const val = info.getValue();
-          if (val === undefined)
-            return <div className="text-right text-zinc-500">-</div>;
+          if (val === undefined) return <div className="text-right text-zinc-500">-</div>;
           return (
             <div
               className={`flex items-center justify-end gap-1 ${val >= 0 ? "text-emerald-400" : "text-rose-400"}`}
@@ -212,8 +191,7 @@ export function UnifiedHoldingsTable({
                 <div className="space-y-1.5">
                   <p className="text-xs font-medium">Cost Basis Calculation</p>
                   <p className="text-xs text-zinc-400">
-                    Hover over a row to see specific methodology and data source
-                    for that asset.
+                    Hover over a row to see specific methodology and data source for that asset.
                   </p>
                 </div>
               </HoverCardContent>
@@ -223,12 +201,9 @@ export function UnifiedHoldingsTable({
         cell: (info) => {
           const val = info.getValue();
           const holding = info.row.original;
-          const methodologyContent = getMethodologyContent(
-            holding.calculationMethod,
-          );
+          const methodologyContent = getMethodologyContent(holding.calculationMethod);
 
-          if (val === undefined)
-            return <div className="text-right text-zinc-500">-</div>;
+          if (val === undefined) return <div className="text-right text-zinc-500">-</div>;
 
           return (
             <div className="flex items-center justify-end gap-1.5">
@@ -255,9 +230,7 @@ export function UnifiedHoldingsTable({
                   <HoverCardContent side="left" className="max-w-xs">
                     <div className="space-y-2">
                       <div>
-                        <p className="text-xs font-medium text-white">
-                          {methodologyContent.title}
-                        </p>
+                        <p className="text-xs font-medium text-white">{methodologyContent.title}</p>
                         <p className="text-xs text-zinc-400 mt-1">
                           Formula: {methodologyContent.formula}
                         </p>
@@ -265,8 +238,7 @@ export function UnifiedHoldingsTable({
                       {holding.dataSource && (
                         <div className="pt-2 border-t border-white/10">
                           <p className="text-xs text-zinc-500">
-                            <span className="font-medium">Data Source:</span>{" "}
-                            {holding.dataSource}
+                            <span className="font-medium">Data Source:</span> {holding.dataSource}
                           </p>
                         </div>
                       )}
@@ -279,7 +251,7 @@ export function UnifiedHoldingsTable({
         },
       }),
     ],
-    [],
+    []
   );
 
   const table = useReactTable({
@@ -319,26 +291,16 @@ export function UnifiedHoldingsTable({
       {/* Filters (AC 5) */}
       <div className="flex items-center gap-2 border-b border-white/5 px-6 py-3 bg-white/2">
         <Filter className="w-3.5 h-3.5 text-zinc-500" />
-        <span className="text-xs font-medium text-zinc-500 mr-2">
-          Filter by:
-        </span>
+        <span className="text-xs font-medium text-zinc-500 mr-2">Filter by:</span>
         {(["ALL", "VN", "US", "CRYPTO"] as const).map((f) => (
           <button
             key={f}
             onClick={() => setFilter(f)}
             className={`px-2.5 py-1 text-xs font-medium rounded-full transition-colors ${
-              filter === f
-                ? "bg-white/10 text-white"
-                : "text-zinc-500 hover:text-zinc-300"
+              filter === f ? "bg-white/10 text-white" : "text-zinc-500 hover:text-zinc-300"
             }`}
           >
-            {f === "ALL"
-              ? "All Assets"
-              : f === "VN"
-                ? "🇻🇳 VN"
-                : f === "US"
-                  ? "🇺🇸 US"
-                  : "₿ Crypto"}
+            {f === "ALL" ? "All Assets" : f === "VN" ? "🇻🇳 VN" : f === "US" ? "🇺🇸 US" : "₿ Crypto"}
           </button>
         ))}
       </div>
@@ -347,20 +309,14 @@ export function UnifiedHoldingsTable({
         <table className="w-full text-left text-sm">
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
-              <tr
-                key={headerGroup.id}
-                className="border-b border-white/5 text-xs text-zinc-500"
-              >
+              <tr key={headerGroup.id} className="border-b border-white/5 text-xs text-zinc-500">
                 {headerGroup.headers.map((header) => (
                   <th
                     key={header.id}
                     className="px-6 py-3 font-medium cursor-pointer hover:text-zinc-300"
                     onClick={header.column.getToggleSortingHandler()}
                   >
-                    {flexRender(
-                      header.column.columnDef.header,
-                      header.getContext(),
-                    )}
+                    {flexRender(header.column.columnDef.header, header.getContext())}
                   </th>
                 ))}
               </tr>
@@ -385,27 +341,17 @@ export function UnifiedHoldingsTable({
                 <td colSpan={6} className="p-0">
                   <Empty className="py-12">
                     <EmptyHeader>
-                      <EmptyMedia
-                        variant="icon"
-                        className="bg-zinc-800 text-zinc-400"
-                      >
+                      <EmptyMedia variant="icon" className="bg-zinc-800 text-zinc-400">
                         <Briefcase className="h-5 w-5" />
                       </EmptyMedia>
-                      <EmptyTitle className="text-white">
-                        No holdings yet
-                      </EmptyTitle>
+                      <EmptyTitle className="text-white">No holdings yet</EmptyTitle>
                       <EmptyDescription>
-                        Start building your portfolio by adding your first
-                        transaction.
+                        Start building your portfolio by adding your first transaction.
                       </EmptyDescription>
                     </EmptyHeader>
                     <EmptyContent>
                       {onAddAsset ? (
-                        <Button
-                          size="sm"
-                          className="gap-1.5"
-                          onClick={onAddAsset}
-                        >
+                        <Button size="sm" className="gap-1.5" onClick={onAddAsset}>
                           <Plus className="h-4 w-4" />
                           Add Transaction
                         </Button>
@@ -423,16 +369,10 @@ export function UnifiedHoldingsTable({
               </tr>
             ) : (
               table.getRowModel().rows.map((row) => (
-                <tr
-                  key={row.id}
-                  className="group hover:bg-white/5 transition-colors"
-                >
+                <tr key={row.id} className="group hover:bg-white/5 transition-colors">
                   {row.getVisibleCells().map((cell) => (
                     <td key={cell.id} className="px-6 py-4">
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </td>
                   ))}
                 </tr>

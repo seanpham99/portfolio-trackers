@@ -5,15 +5,11 @@ export default function HistoryPage() {
         <h1 className="font-serif text-3xl font-light tracking-tight text-foreground">
           Transaction History
         </h1>
-        <p className="text-muted-foreground mt-2">
-          View all your portfolio transactions
-        </p>
+        <p className="text-muted-foreground mt-2">View all your portfolio transactions</p>
       </div>
 
       <div className="glass-card p-6 rounded-xl">
-        <p className="text-muted-foreground">
-          Transaction history will be displayed here.
-        </p>
+        <p className="text-muted-foreground">Transaction history will be displayed here.</p>
       </div>
     </div>
   );

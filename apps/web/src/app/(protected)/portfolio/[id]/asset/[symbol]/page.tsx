@@ -34,42 +34,30 @@ import {
   TableRow,
 } from "@workspace/ui/components/table";
 import { ScrollArea } from "@workspace/ui/components/scroll-area";
-import {
-  HoverCard,
-  HoverCardTrigger,
-  HoverCardContent,
-} from "@workspace/ui/components/hover-card";
+import { HoverCard, HoverCardTrigger, HoverCardContent } from "@workspace/ui/components/hover-card";
 import TradingViewWidget from "@/features/portfolio/trading-view-widget";
 
 export default function AssetDetailPage() {
   const params = useParams<{ id: string; symbol: string }>();
   const portfolioId = params.id;
   const symbol = params.symbol;
-  
+
   const { data: portfolio } = usePortfolio(portfolioId);
-  const {
-    data: assetData,
-    isLoading,
-    isError,
-  } = useAssetDetails(portfolioId, symbol);
+  const { data: assetData, isLoading, isError } = useAssetDetails(portfolioId, symbol);
 
   if (isLoading && !assetData) {
     return (
       <div className="flex h-full items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <div className="h-12 w-12 animate-spin rounded-full border-4 border-emerald-500 border-t-transparent" />
-          <p className="text-muted-foreground animate-pulse">
-            Loading asset details...
-          </p>
+          <p className="text-muted-foreground animate-pulse">Loading asset details...</p>
         </div>
       </div>
     );
   }
 
   if (isError || !assetData) {
-    const isNoTransactions = (isError as any)?.message?.includes(
-      "No transactions",
-    );
+    const isNoTransactions = (isError as any)?.message?.includes("No transactions");
     return (
       <div className="flex h-full flex-col items-center justify-center p-8 text-center">
         <div
@@ -104,8 +92,7 @@ export default function AssetDetailPage() {
     }).format(value);
   };
 
-  const isStale =
-    new Date().getTime() - new Date(details.last_updated).getTime() > 3600000;
+  const isStale = new Date().getTime() - new Date(details.last_updated).getTime() > 3600000;
 
   return (
     <div className="flex h-full flex-col bg-background">
@@ -122,16 +109,12 @@ export default function AssetDetailPage() {
               <BreadcrumbSeparator />
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link href={`/portfolio/${portfolioId}`}>
-                    {portfolio?.name || "Portfolio"}
-                  </Link>
+                  <Link href={`/portfolio/${portfolioId}`}>{portfolio?.name || "Portfolio"}</Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbPage className="text-emerald-400">
-                  {symbol}
-                </BreadcrumbPage>
+                <BreadcrumbPage className="text-emerald-400">{symbol}</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
@@ -198,11 +181,7 @@ export default function AssetDetailPage() {
               percentage={details.total_return_pct}
               type="dynamic"
             />
-            <StatCard
-              label="FX Gain"
-              value={formatCurrency(details.fx_gain)}
-              type="neutral"
-            />
+            <StatCard label="FX Gain" value={formatCurrency(details.fx_gain)} type="neutral" />
             <StatCard
               label="Realized P/L"
               value={formatCurrency(details.realized_pl || 0)}
@@ -217,8 +196,7 @@ export default function AssetDetailPage() {
               <div className="rounded-2xl border border-border bg-surface-elevated p-0 shadow-xl relative overflow-hidden h-[500px]">
                 <div className="flex items-center justify-between p-6 border-b border-border">
                   <h3 className="font-medium text-foreground flex items-center gap-2">
-                    <TrendingUp className="h-4 w-4 text-emerald-400" />{" "}
-                    Interactive Chart
+                    <TrendingUp className="h-4 w-4 text-emerald-400" /> Interactive Chart
                   </h3>
                 </div>
                 <div className="flex-1 w-full h-full pb-[60px]">
@@ -232,20 +210,14 @@ export default function AssetDetailPage() {
               <div className="rounded-2xl border border-border bg-surface-elevated p-0 shadow-xl overflow-hidden flex flex-col h-[500px]">
                 <div className="flex items-center gap-2 p-5 border-b border-border bg-overlay-light">
                   <History className="h-5 w-5 text-muted-foreground" />
-                  <h3 className="font-medium text-foreground">
-                    Recent Transactions
-                  </h3>
+                  <h3 className="font-medium text-foreground">Recent Transactions</h3>
                 </div>
                 <ScrollArea className="flex-1">
                   <Table>
                     <TableHeader className="bg-overlay-light">
                       <TableRow className="border-border hover:bg-transparent">
-                        <TableHead className="text-muted-foreground pl-5">
-                          Date
-                        </TableHead>
-                        <TableHead className="text-muted-foreground">
-                          Type
-                        </TableHead>
+                        <TableHead className="text-muted-foreground pl-5">Date</TableHead>
+                        <TableHead className="text-muted-foreground">Type</TableHead>
                         <TableHead className="text-muted-foreground text-right pr-5">
                           Amount
                         </TableHead>
@@ -293,8 +265,7 @@ export default function AssetDetailPage() {
                   href={`/portfolio/${portfolioId}/transactions`}
                   className="p-4 text-center text-xs font-medium text-muted-foreground hover:text-emerald-400 border-t border-border bg-overlay-light transition-colors"
                 >
-                  View full history{" "}
-                  <ChevronRight className="inline h-3 w-3 ml-1" />
+                  View full history <ChevronRight className="inline h-3 w-3 ml-1" />
                 </Link>
               </div>
             </div>
@@ -323,15 +294,11 @@ function StatCard({
   return (
     <div className="relative group rounded-2xl border border-white/5 bg-zinc-900/50 p-5 shadow-lg transition-all hover:bg-zinc-900/80 hover:border-white/10 overflow-hidden">
       <div className="flex items-center justify-between mb-2">
-        <p className="text-xs font-medium text-zinc-500 uppercase tracking-tight">
-          {label}
-        </p>
+        <p className="text-xs font-medium text-zinc-500 uppercase tracking-tight">{label}</p>
       </div>
 
       <div className="flex items-baseline gap-2">
-        <span className="text-2xl font-bold text-white tracking-tight">
-          {value}
-        </span>
+        <span className="text-2xl font-bold text-white tracking-tight">{value}</span>
       </div>
 
       {type === "dynamic" && percentage !== undefined && (
@@ -347,14 +314,10 @@ function StatCard({
         </div>
       )}
 
-      {subValue && (
-        <p className="mt-2 text-xs text-zinc-600 font-medium">{subValue}</p>
-      )}
+      {subValue && <p className="mt-2 text-xs text-zinc-600 font-medium">{subValue}</p>}
 
       {type === "neutral" && (
-        <p className="mt-2 text-xs text-zinc-600 font-medium italic">
-          Breakdown of FX impact
-        </p>
+        <p className="mt-2 text-xs text-zinc-600 font-medium italic">Breakdown of FX impact</p>
       )}
     </div>
   );

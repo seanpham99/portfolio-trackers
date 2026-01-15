@@ -2,11 +2,7 @@
 
 import { motion, useReducedMotion } from "framer-motion";
 
-export default function AuthLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function AuthLayout({ children }: { children: React.ReactNode }) {
   const prefersReducedMotion = useReducedMotion();
 
   // Reduced motion variants
@@ -36,39 +32,24 @@ export default function AuthLayout({
         {/* Animated Logo */}
         <motion.header
           {...logoVariants}
-          transition={
-            prefersReducedMotion
-              ? { duration: 0 }
-              : { duration: 0.5, ease: "easeOut" }
-          }
+          transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.5, ease: "easeOut" }}
           className="mb-8 flex flex-col items-center justify-center"
         >
           <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500/20 to-emerald-900/20 border border-border shadow-2xl shadow-emerald-900/20 backdrop-blur-sm">
-            <span
-              className="text-3xl font-bold text-emerald-400"
-              aria-hidden="true"
-            >
+            <span className="text-3xl font-bold text-emerald-400" aria-hidden="true">
               F
             </span>
           </div>
           <motion.h1
             {...fadeVariants}
-            transition={
-              prefersReducedMotion
-                ? { duration: 0 }
-                : { delay: 0.2, duration: 0.5 }
-            }
+            transition={prefersReducedMotion ? { duration: 0 } : { delay: 0.2, duration: 0.5 }}
             className="mt-4 font-serif text-3xl font-medium tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-white to-white/70"
           >
             Portfolios Tracker
           </motion.h1>
           <motion.p
             {...fadeVariants}
-            transition={
-              prefersReducedMotion
-                ? { duration: 0 }
-                : { delay: 0.3, duration: 0.5 }
-            }
+            transition={prefersReducedMotion ? { duration: 0 } : { delay: 0.3, duration: 0.5 }}
             className="mt-2 text-center text-sm text-muted-foreground"
           >
             Consolidated wealth. Calm mind.
@@ -78,11 +59,7 @@ export default function AuthLayout({
         {/* Auth page content */}
         <motion.div
           {...contentVariants}
-          transition={
-            prefersReducedMotion
-              ? { duration: 0 }
-              : { delay: 0.1, duration: 0.4 }
-          }
+          transition={prefersReducedMotion ? { duration: 0 } : { delay: 0.1, duration: 0.4 }}
         >
           {children}
         </motion.div>
@@ -90,11 +67,7 @@ export default function AuthLayout({
         {/* Footer */}
         <motion.footer
           {...fadeVariants}
-          transition={
-            prefersReducedMotion
-              ? { duration: 0 }
-              : { delay: 0.4, duration: 0.5 }
-          }
+          transition={prefersReducedMotion ? { duration: 0 } : { delay: 0.4, duration: 0.5 }}
           className="mt-8 text-center text-xs text-muted-foreground"
         >
           © {new Date().getFullYear()} Portfolios Tracker. All rights reserved.

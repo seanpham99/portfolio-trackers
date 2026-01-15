@@ -3,7 +3,10 @@ import { NotFoundException } from '@nestjs/common';
 import { PortfoliosController } from './portfolios.controller';
 import { PortfoliosService } from './portfolios.service';
 import { CreatePortfolioDto, UpdatePortfolioDto } from './dto';
-import { CreateTransactionDto, TransactionType } from '@workspace/shared-types/api';
+import {
+  CreateTransactionDto,
+  TransactionType,
+} from '@workspace/shared-types/api';
 import { Portfolio } from './portfolio.entity';
 import { AuthGuard } from './guards';
 

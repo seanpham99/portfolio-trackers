@@ -51,7 +51,6 @@ export class AuthGuard implements CanActivate {
         throw new UnauthorizedException('Invalid or expired token');
       }
 
-      
       console.log('AuthGuard: User authenticated:', user.id);
       // Attach user to request for downstream use
       request.user = user;

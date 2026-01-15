@@ -54,15 +54,9 @@ function CustomTooltip({
       <div className="mb-2 text-xs font-medium text-zinc-500">
         {format(data.date, "MMM dd, yyyy")}
       </div>
-      <div className="mb-1 text-sm font-semibold text-white">
-        {formatCurrency(data.value)}
-      </div>
+      <div className="mb-1 text-sm font-semibold text-white">{formatCurrency(data.value)}</div>
       {data.changeFromPrevious !== 0 && (
-        <div
-          className={`text-xs font-medium ${
-            isPositive ? "text-green-600" : "text-red-600"
-          }`}
-        >
+        <div className={`text-xs font-medium ${isPositive ? "text-green-600" : "text-red-600"}`}>
           {formatChange(data.changeFromPrevious)} from previous
         </div>
       )}
@@ -93,15 +87,10 @@ export function PerformanceChart({ data, currency }: PerformanceChartProps) {
       transition={{ duration: 0.3, ease: "easeOut" }}
       className="rounded-xl border border-white/6 bg-zinc-900/50 p-6"
     >
-      <h3 className="mb-4 text-lg font-semibold text-white">
-        Portfolio Performance
-      </h3>
+      <h3 className="mb-4 text-lg font-semibold text-white">Portfolio Performance</h3>
 
       <ResponsiveContainer width="100%" height={400}>
-        <LineChart
-          data={chartData}
-          aria-label="Portfolio performance over time"
-        >
+        <LineChart data={chartData} aria-label="Portfolio performance over time">
           <CartesianGrid strokeDasharray="3 3" stroke="#27272a" opacity={0.5} />
           <XAxis
             dataKey="timestamp"
@@ -118,9 +107,7 @@ export function PerformanceChart({ data, currency }: PerformanceChartProps) {
             width={80}
           />
           <Tooltip
-            content={(props) => (
-              <CustomTooltip {...props} currency={currency} />
-            )}
+            content={(props) => <CustomTooltip {...props} currency={currency} />}
             cursor={{ stroke: "#52525b", strokeWidth: 1 }}
           />
           <Line

@@ -80,9 +80,9 @@ describe("UnifiedHoldingsTable", () => {
     const chevronButtons = screen.queryAllByRole("button", {
       name: /methodology/i,
     });
-    expect(
-      chevronButtons.filter((btn) => btn.querySelector('svg[class*="rotate"]')),
-    ).toHaveLength(0);
+    expect(chevronButtons.filter((btn) => btn.querySelector('svg[class*="rotate"]'))).toHaveLength(
+      0
+    );
   });
 
   it("should render info icon for methodology tooltip", () => {
@@ -111,9 +111,7 @@ describe("UnifiedHoldingsTable", () => {
     expect(infoIcons.length).toBeGreaterThan(0);
 
     // Header tooltip should exist
-    const headerTooltip = screen.getByLabelText(
-      "View methodology for P/L calculation",
-    );
+    const headerTooltip = screen.getByLabelText("View methodology for P/L calculation");
     expect(headerTooltip).toBeInTheDocument();
 
     // Row tooltip should exist

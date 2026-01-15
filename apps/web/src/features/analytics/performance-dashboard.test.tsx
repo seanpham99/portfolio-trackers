@@ -86,9 +86,7 @@ describe("PerformanceDashboard", () => {
     });
 
     // Should show error message
-    expect(
-      screen.getByText(/Failed to load performance data/i),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/Failed to load performance data/i)).toBeInTheDocument();
 
     // Should have retry button
     const retryButton = screen.getByRole("button", { name: /retry/i });
@@ -120,14 +118,10 @@ describe("PerformanceDashboard", () => {
 
     // Should show empty state
     expect(screen.getByText(/No performance data yet/i)).toBeInTheDocument();
-    expect(
-      screen.getByText(/Add your first transaction to start tracking/i),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/Add your first transaction to start tracking/i)).toBeInTheDocument();
 
     // Should have Add Transaction button
-    expect(
-      screen.getByRole("button", { name: /Add Transaction/i }),
-    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Add Transaction/i })).toBeInTheDocument();
   });
 
   it("should display performance metrics correctly", () => {
@@ -246,15 +240,9 @@ describe("PerformanceDashboard", () => {
       refetch: vi.fn(),
     } as any);
 
-    render(
-      <PerformanceDashboard
-        portfolioId="portfolio-1"
-        onAddAsset={onAddAssetMock}
-      />,
-      {
-        wrapper: AllTheProviders,
-      },
-    );
+    render(<PerformanceDashboard portfolioId="portfolio-1" onAddAsset={onAddAssetMock} />, {
+      wrapper: AllTheProviders,
+    });
 
     const addButton = screen.getByRole("button", { name: /Add Transaction/i });
     await user.click(addButton);

@@ -20,9 +20,7 @@ export async function middleware(request: NextRequest) {
           return request.cookies.getAll();
         },
         setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value)
-          );
+          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
           supabaseResponse = NextResponse.next({
             request,
           });
@@ -43,9 +41,7 @@ export async function middleware(request: NextRequest) {
 
   // Protected routes - redirect to login if not authenticated
   const protectedPaths = ["/dashboard", "/portfolio", "/settings", "/history"];
-  const isProtectedPath = protectedPaths.some((path) =>
-    request.nextUrl.pathname.startsWith(path)
-  );
+  const isProtectedPath = protectedPaths.some((path) => request.nextUrl.pathname.startsWith(path));
 
   if (!user && isProtectedPath) {
     const url = request.nextUrl.clone();
@@ -55,9 +51,7 @@ export async function middleware(request: NextRequest) {
 
   // Redirect authenticated users away from auth pages
   const authPaths = ["/login", "/signup"];
-  const isAuthPath = authPaths.some(
-    (path) => request.nextUrl.pathname === path
-  );
+  const isAuthPath = authPaths.some((path) => request.nextUrl.pathname === path);
 
   if (user && isAuthPath) {
     const url = request.nextUrl.clone();

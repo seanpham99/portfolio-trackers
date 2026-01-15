@@ -23,7 +23,7 @@ describe("PortfolioCard", () => {
     render(
       <MemoryRouter>
         <PortfolioCard portfolio={mockPortfolio} />
-      </MemoryRouter>,
+      </MemoryRouter>
     );
 
     expect(screen.getByText("Growth Fund")).toBeInTheDocument();
@@ -36,7 +36,7 @@ describe("PortfolioCard", () => {
     render(
       <MemoryRouter>
         <PortfolioCard portfolio={mockPortfolio} />
-      </MemoryRouter>,
+      </MemoryRouter>
     );
 
     const link = screen.getByRole("link");

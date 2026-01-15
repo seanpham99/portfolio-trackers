@@ -59,11 +59,7 @@ export function PrivacyConsentModal({
       >
         <motion.div
           {...motionVariants}
-          transition={
-            prefersReducedMotion
-              ? { duration: 0 }
-              : { duration: 0.2, ease: "easeOut" }
-          }
+          transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.2, ease: "easeOut" }}
           className="flex flex-col"
         >
           <DialogHeader className="px-6 pt-8 pb-6 flex flex-col items-center text-center space-y-0">
@@ -76,47 +72,40 @@ export function PrivacyConsentModal({
               Privacy Matters
             </DialogTitle>
             <DialogDescription className="text-zinc-400 text-center text-balance leading-relaxed">
-              To provide you with secure, institutional-grade analytics, we
-              handle your data with the highest level of care.
+              To provide you with secure, institutional-grade analytics, we handle your data with
+              the highest level of care.
             </DialogDescription>
           </DialogHeader>
 
           <div className="px-6 pb-6 space-y-4 text-sm text-foreground">
             <div className="p-4 rounded-lg bg-overlay-light border border-border">
               <p className="leading-relaxed">
-                By continuing, you agree to our processing of your personal data
-                according to Vietnam&apos;s
-                <span className="text-emerald-400 font-medium">
-                  {" "}
-                  PDPL (2026)
-                </span>{" "}
-                and
-                <span className="text-emerald-400 font-medium"> GDPR</span>{" "}
-                standards.
+                By continuing, you agree to our processing of your personal data according to
+                Vietnam&apos;s
+                <span className="text-emerald-400 font-medium"> PDPL (2026)</span> and
+                <span className="text-emerald-400 font-medium"> GDPR</span> standards.
               </p>
             </div>
             <ul className="space-y-3">
               <li className="flex items-start gap-3">
                 <div className="mt-1.5 h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0" />
                 <span className="leading-relaxed">
-                  <span className="text-white font-medium">
-                    Data Minimization:
-                  </span>{" "}
-                  We only collect essential PII for portfolio tracking.
+                  <span className="text-white font-medium">Data Minimization:</span> We only collect
+                  essential PII for portfolio tracking.
                 </span>
               </li>
               <li className="flex items-start gap-3">
                 <div className="mt-1.5 h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0" />
                 <span className="leading-relaxed">
-                  <span className="text-white font-medium">Audit-Ready:</span>{" "}
-                  Your consent is logged using secure, anonymized metadata.
+                  <span className="text-white font-medium">Audit-Ready:</span> Your consent is
+                  logged using secure, anonymized metadata.
                 </span>
               </li>
               <li className="flex items-start gap-3">
                 <div className="mt-1.5 h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0" />
                 <span className="leading-relaxed">
-                  <span className="text-white font-medium">Your Rights:</span>{" "}
-                  You can export or delete your data at any time.
+                  <span className="text-white font-medium">Your Rights:</span> You can export or
+                  delete your data at any time.
                 </span>
               </li>
             </ul>
@@ -124,21 +113,13 @@ export function PrivacyConsentModal({
 
           <DialogFooter className="px-6 pb-6 pt-2 flex flex-col gap-3">
             <form onSubmit={handleSubmit} className="w-full">
-              <input
-                type="hidden"
-                name="consent_version"
-                value={currentVersion}
-              />
+              <input type="hidden" name="consent_version" value={currentVersion} />
               <Button
                 type="submit"
                 disabled={isPending}
                 className="w-full h-11 bg-emerald-600 hover:bg-emerald-500 text-white font-medium shadow-lg shadow-emerald-900/20 transition-colors"
               >
-                {isPending ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  "Accept and Continue"
-                )}
+                {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : "Accept and Continue"}
               </Button>
             </form>
             <Button

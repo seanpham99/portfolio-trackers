@@ -3,12 +3,7 @@
 import { ProfileForm } from "@/features/settings/components/profile-form";
 import { PreferenceForm } from "@/features/settings/components/preference-form";
 import { Separator } from "@workspace/ui/components/separator";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@workspace/ui/components/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@workspace/ui/components/tabs";
 
 export default function SettingsPage() {
   return (
@@ -20,19 +15,19 @@ export default function SettingsPage() {
         </p>
       </div>
       <Separator />
-      
+
       <Tabs defaultValue="profile" className="space-y-6">
         <TabsList>
           <TabsTrigger value="profile">Profile</TabsTrigger>
           <TabsTrigger value="preferences">Preferences</TabsTrigger>
         </TabsList>
-        
+
         <TabsContent value="profile" className="max-w-xl">
-           <ProfileForm />
+          <ProfileForm />
         </TabsContent>
-        
+
         <TabsContent value="preferences" className="max-w-xl">
-           <PreferenceForm />
+          <PreferenceForm />
         </TabsContent>
       </Tabs>
     </div>

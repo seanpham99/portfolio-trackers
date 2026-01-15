@@ -3,10 +3,7 @@ import { getApiUrl } from "@/lib/api";
 import { PortfolioSummaryDto } from "@workspace/shared-types/api";
 
 // Server-side apiFetch wrapper
-async function serverApiFetch(
-  endpoint: string,
-  options: RequestInit = {}
-): Promise<Response> {
+async function serverApiFetch(endpoint: string, options: RequestInit = {}): Promise<Response> {
   const supabase = await createClient();
   const {
     data: { session },

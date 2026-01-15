@@ -1,8 +1,4 @@
-
-import {
-  HydrationBoundary,
-  dehydrate,
-} from "@tanstack/react-query";
+import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
 import { getQueryClient } from "@/lib/get-query-client";
 import { getPortfolios } from "@/api/server";
 import { DashboardClient } from "./dashboard-client";

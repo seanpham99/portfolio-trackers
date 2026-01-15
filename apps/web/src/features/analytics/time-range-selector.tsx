@@ -16,7 +16,7 @@ const TIME_RANGES: { value: TimeRange; label: string }[] = [
 
 export function TimeRangeSelector({ value, onChange }: TimeRangeSelectorProps) {
   return (
-    <Tabs value={value} onValueChange={onChange}>
+    <Tabs value={value} onValueChange={(val) => onChange(val as TimeRange)}>
       <TabsList>
         {TIME_RANGES.map((range) => (
           <TabsTrigger key={range.value} value={range.value}>

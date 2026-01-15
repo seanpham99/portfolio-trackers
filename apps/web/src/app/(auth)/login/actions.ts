@@ -8,10 +8,7 @@ export type LoginState = {
   error: string | null;
 };
 
-export async function login(
-  prevState: LoginState,
-  formData: FormData
-): Promise<LoginState> {
+export async function login(prevState: LoginState, formData: FormData): Promise<LoginState> {
   const supabase = await createClient();
 
   const email = formData.get("email") as string;
@@ -52,10 +49,7 @@ export async function signInWithGoogle() {
   redirect("/login?error=Failed to initiate Google sign-in");
 }
 
-export async function signup(
-  prevState: LoginState,
-  formData: FormData
-): Promise<LoginState> {
+export async function signup(prevState: LoginState, formData: FormData): Promise<LoginState> {
   const supabase = await createClient();
   const headersList = await headers();
   const origin = headersList.get("origin") || "http://localhost:3001";

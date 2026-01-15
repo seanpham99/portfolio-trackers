@@ -31,7 +31,7 @@ type ProfileFormValues = z.infer<typeof profileFormSchema>;
 export function ProfileForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(true);
-  
+
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
     defaultValues: {
@@ -43,8 +43,10 @@ export function ProfileForm() {
   useEffect(() => {
     async function fetchUser() {
       const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
       if (user) {
         form.reset({
           email: user.email || "",
@@ -53,14 +55,14 @@ export function ProfileForm() {
       }
       setIsFetching(false);
     }
-    
+
     fetchUser();
   }, [form]);
 
   async function onSubmit(data: ProfileFormValues) {
     setIsLoading(true);
     const supabase = createClient();
-    
+
     // Update basic user metadata
     const { error } = await supabase.auth.updateUser({
       data: { full_name: data.full_name },
@@ -71,15 +73,17 @@ export function ProfileForm() {
     } else {
       toast.success("Profile updated successfully");
     }
-    
+
     setIsLoading(false);
   }
 
   if (isFetching) {
-    return <div className="space-y-4">
+    return (
+      <div className="space-y-4">
         <div className="h-10 w-full animate-pulse rounded-md bg-zinc-900" />
         <div className="h-10 w-full animate-pulse rounded-md bg-zinc-900" />
-    </div>;
+      </div>
+    );
   }
 
   return (
@@ -94,9 +98,7 @@ export function ProfileForm() {
               <FormControl>
                 <Input placeholder="email@example.com" {...field} disabled />
               </FormControl>
-              <FormDescription>
-                Your email address cannot be changed here.
-              </FormDescription>
+              <FormDescription>Your email address cannot be changed here.</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -110,9 +112,7 @@ export function ProfileForm() {
               <FormControl>
                 <Input placeholder="John Doe" {...field} />
               </FormControl>
-              <FormDescription>
-                This is your public display name.
-              </FormDescription>
+              <FormDescription>This is your public display name.</FormDescription>
               <FormMessage />
             </FormItem>
           )}

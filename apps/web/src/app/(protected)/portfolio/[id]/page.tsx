@@ -10,12 +10,7 @@ import { AllocationDonut } from "@/features/portfolio/allocation-donut";
 import { AddAssetModal } from "@/features/transactions/add-asset-modal";
 import { PerformanceDashboard } from "@/features/analytics/performance-dashboard";
 import { Button } from "@workspace/ui/components/button";
-import {
-  Tabs,
-  TabsList,
-  TabsTrigger,
-  TabsContent,
-} from "@workspace/ui/components/tabs";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@workspace/ui/components/tabs";
 import { ChevronLeft, AlertCircle, Plus } from "lucide-react";
 import {
   Empty,
@@ -57,8 +52,8 @@ export default function PortfolioDetailPage() {
             </EmptyMedia>
             <EmptyTitle>Portfolio not found</EmptyTitle>
             <EmptyDescription>
-              The portfolio you are looking for does not exist or you do not
-              have permission to view it.
+              The portfolio you are looking for does not exist or you do not have permission to view
+              it.
             </EmptyDescription>
           </EmptyHeader>
           <div className="mt-6 flex justify-center">
@@ -94,9 +89,7 @@ export default function PortfolioDetailPage() {
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbPage className="text-emerald-400">
-                  {portfolio.name}
-                </BreadcrumbPage>
+                <BreadcrumbPage className="text-emerald-400">{portfolio.name}</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
@@ -107,18 +100,14 @@ export default function PortfolioDetailPage() {
                 <h1 className="text-2xl font-semibold text-white tracking-tight">
                   {portfolio.name}
                 </h1>
-                <p className="text-sm text-zinc-500">
-                  {portfolio.description || "No description"}
-                </p>
+                <p className="text-sm text-zinc-500">{portfolio.description || "No description"}</p>
               </div>
             </div>
 
             <div className="flex items-center gap-6">
               {/* Summary Stats */}
               <div className="flex flex-col items-end">
-                <span className="mb-px text-xs font-medium text-zinc-500">
-                  Net Worth
-                </span>
+                <span className="mb-px text-xs font-medium text-zinc-500">Net Worth</span>
                 <span className="font-serif text-3xl font-light tracking-tight text-white">
                   {formatCurrency(portfolio.netWorth)}
                 </span>
@@ -158,25 +147,16 @@ export default function PortfolioDetailPage() {
 
               {/* Bottom Row: Holdings Table */}
               <div>
-                <UnifiedHoldingsTable
-                  portfolioId={id}
-                  onAddAsset={() => setIsAddAssetOpen(true)}
-                />
+                <UnifiedHoldingsTable portfolioId={id} onAddAsset={() => setIsAddAssetOpen(true)} />
               </div>
             </TabsContent>
 
             <TabsContent value="performance">
-              <PerformanceDashboard
-                portfolioId={id}
-                onAddAsset={() => setIsAddAssetOpen(true)}
-              />
+              <PerformanceDashboard portfolioId={id} onAddAsset={() => setIsAddAssetOpen(true)} />
             </TabsContent>
 
             <TabsContent value="holdings">
-              <UnifiedHoldingsTable
-                portfolioId={id}
-                onAddAsset={() => setIsAddAssetOpen(true)}
-              />
+              <UnifiedHoldingsTable portfolioId={id} onAddAsset={() => setIsAddAssetOpen(true)} />
             </TabsContent>
           </Tabs>
         </div>

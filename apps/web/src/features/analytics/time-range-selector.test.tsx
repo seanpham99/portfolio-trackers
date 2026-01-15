@@ -57,9 +57,7 @@ describe("TimeRangeSelector", () => {
 
   it("maintains theme consistency", () => {
     const onChange = vi.fn();
-    const { container } = render(
-      <TimeRangeSelector value="3M" onChange={onChange} />,
-    );
+    const { container } = render(<TimeRangeSelector value="3M" onChange={onChange} />);
 
     // shadcn Tabs should have proper TabsList container
     const tabsList = container.querySelector('[role="tablist"]');

@@ -25,8 +25,8 @@ import { ExchangeId } from "@workspace/shared-types/api";
 import { useValidateConnection, useCreateConnection } from "./use-connections";
 
 const EXCHANGE_NAMES: Record<ExchangeId, string> = {
-  [ExchangeId.BINANCE]: "Binance",
-  [ExchangeId.OKX]: "OKX",
+  [ExchangeId.binance]: "Binance",
+  [ExchangeId.okx]: "OKX",
 };
 
 const connectionSchema = z.object({
@@ -43,12 +43,7 @@ interface ConnectionModalProps {
   onSuccess?: () => void;
 }
 
-export function ConnectionModal({
-  exchange,
-  open,
-  onOpenChange,
-  onSuccess,
-}: ConnectionModalProps) {
+export function ConnectionModal({ exchange, open, onOpenChange, onSuccess }: ConnectionModalProps) {
   const [validationState, setValidationState] = useState<
     "idle" | "validating" | "valid" | "invalid"
   >("idle");
@@ -132,8 +127,7 @@ export function ConnectionModal({
             Connect {EXCHANGE_NAMES[exchange]}
           </DialogTitle>
           <DialogDescription>
-            Enter your read-only API credentials. We only need access to view
-            your balances.
+            Enter your read-only API credentials. We only need access to view your balances.
           </DialogDescription>
         </DialogHeader>
 
@@ -146,11 +140,7 @@ export function ConnectionModal({
               autoComplete="off"
               {...register("apiKey")}
             />
-            {errors.apiKey && (
-              <p className="text-sm text-destructive">
-                {errors.apiKey.message}
-              </p>
-            )}
+            {errors.apiKey && <p className="text-sm text-destructive">{errors.apiKey.message}</p>}
           </div>
 
           <div className="space-y-2">
@@ -163,9 +153,7 @@ export function ConnectionModal({
               {...register("apiSecret")}
             />
             {errors.apiSecret && (
-              <p className="text-sm text-destructive">
-                {errors.apiSecret.message}
-              </p>
+              <p className="text-sm text-destructive">{errors.apiSecret.message}</p>
             )}
           </div>
 
@@ -183,9 +171,7 @@ export function ConnectionModal({
             <Alert variant="destructive">
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>
-                {validationError ||
-                  createMutation.error?.message ||
-                  "Failed to connect"}
+                {validationError || createMutation.error?.message || "Failed to connect"}
               </AlertDescription>
             </Alert>
           )}

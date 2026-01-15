@@ -7,10 +7,7 @@ interface PerformanceMetricsProps {
   currency: string;
 }
 
-export function PerformanceMetricsPanel({
-  metrics,
-  currency,
-}: PerformanceMetricsProps) {
+export function PerformanceMetricsPanel({ metrics, currency }: PerformanceMetricsProps) {
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
@@ -35,9 +32,7 @@ export function PerformanceMetricsPanel({
     >
       {/* Current Value */}
       <div className="rounded-xl border border-border-subtle bg-surface-glass p-6">
-        <div className="mb-2 text-sm font-medium text-muted-foreground">
-          Current Value
-        </div>
+        <div className="mb-2 text-sm font-medium text-muted-foreground">Current Value</div>
         <div className="font-serif text-3xl font-light tracking-tight text-foreground">
           {formatCurrency(metrics.currentValue)}
         </div>
@@ -64,9 +59,7 @@ export function PerformanceMetricsPanel({
 
       {/* Percentage Change */}
       <div className="rounded-xl border border-border-subtle bg-surface-glass p-6">
-        <div className="mb-2 text-sm font-medium text-muted-foreground">
-          Return (%)
-        </div>
+        <div className="mb-2 text-sm font-medium text-muted-foreground">Return (%)</div>
         <div
           className={`font-serif text-3xl font-light tracking-tight ${
             isPositive ? "text-green-600" : "text-red-600"

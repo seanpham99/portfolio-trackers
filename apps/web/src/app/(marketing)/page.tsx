@@ -6,7 +6,8 @@ import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Portfolio Tracker - Master Your Wealth",
-  description: "The modern way to track your net worth. Connect all your accounts, analyze performance, and make better financial decisions.",
+  description:
+    "The modern way to track your net worth. Connect all your accounts, analyze performance, and make better financial decisions.",
 };
 
 export default function MarketingPage() {

@@ -6,10 +6,7 @@ const nextConfig: NextConfig = {
   turbopack: {},
 
   // Transpile workspace packages
-  transpilePackages: [
-    "@workspace/ui",
-    "@workspace/shared-types",
-  ],
+  transpilePackages: ["@workspace/ui", "@workspace/shared-types"],
 
   // Strict mode for catching bugs early
   reactStrictMode: true,

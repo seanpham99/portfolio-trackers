@@ -53,9 +53,7 @@ describe("TransactionForm", () => {
   });
 
   it("renders form with all inputs", () => {
-    render(
-      <TransactionForm portfolioId={portfolioId} onSuccess={mockOnSuccess} />,
-    );
+    render(<TransactionForm portfolioId={portfolioId} onSuccess={mockOnSuccess} />);
 
     expect(screen.getByText("Asset")).toBeInTheDocument();
     expect(screen.getByText("Type")).toBeInTheDocument();
@@ -66,9 +64,7 @@ describe("TransactionForm", () => {
   });
 
   it("submit button is disabled when no asset selected", () => {
-    render(
-      <TransactionForm portfolioId={portfolioId} onSuccess={mockOnSuccess} />,
-    );
+    render(<TransactionForm portfolioId={portfolioId} onSuccess={mockOnSuccess} />);
 
     const submitButton = screen.getByRole("button", {
       name: /confirm purchase/i,
@@ -77,9 +73,7 @@ describe("TransactionForm", () => {
   });
 
   it("submit button is enabled after selecting asset", async () => {
-    render(
-      <TransactionForm portfolioId={portfolioId} onSuccess={mockOnSuccess} />,
-    );
+    render(<TransactionForm portfolioId={portfolioId} onSuccess={mockOnSuccess} />);
 
     // Select an asset
     fireEvent.click(screen.getByTestId("mock-asset-autocomplete"));
@@ -93,14 +87,10 @@ describe("TransactionForm", () => {
   });
 
   it("changes button text based on transaction type", async () => {
-    render(
-      <TransactionForm portfolioId={portfolioId} onSuccess={mockOnSuccess} />,
-    );
+    render(<TransactionForm portfolioId={portfolioId} onSuccess={mockOnSuccess} />);
 
     // Initially shows "Confirm Purchase" (BUY)
-    expect(
-      screen.getByRole("button", { name: /confirm purchase/i }),
-    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /confirm purchase/i })).toBeInTheDocument();
   });
 
   it("displays error when asset not selected on submit", async () => {
@@ -109,9 +99,7 @@ describe("TransactionForm", () => {
       json: async () => ({ error: "Please select an asset" }),
     });
 
-    render(
-      <TransactionForm portfolioId={portfolioId} onSuccess={mockOnSuccess} />,
-    );
+    render(<TransactionForm portfolioId={portfolioId} onSuccess={mockOnSuccess} />);
 
     // Don't select asset, form should show error state
     // Note: Submit button is disabled, so this tests the form validation
@@ -128,9 +116,7 @@ describe("TransactionForm", () => {
       json: async () => ({ message: "Invalid quantity" }),
     });
 
-    render(
-      <TransactionForm portfolioId={portfolioId} onSuccess={mockOnSuccess} />,
-    );
+    render(<TransactionForm portfolioId={portfolioId} onSuccess={mockOnSuccess} />);
 
     // Select asset first
     fireEvent.click(screen.getByTestId("mock-asset-autocomplete"));
@@ -156,12 +142,10 @@ describe("TransactionForm", () => {
   it("form fields are disabled during submission", async () => {
     // Make the API call hang
     (apiFetch as any).mockImplementation(
-      () => new Promise(() => {}), // Never resolves
+      () => new Promise(() => {}) // Never resolves
     );
 
-    render(
-      <TransactionForm portfolioId={portfolioId} onSuccess={mockOnSuccess} />,
-    );
+    render(<TransactionForm portfolioId={portfolioId} onSuccess={mockOnSuccess} />);
 
     // Select asset
     fireEvent.click(screen.getByTestId("mock-asset-autocomplete"));

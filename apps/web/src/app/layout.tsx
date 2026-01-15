@@ -16,7 +16,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Portfolios Tracker | Multi-Asset Portfolio Intelligence",
-  description: "Track VN stocks, US equities, and crypto in one calm dashboard. Consolidated wealth. Calm mind.",
+  description:
+    "Track VN stocks, US equities, and crypto in one calm dashboard. Consolidated wealth. Calm mind.",
   openGraph: {
     title: "Portfolios Tracker",
     description: "Multi-Asset Portfolio Intelligence Platform",
@@ -31,15 +32,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          enableSystem
-          disableTransitionOnChange
-        >
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
           <Providers>{children}</Providers>
         </ThemeProvider>
       </body>

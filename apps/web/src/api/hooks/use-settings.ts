@@ -20,9 +20,7 @@ export function useUpdateSettings() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (
-      updates: UpdateUserSettingsDto,
-    ): Promise<UserSettingsDto> => {
+    mutationFn: async (updates: UpdateUserSettingsDto): Promise<UserSettingsDto> => {
       const res = await apiFetch("/me/settings", {
         method: "PATCH",
         body: JSON.stringify(updates),

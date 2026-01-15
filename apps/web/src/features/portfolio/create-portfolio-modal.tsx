@@ -50,10 +50,7 @@ const currencies = [
   { value: "JPY", label: "JPY (¥)" },
 ];
 
-export function CreatePortfolioModal({
-  isOpen,
-  onClose,
-}: CreatePortfolioModalProps) {
+export function CreatePortfolioModal({ isOpen, onClose }: CreatePortfolioModalProps) {
   const [error, setError] = useState<string | null>(null);
   const queryClient = useQueryClient();
   const router = useRouter();
@@ -120,9 +117,7 @@ export function CreatePortfolioModal({
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-[425px] bg-zinc-900 border-white/[0.08] text-white">
         <DialogHeader>
-          <DialogTitle className="font-serif text-xl font-light">
-            Create Portfolio
-          </DialogTitle>
+          <DialogTitle className="font-serif text-xl font-light">Create Portfolio</DialogTitle>
           <DialogDescription className="text-zinc-500">
             Start tracking your investments by creating a new portfolio.
           </DialogDescription>
@@ -140,10 +135,7 @@ export function CreatePortfolioModal({
             name="name"
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
-                <FieldLabel
-                  htmlFor={field.name}
-                  className="text-zinc-400 font-normal"
-                >
+                <FieldLabel htmlFor={field.name} className="text-zinc-400 font-normal">
                   Portfolio Name
                 </FieldLabel>
                 <Input
@@ -153,9 +145,7 @@ export function CreatePortfolioModal({
                   placeholder="e.g., Retirement Fund"
                   className="bg-white/[0.03] border-white/[0.08] focus-visible:ring-emerald-500/50"
                 />
-                {fieldState.invalid && (
-                  <FieldError errors={[fieldState.error]} />
-                )}
+                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
               </Field>
             )}
           />
@@ -165,10 +155,7 @@ export function CreatePortfolioModal({
             name="description"
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
-                <FieldLabel
-                  htmlFor={field.name}
-                  className="text-zinc-400 font-normal"
-                >
+                <FieldLabel htmlFor={field.name} className="text-zinc-400 font-normal">
                   Description (Optional)
                 </FieldLabel>
                 <Textarea
@@ -180,9 +167,7 @@ export function CreatePortfolioModal({
                   rows={3}
                   value={field.value || ""}
                 />
-                {fieldState.invalid && (
-                  <FieldError errors={[fieldState.error]} />
-                )}
+                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
               </Field>
             )}
           />
@@ -192,17 +177,10 @@ export function CreatePortfolioModal({
             name="baseCurrency"
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
-                <FieldLabel
-                  htmlFor={field.name}
-                  className="text-zinc-400 font-normal"
-                >
+                <FieldLabel htmlFor={field.name} className="text-zinc-400 font-normal">
                   Base Currency
                 </FieldLabel>
-                <Select
-                  name={field.name}
-                  value={field.value}
-                  onValueChange={field.onChange}
-                >
+                <Select name={field.name} value={field.value} onValueChange={field.onChange}>
                   <SelectTrigger
                     id={field.name}
                     aria-invalid={fieldState.invalid}
@@ -222,9 +200,7 @@ export function CreatePortfolioModal({
                     ))}
                   </SelectContent>
                 </Select>
-                {fieldState.invalid && (
-                  <FieldError errors={[fieldState.error]} />
-                )}
+                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
               </Field>
             )}
           />

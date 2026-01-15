@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 async function getBlogPosts() {
   const postsDirectory = path.join(process.cwd(), "content/posts");
-  
+
   // Ensure directory exists
   if (!fs.existsSync(postsDirectory)) {
     return [];
@@ -54,9 +54,7 @@ export default async function BlogIndexPage() {
         <h1 className="text-4xl font-bold tracking-tight text-white mb-4">
           Latest <span className="text-emerald-400">Updates</span>
         </h1>
-        <p className="text-lg text-zinc-400">
-          News, tips, and insights from the Portfolio team.
-        </p>
+        <p className="text-lg text-zinc-400">News, tips, and insights from the Portfolio team.</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -64,9 +62,9 @@ export default async function BlogIndexPage() {
           <BlogCard key={post.slug} post={post as any} />
         ))}
         {posts.length === 0 && (
-             <div className="col-span-full text-center py-20 text-zinc-500">
-                No posts found. check back later!
-             </div>
+          <div className="col-span-full text-center py-20 text-zinc-500">
+            No posts found. check back later!
+          </div>
         )}
       </div>
     </div>

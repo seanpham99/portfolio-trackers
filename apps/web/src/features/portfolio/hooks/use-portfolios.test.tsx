@@ -30,9 +30,7 @@ describe("usePortfolios", () => {
   });
 
   it("should fetch portfolios using getPortfolios client method", async () => {
-    const mockPortfolios = [
-      { id: "1", name: "Test", netWorth: 100, change24h: 5 },
-    ];
+    const mockPortfolios = [{ id: "1", name: "Test", netWorth: 100, change24h: 5 }];
     vi.mocked(client.getPortfolios).mockResolvedValue(mockPortfolios);
 
     const { result } = renderHook(() => usePortfolios(), {

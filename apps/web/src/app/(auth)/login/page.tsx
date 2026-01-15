@@ -50,11 +50,7 @@ export default function LoginPage() {
   return (
     <motion.div
       {...cardVariants}
-      transition={
-        prefersReducedMotion
-          ? { duration: 0 }
-          : { duration: 0.4, ease: "easeOut" }
-      }
+      transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.4, ease: "easeOut" }}
       className="w-full"
     >
       <Card className="glass-card overflow-hidden">
@@ -76,11 +72,7 @@ export default function LoginPage() {
               disabled={isPending}
             >
               <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-r from-emerald-500/10 to-transparent" />
-              <svg
-                className="mr-2 h-4 w-4"
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-              >
+              <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24" aria-hidden="true">
                 <path
                   fill="currentColor"
                   d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -120,10 +112,7 @@ export default function LoginPage() {
               control={form.control}
               render={({ field, fieldState }) => (
                 <div className="space-y-2">
-                  <Label
-                    htmlFor="login-email"
-                    className="text-muted-foreground font-normal"
-                  >
+                  <Label htmlFor="login-email" className="text-muted-foreground font-normal">
                     Email
                   </Label>
                   <div className="relative">
@@ -143,9 +132,7 @@ export default function LoginPage() {
                     />
                   </div>
                   {fieldState.error && (
-                    <p className="text-sm text-destructive">
-                      {fieldState.error.message}
-                    </p>
+                    <p className="text-sm text-destructive">{fieldState.error.message}</p>
                   )}
                 </div>
               )}
@@ -157,10 +144,7 @@ export default function LoginPage() {
               render={({ field, fieldState }) => (
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <Label
-                      htmlFor="login-password"
-                      className="text-muted-foreground font-normal"
-                    >
+                    <Label htmlFor="login-password" className="text-muted-foreground font-normal">
                       Password
                     </Label>
                     <Link
@@ -186,9 +170,7 @@ export default function LoginPage() {
                     />
                   </div>
                   {fieldState.error && (
-                    <p className="text-sm text-destructive">
-                      {fieldState.error.message}
-                    </p>
+                    <p className="text-sm text-destructive">{fieldState.error.message}</p>
                   )}
                 </div>
               )}
@@ -212,8 +194,8 @@ export default function LoginPage() {
                 aria-live="polite"
                 className="rounded-md bg-amber-500/10 border border-amber-500/20 px-3 py-2 text-sm text-amber-400"
               >
-                Privacy consent is required to access the platform. Please sign
-                in again and accept the terms to continue.
+                Privacy consent is required to access the platform. Please sign in again and accept
+                the terms to continue.
               </div>
             )}
 
@@ -226,8 +208,7 @@ export default function LoginPage() {
                 <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
               ) : (
                 <span className="flex items-center justify-center">
-                  Sign In{" "}
-                  <ArrowRight className="ml-2 h-4 w-4" aria-hidden="true" />
+                  Sign In <ArrowRight className="ml-2 h-4 w-4" aria-hidden="true" />
                 </span>
               )}
             </Button>
