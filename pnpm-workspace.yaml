@@ -4,11 +4,12 @@ packages:
   - services/*
 
 onlyBuiltDependencies:
-  - "@nestjs/core"
-  - "@scarf/scarf"
-  - "@swc/core"
+  - '@nestjs/core'
+  - '@scarf/scarf'
+  - '@swc/core'
   - ccxt
   - core-js-pure
   - esbuild
+  - sharp
   - supabase
   - unrs-resolver
