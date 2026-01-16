@@ -25,7 +25,11 @@ const nextConfig: NextConfig = {
   pageExtensions: ["js", "jsx", "md", "mdx", "ts", "tsx"],
 
   // Allow all hosts for development in Replit
-  allowedDevOrigins: ["*"],
+  allowedDevOrigins: [
+    "https://*.replit.dev",
+    "https://*.janeway.replit.dev",
+    "https://*.replit.app",
+  ],
 };
 
 const withMDX = createMDX({
