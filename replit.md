@@ -89,7 +89,22 @@ The project uses Turborepo with pnpm workspaces organized as:
 ### Development Tools
 
 - **Turborepo**: Monorepo orchestration
-- **pnpm 10.26.2**: Package management
+- **pnpm**: Package management (using Replit's built-in version)
+
+## Running the Application
+
+The project runs two servers in parallel:
+1. **Next.js Web App** on port 5000 (frontend)
+2. **NestJS API** on port 3001 (backend)
+
+Build order: `packages/shared-types` must be built before the API can start.
+
+### CORS Configuration
+The API is configured with CORS_ORIGIN environment variable allowing:
+- `https://*.replit.dev`
+- `https://*.replit.app`
+
+### Additional Tools
 - **Changesets**: Version management
 - **Husky + lint-staged**: Pre-commit hooks
 - **Syncpack**: Dependency version synchronization

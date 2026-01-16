@@ -10,7 +10,7 @@ runButton = "Project"
 
 [[workflows.workflow]]
 name = "Project"
-mode = "sequential"
+mode = "parallel"
 author = "agent"
 
 [[workflows.workflow.tasks]]
@@ -19,24 +19,35 @@ args = "cd packages/shared-types && pnpm run build"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
-args = "Dev Servers"
+args = "NestJS API"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Next.js Frontend"
 
 [[workflows.workflow]]
-name = "Dev Servers"
-mode = "parallel"
+name = "NestJS API"
 author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "cd apps/web && pnpm run dev"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "cd services/api && pnpm run start:dev"
+args = "cd packages/shared-types && pnpm run build && cd ../../services/api && pnpm run build && node dist/main.js"
 waitForPort = 3001
 
 [workflows.workflow.metadata]
+outputType = "console"
+
+[[workflows.workflow]]
+name = "Next.js Frontend"
+author = "agent"
+
+[workflows.workflow.metadata]
 outputType = "webview"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd apps/web && pnpm run dev"
+waitForPort = 5000
 
 [[ports]]
 localPort = 3001
@@ -52,3 +63,8 @@ run = [
   "pnpm run start --filter @workspace/web -- --port 5000 --hostname 0.0.0.0",
 ]
 build = ["pnpm run build --filter @workspace/web"]
+
+[userenv]
+
+[userenv.shared]
+CORS_ORIGIN = "https://*.replit.dev,https://*.replit.app"
