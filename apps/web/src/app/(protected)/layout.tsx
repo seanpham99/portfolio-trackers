@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { SidebarInset, SidebarProvider, SidebarTrigger } from "@workspace/ui/components/sidebar";
+import { SidebarProvider, SidebarTrigger } from "@workspace/ui/components/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { Separator } from "@workspace/ui/components/separator";
 
@@ -17,7 +17,7 @@ export default async function ProtectedLayout({ children }: { children: React.Re
   return (
     <SidebarProvider defaultOpen={true}>
       <AppSidebar user={user} />
-      <SidebarInset>
+      <main className="flex-1 flex flex-col min-h-svh">
         {/* Premium Background for all protected pages */}
         <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-950/20 via-background to-background pointer-events-none -z-20" />
 
@@ -30,7 +30,7 @@ export default async function ProtectedLayout({ children }: { children: React.Re
 
         {/* Page content */}
         <div className="flex-1 py-6">{children}</div>
-      </SidebarInset>
+      </main>
     </SidebarProvider>
   );
 }
