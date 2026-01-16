@@ -51,6 +51,9 @@ portfolios-tracker/
 │   ├── ui/                      # @workspace/ui: Radix/Shadcn primitives
 │   ├── typescript-config/       # Shared TS configurations
 │   └── eslint-config/           # Shared lint configurations
+├── scripts/
+│   ├── start-dev.sh             # Start development environment (builds shared-types, runs API + web)
+│   └── deploy-build.sh          # Production build script
 └── tests/
     └── e2e/                     # Playwright cross-browser scenarios
 ```
@@ -74,9 +77,21 @@ portfolios-tracker/
 3. Copy `.env.example` to `.env` in `apps/web` and `services/api` and fill in your keys.
 4. Run development server:
 
+   **Option A: Using Turborepo (recommended for parallel development)**
    ```bash
    pnpm dev
    ```
+
+   **Option B: Using the dev script (builds shared-types first, then runs services)**
+   ```bash
+   chmod +x scripts/start-dev.sh
+   ./scripts/start-dev.sh
+   ```
+
+### Available Scripts
+
+- **`scripts/start-dev.sh`**: Builds `packages/shared-types`, then starts `services/api` and `apps/web` in the background. Handles graceful shutdown with Ctrl+C.
+- **`scripts/deploy-build.sh`**: Production build script that installs dependencies and builds all packages sequentially.
 
 ## 🏗️ Architectural Principles
 
