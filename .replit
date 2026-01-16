@@ -4,3 +4,65 @@ expertMode = true
 
 [nix]
 channel = "stable-25_05"
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd packages/shared-types && pnpm run build"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "NestJS API Server"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Next.js Frontend"
+
+[[workflows.workflow]]
+name = "NestJS API Server"
+author = "agent"
+
+[workflows.workflow.metadata]
+outputType = "console"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd services/api && pnpm run dev"
+waitForPort = 3001
+
+[[workflows.workflow]]
+name = "Next.js Frontend"
+author = "agent"
+
+[workflows.workflow.metadata]
+outputType = "webview"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd apps/web && pnpm run dev"
+waitForPort = 5000
+
+[[ports]]
+localPort = 3000
+externalPort = 3000
+
+[[ports]]
+localPort = 3001
+externalPort = 3001
+
+[deployment]
+deploymentTarget = "autoscale"
+run = ["bash", "-c", "PORT=3001 node services/api/dist/main.js & cd apps/web && PORT=3000 pnpm run start"]
+build = ["bash", "scripts/deploy-build.sh"]
+
+[userenv]
+
+[userenv.shared]
+CORS_ORIGIN = "https://*.replit.dev,https://*.replit.app"

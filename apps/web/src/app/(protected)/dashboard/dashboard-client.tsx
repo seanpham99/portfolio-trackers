@@ -310,6 +310,7 @@ export function DashboardClient() {
                   const best = [...portfolios].sort(
                     (a, b) => b.change24hPercent - a.change24hPercent
                   )[0];
+                  if (!best) return null;
                   return (
                     <div className="flex-1 flex flex-col justify-center">
                       <div className="flex items-center gap-3 mb-2">
