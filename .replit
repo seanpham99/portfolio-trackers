@@ -59,10 +59,8 @@ externalPort = 3001
 
 [deployment]
 deploymentTarget = "autoscale"
-run = [
-  "pnpm run start --filter @workspace/web -- --port 5000 --hostname 0.0.0.0",
-]
-build = ["pnpm run build --filter @workspace/web"]
+run = ["bash", "-c", "cd services/api && node dist/main.js & cd apps/web && pnpm run start"]
+build = ["bash", "-c", "cd packages/shared-types && pnpm run build && cd ../../services/api && pnpm run build && cd ../../apps/web && pnpm run build"]
 
 [userenv]
 

@@ -104,6 +104,12 @@ The API is configured with CORS_ORIGIN environment variable allowing:
 - `https://*.replit.dev`
 - `https://*.replit.app`
 
+### Production Deployment
+The deployment is configured to run both services together:
+- **Build**: Builds shared-types, API, and web app sequentially
+- **Run**: Starts the NestJS API in background, then the Next.js frontend
+- **Target**: Autoscale deployment for automatic scaling
+
 ### Additional Tools
 - **Changesets**: Version management
 - **Husky + lint-staged**: Pre-commit hooks
