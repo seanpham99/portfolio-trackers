@@ -18,11 +18,21 @@ const nextConfig: NextConfig = {
 
   // Environment variables exposed to the browser
   env: {
-    NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3001",
+    NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL || "http://0.0.0.0:5000",
   },
 
   // Configure pageExtensions to include md and mdx
   pageExtensions: ["js", "jsx", "md", "mdx", "ts", "tsx"],
+
+  // Allow all hosts for development in Replit
+  experimental: {
+    serverActions: {
+      allowedOrigins: ["*"],
+    },
+  },
+  devIndicators: {
+    appIsrStatus: false,
+  },
 };
 
 const withMDX = createMDX({
