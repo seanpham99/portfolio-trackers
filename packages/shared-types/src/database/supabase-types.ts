@@ -1,10 +1,4 @@
-export type Json =
-  | string
-  | number
-  | boolean
-  | null
-  | { [key: string]: Json | undefined }
-  | Json[];
+export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
 export type Database = {
   public: {
@@ -105,6 +99,7 @@ export type Database = {
         Row: {
           asset_id: string;
           created_at: string | null;
+          exchange_rate: number | null;
           fee: number | null;
           id: string;
           notes: string | null;
@@ -119,6 +114,7 @@ export type Database = {
         Insert: {
           asset_id: string;
           created_at?: string | null;
+          exchange_rate?: number | null;
           fee?: number | null;
           id?: string;
           notes?: string | null;
@@ -133,6 +129,7 @@ export type Database = {
         Update: {
           asset_id?: string;
           created_at?: string | null;
+          exchange_rate?: number | null;
           fee?: number | null;
           id?: string;
           notes?: string | null;
@@ -299,10 +296,7 @@ export type Database = {
 
 type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">;
 
-type DefaultSchema = DatabaseWithoutInternals[Extract<
-  keyof Database,
-  "public"
->];
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">];
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
@@ -323,10 +317,8 @@ export type Tables<
     }
     ? R
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
-        DefaultSchema["Views"])
-    ? (DefaultSchema["Tables"] &
-        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] & DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
         Row: infer R;
       }
       ? R
@@ -445,41 +437,28 @@ export type InsertAssets = Database["public"]["Tables"]["assets"]["Insert"];
 export type UpdateAssets = Database["public"]["Tables"]["assets"]["Update"];
 
 export type Portfolios = Database["public"]["Tables"]["portfolios"]["Row"];
-export type InsertPortfolios =
-  Database["public"]["Tables"]["portfolios"]["Insert"];
-export type UpdatePortfolios =
-  Database["public"]["Tables"]["portfolios"]["Update"];
+export type InsertPortfolios = Database["public"]["Tables"]["portfolios"]["Insert"];
+export type UpdatePortfolios = Database["public"]["Tables"]["portfolios"]["Update"];
 
 export type Transactions = Database["public"]["Tables"]["transactions"]["Row"];
-export type InsertTransactions =
-  Database["public"]["Tables"]["transactions"]["Insert"];
-export type UpdateTransactions =
-  Database["public"]["Tables"]["transactions"]["Update"];
+export type InsertTransactions = Database["public"]["Tables"]["transactions"]["Insert"];
+export type UpdateTransactions = Database["public"]["Tables"]["transactions"]["Update"];
 
-export type UserConnections =
-  Database["public"]["Tables"]["user_connections"]["Row"];
-export type InsertUserConnections =
-  Database["public"]["Tables"]["user_connections"]["Insert"];
-export type UpdateUserConnections =
-  Database["public"]["Tables"]["user_connections"]["Update"];
+export type UserConnections = Database["public"]["Tables"]["user_connections"]["Row"];
+export type InsertUserConnections = Database["public"]["Tables"]["user_connections"]["Insert"];
+export type UpdateUserConnections = Database["public"]["Tables"]["user_connections"]["Update"];
 
-export type UserPreferences =
-  Database["public"]["Tables"]["user_preferences"]["Row"];
-export type InsertUserPreferences =
-  Database["public"]["Tables"]["user_preferences"]["Insert"];
-export type UpdateUserPreferences =
-  Database["public"]["Tables"]["user_preferences"]["Update"];
+export type UserPreferences = Database["public"]["Tables"]["user_preferences"]["Row"];
+export type InsertUserPreferences = Database["public"]["Tables"]["user_preferences"]["Insert"];
+export type UpdateUserPreferences = Database["public"]["Tables"]["user_preferences"]["Update"];
 
 export type Users = Database["public"]["Tables"]["users"]["Row"];
 export type InsertUsers = Database["public"]["Tables"]["users"]["Insert"];
 export type UpdateUsers = Database["public"]["Tables"]["users"]["Update"];
 
 // Functions
-export type ArgsShowLimit =
-  Database["public"]["Functions"]["show_limit"]["Args"];
-export type ReturnTypeShowLimit =
-  Database["public"]["Functions"]["show_limit"]["Returns"];
+export type ArgsShowLimit = Database["public"]["Functions"]["show_limit"]["Args"];
+export type ReturnTypeShowLimit = Database["public"]["Functions"]["show_limit"]["Returns"];
 
 export type ArgsShowTrgm = Database["public"]["Functions"]["show_trgm"]["Args"];
-export type ReturnTypeShowTrgm =
-  Database["public"]["Functions"]["show_trgm"]["Returns"];
+export type ReturnTypeShowTrgm = Database["public"]["Functions"]["show_trgm"]["Returns"];

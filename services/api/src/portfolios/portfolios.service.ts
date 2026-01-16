@@ -98,6 +98,9 @@ export class PortfoliosService {
         asset_id,
         quantity,
         price,
+        fee,
+        total,
+        exchange_rate,
         type,
         portfolio_id,
         assets (
@@ -178,6 +181,9 @@ export class PortfoliosService {
         asset_id,
         quantity,
         price,
+        fee,
+        total,
+        exchange_rate,
         type,
         portfolio_id,
         assets (
@@ -305,6 +311,9 @@ export class PortfoliosService {
         asset_id,
         quantity,
         price,
+        fee,
+        total,
+        exchange_rate,
         type,
         portfolio_id,
         assets (
@@ -342,14 +351,14 @@ export class PortfoliosService {
   }
 
   /**
-   * Helper to aggregates transactions into holdings using Weighted Average Cost
+   * Helper to aggregates transactions into holdings using FIFO Logic
    */
   private calculateHoldings(transactions: any[]): HoldingDto[] {
-    const holdingsMap = new Map<
+    // Map assetId -> FIFO Lots Queue
+    const lotsMap = new Map<
       string,
       {
-        qty: number;
-        cost: number;
+        lots: { qty: number; cost: number }[];
         asset: any;
       }
     >();
@@ -358,35 +367,51 @@ export class PortfoliosService {
       if (!tx.assets || (Array.isArray(tx.assets) && tx.assets.length === 0))
         continue;
 
-      const assetId = tx.asset_id;
-      if (!holdingsMap.has(assetId)) {
-        holdingsMap.set(assetId, {
-          qty: 0,
-          cost: 0,
+      const assetId = tx.asset_id as string;
+      if (!lotsMap.has(assetId)) {
+        lotsMap.set(assetId, {
+          lots: [],
           asset: Array.isArray(tx.assets) ? tx.assets[0] : tx.assets,
         });
       }
-      const entry = holdingsMap.get(assetId)!;
+      const entry = lotsMap.get(assetId)!;
 
       if (tx.type === 'BUY') {
-        entry.qty += tx.quantity;
-        entry.cost += tx.quantity * tx.price;
+        // FR2.3: Base Cost = Asset Total (calculated by DB) * Exchange Rate
+        const AssetTotal = tx.total ?? tx.quantity * tx.price + (tx.fee || 0);
+        const costBasis = AssetTotal * (tx.exchange_rate ?? 1);
+        entry.lots.push({ qty: tx.quantity, cost: costBasis });
       } else if (tx.type === 'SELL') {
-        // Weighted Average Cost Logic
-        const currentAvg = entry.qty > 0 ? entry.cost / entry.qty : 0;
-        entry.qty -= tx.quantity;
-        entry.cost -= tx.quantity * currentAvg;
-      }
+        let qtyToSell = tx.quantity;
 
-      if (Math.abs(entry.qty) < 0.000001) {
-        entry.qty = 0;
-        entry.cost = 0;
+        // FIFO Consumption
+        while (qtyToSell > 0.00000001 && entry.lots.length > 0) {
+          const currentLot = entry.lots[0];
+          if (!currentLot) break;
+
+          if (currentLot.qty > qtyToSell) {
+            // Partial consumption
+            const ratio = qtyToSell / currentLot.qty;
+            const costToRemove = currentLot.cost * ratio;
+
+            currentLot.qty -= qtyToSell;
+            currentLot.cost -= costToRemove;
+            qtyToSell = 0;
+          } else {
+            // Full consumption
+            qtyToSell -= currentLot.qty;
+            entry.lots.shift();
+          }
+        }
       }
     }
 
     // Convert to DTO
-    return Array.from(holdingsMap.values())
+    return Array.from(lotsMap.values())
       .map((entry) => {
+        const totalQty = entry.lots.reduce((sum, lot) => sum + lot.qty, 0);
+        const totalCost = entry.lots.reduce((sum, lot) => sum + lot.cost, 0);
+
         return {
           asset_id: entry.asset.id,
           symbol: entry.asset.symbol,
@@ -395,13 +420,13 @@ export class PortfoliosService {
           asset_class: entry.asset.asset_class,
           market: entry.asset.market ?? undefined,
           currency: entry.asset.currency,
-          total_quantity: entry.qty,
-          avg_cost: entry.qty > 0 ? entry.cost / entry.qty : 0,
-          calculationMethod: CalculationMethod.WEIGHTED_AVG,
+          total_quantity: totalQty,
+          avg_cost: totalQty > 0 ? totalCost / totalQty : 0,
+          calculationMethod: CalculationMethod.FIFO, // Now accurate
           dataSource: 'Manual Entry',
         };
       })
-      .filter((h) => h.total_quantity > 0);
+      .filter((h) => h.total_quantity > 0.000001); // Filter out zero balances
   }
 
   /**
@@ -424,6 +449,7 @@ export class PortfoliosService {
         quantity: createDto.quantity,
         price: createDto.price,
         fee: createDto.fee ?? 0,
+        exchange_rate: createDto.exchange_rate ?? 1,
         transaction_date:
           createDto.transaction_date ?? new Date().toISOString(),
         notes: createDto.notes ?? null,
@@ -462,6 +488,8 @@ export class PortfoliosService {
         quantity,
         price,
         fee,
+        total,
+        exchange_rate,
         transaction_date,
         notes,
         assets!inner (
@@ -489,12 +517,12 @@ export class PortfoliosService {
     // Since we filtered by assets!inner.symbol, all transactions belong to the same unique asset in this context
     const asset = (transactions[0] as any).assets;
 
-    // 3. Calculate Metrics
+    // 3. FIFO Calculation Engine
+    const lots: { quantity: number; cost: number; date: string }[] = [];
     let totalQty = 0;
-    let totalCost = 0;
     let realizedPL = 0;
 
-    const txDtos = transactions.map((tx) => ({
+    const txDtos = transactions.map((tx: any) => ({
       id: tx.id,
       type: tx.type as 'BUY' | 'SELL',
       quantity: tx.quantity,
@@ -502,36 +530,77 @@ export class PortfoliosService {
       date: tx.transaction_date,
       fee: tx.fee ?? 0,
       notes: tx.notes ?? undefined,
+      exchange_rate: tx.exchange_rate ?? 1,
     }));
 
     for (const tx of transactions) {
       if (tx.type === 'BUY') {
+        // FR2.3: Base Cost = Asset Total * Exchange Rate
+        const AssetTotal = tx.total ?? tx.quantity * tx.price + (tx.fee || 0);
+        const costBasis = AssetTotal * (tx.exchange_rate ?? 1);
+
+        lots.push({
+          quantity: tx.quantity,
+          cost: costBasis,
+          date: tx.transaction_date,
+        });
         totalQty += tx.quantity;
-        totalCost += tx.quantity * tx.price + (tx.fee || 0);
       } else if (tx.type === 'SELL') {
-        const currentAvgCost = totalQty > 0 ? totalCost / totalQty : 0;
-        const costBasis = currentAvgCost * tx.quantity;
-        const proceeds = tx.quantity * tx.price - (tx.fee || 0);
+        let qtyToSell = tx.quantity;
+        let costBasisRemoved = 0;
 
-        realizedPL += proceeds - costBasis;
+        // FIFO: Consume from oldest lots
+        while (qtyToSell > 0.00000001 && lots.length > 0) {
+          const currentLot = lots[0]; // Peek oldest
+          if (!currentLot) break; // Safety check
 
+          if (currentLot.quantity > qtyToSell) {
+            // Partial consumption of lot
+            const ratio = qtyToSell / currentLot.quantity;
+            const costPortion = currentLot.cost * ratio;
+
+            costBasisRemoved += costPortion;
+            currentLot.quantity -= qtyToSell;
+            currentLot.cost -= costPortion;
+            qtyToSell = 0;
+          } else {
+            // Full consumption of lot
+            costBasisRemoved += currentLot.cost;
+            qtyToSell -= currentLot.quantity;
+            lots.shift(); // Remove empty lot
+          }
+        }
+
+        // Calculate Realized P/L for this transaction
+        // Proceeds (Base) = Asset Total * Exchange Rate
+        const AssetTotal = tx.total ?? tx.quantity * tx.price - (tx.fee || 0);
+        const proceeds = AssetTotal * (tx.exchange_rate ?? 1);
+
+        realizedPL += proceeds - costBasisRemoved;
         totalQty -= tx.quantity;
-        totalCost -= costBasis;
       }
     }
 
-    // Handle float precision
     if (Math.abs(totalQty) < 0.000001) {
       totalQty = 0;
-      totalCost = 0;
     }
 
-    const avgCost = totalQty > 0 ? totalCost / totalQty : 0;
+    // Calculate Remaining Cost Basis from lots
+    const remainingCostBasis = lots.reduce((sum, lot) => sum + lot.cost, 0);
+
+    const avgCost = totalQty > 0 ? remainingCostBasis / totalQty : 0;
     const lastTx = transactions[transactions.length - 1];
     if (!lastTx) throw new Error('Unexpected error: No transactions found');
+
     const currentPrice = lastTx.price;
+    // Current Value (Base) = Qty * Price * Current_FX_Rate (Assumed same as initial for now or 1)
+    // NOTE: We don't have a live FX feed yet. So we assume Current FX = 1 (or same as historical).
+    // This effectively means "Asset Gain" is calculated in the Asset's currency, then converted to Base.
+    // Ideally: Current Value = Qty * Current_Price * (Latest_Exchange_Rate ?? 1)
     const currentValue = totalQty * currentPrice;
-    const unrealizedPL = currentValue - totalQty * avgCost;
+
+    // Unrealized P/L = Current Value - Remaining Cost Basis
+    const unrealizedPL = currentValue - remainingCostBasis;
 
     return {
       details: {
@@ -547,14 +616,16 @@ export class PortfoliosService {
         current_value: currentValue,
         total_return_abs: unrealizedPL + realizedPL,
         total_return_pct:
-          totalCost > 0 ? ((unrealizedPL + realizedPL) / totalCost) * 100 : 0,
+          remainingCostBasis > 0
+            ? ((unrealizedPL + realizedPL) / remainingCostBasis) * 100
+            : 0,
         unrealized_pl: unrealizedPL,
         unrealized_pl_pct:
           avgCost > 0 ? ((currentPrice - avgCost) / avgCost) * 100 : 0,
         realized_pl: realizedPL,
-        asset_gain: unrealizedPL,
+        asset_gain: unrealizedPL, // TODO: Separate FX Gain when live rates available
         fx_gain: 0,
-        calculation_method: CalculationMethod.WEIGHTED_AVG,
+        calculation_method: CalculationMethod.FIFO,
         last_updated: new Date().toISOString(),
       },
       transactions: txDtos,

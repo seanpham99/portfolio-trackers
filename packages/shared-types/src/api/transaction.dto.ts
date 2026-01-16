@@ -42,6 +42,11 @@ export class CreateTransactionDto {
   @IsOptional()
   fee?: number;
 
+  @IsNumber()
+  @Min(0.00000001, { message: "Exchange rate must be greater than 0" })
+  @IsOptional()
+  exchange_rate?: number;
+
   @IsDateString(
     {},
     { message: "Transaction date must be a valid ISO 8601 date string" },

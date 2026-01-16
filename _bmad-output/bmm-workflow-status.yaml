@@ -89,16 +89,24 @@ workflow_status:
       - "_bmad-output/architecture.md"
 
   create-epics-and-stories:
-    status: required
+    status: completed
     agent: pm
     command: create-epics-and-stories
     phase: 2
+    note: "Break down PRD into implementable epics and stories"
+    completed: "2025-12-26"
+    artifacts:
+      - "_bmad-output/project-planning-artifacts/epics.md"
 
   test-design:
-    status: recommended
+    status: completed
     agent: tea
     command: test-design
     phase: 2
+    note: "System-level testability review completed"
+    completed: "2025-12-26"
+    artifacts:
+      - "_bmad-output/project-planning-artifacts/testarch/system-test-design.md"
 
   validate-architecture:
     status: optional
@@ -114,7 +122,9 @@ workflow_status:
 
   # PHASE 3: Implementation
   sprint-planning:
-    status: required
+    status: completed
     agent: sm
     command: sprint-planning
     phase: 3
+    artifacts:
+      - "_bmad-output/implementation-artifacts/sprint-status.yaml"

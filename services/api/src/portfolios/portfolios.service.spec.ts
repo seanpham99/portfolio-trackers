@@ -304,6 +304,8 @@ describe('PortfoliosService', () => {
           quantity: 10,
           price: 100,
           type: 'BUY',
+          total: 1000, // 10 * 100
+          exchange_rate: 1,
           assets: {
             id: 'asset-1',
             symbol: 'AAPL',
@@ -318,6 +320,8 @@ describe('PortfoliosService', () => {
           quantity: 5,
           price: 120,
           type: 'BUY',
+          total: 600, // 5 * 120
+          exchange_rate: 1,
           assets: {
             id: 'asset-1',
             symbol: 'AAPL',
@@ -332,6 +336,7 @@ describe('PortfoliosService', () => {
           quantity: 5,
           price: 150,
           type: 'SELL',
+          exchange_rate: 1,
           assets: {
             id: 'asset-1',
             symbol: 'AAPL',
@@ -354,11 +359,49 @@ describe('PortfoliosService', () => {
       const aapl = result.find((h) => h.symbol === 'AAPL');
       expect(aapl).toBeDefined();
       expect(aapl!.total_quantity).toBe(10);
-      // Avg Cost Logic:
-      // Buy 1: 10 @ 100 = 1000. Qty=10.
-      // Buy 2: 5 @ 120 = 600. Total Cost = 1600. Total Qty = 15. Avg = 106.666
-      // Sell 1: 5 @ 150. Reduced Cost = 5 * 106.666 = 533.33. Remaining Cost = 1066.67. Remaining Qty = 10. Avg = 106.666.
-      expect(aapl!.avg_cost).toBeCloseTo(106.667, 3);
+      // FIFO Logic Verification:
+      // Buy 1: 10 @ 100.
+      // Buy 2: 5 @ 120.
+      // Sell 1: 5. FIFO removes from Buy 1 (Oldest).
+      // Remaining: 5 @ 100 (from Buy 1) + 5 @ 120 (from Buy 2).
+      // Total Qty: 10.
+      // Total Cost: 500 + 600 = 1100.
+      // Avg Cost: 1100 / 10 = 110.
+      expect(aapl!.avg_cost).toBe(110);
+    });
+
+    it('should correctly handle FX conversion using the total column', async () => {
+      mockCacheService.get.mockResolvedValue(null);
+
+      const mockTransactions = [
+        {
+          asset_id: 'asset-fx',
+          quantity: 10,
+          price: 10, // USD
+          type: 'BUY',
+          total: 100, // 10 * 10 (Asset Currency Total)
+          exchange_rate: 23000,
+          assets: {
+            id: 'asset-fx',
+            symbol: 'US-STOCK',
+            name_en: 'US Stock',
+            asset_class: 'US Equity',
+            market: 'US',
+            currency: 'USD',
+          },
+        },
+      ];
+
+      mockChain.then.mockImplementation((resolve: any) =>
+        resolve({ data: mockTransactions, error: null }),
+      );
+
+      const result = await service.getHoldings(mockUserId);
+      const output = result[0];
+
+      // Avg Cost in Base Currency (VND)
+      // 2,300,000 / 10 = 230,000 VND
+      expect(output!.avg_cost).toBe(230000);
     });
 
     it('should include methodology transparency fields (calculationMethod and dataSource)', async () => {
@@ -393,7 +436,7 @@ describe('PortfoliosService', () => {
       if (!holding) throw new Error('Holding not found');
 
       // Verify methodology fields are populated
-      expect(holding.calculationMethod).toBe('WEIGHTED_AVG');
+      expect(holding.calculationMethod).toBe('FIFO');
       expect(holding.dataSource).toBe('Manual Entry');
     });
   });
@@ -420,6 +463,8 @@ describe('PortfoliosService', () => {
           quantity: 10,
           price: 150,
           fee: 5,
+          total: 1505,
+          exchange_rate: 1,
           type: 'BUY',
           transaction_date: '2025-01-01T00:00:00Z',
           assets: mockAsset,
@@ -430,6 +475,8 @@ describe('PortfoliosService', () => {
           quantity: 5,
           price: 200,
           fee: 5,
+          total: 995, // (5 * 200) - 5
+          exchange_rate: 1,
           type: 'SELL',
           transaction_date: '2025-01-02T00:00:00Z',
           assets: mockAsset,
@@ -461,19 +508,28 @@ describe('PortfoliosService', () => {
       if (!tx1) throw new Error('Transaction 1 not found');
       expect(tx1.id).toBe('tx-1');
 
-      // Verify Details
-      // Buy 10 @ 150 + 5 fee = 1505. Avg: 150.5
-      // Sold 5: proceeds (5*200)-5 = 995. Cost basis 5*150.5 = 752.5.
-      // Realized PL = 995 - 752.5 = 242.5
-      // Remaining 5. Avg cost 150.5. Current price 200 (last tx). Current value 1000.
-      // Asset Gain (Unrealized) = 1000 - 752.5 = 247.5.
+      // FIFO Verification
+      // Buy 1: 10 @ 150 (Total 1500 + 5 fee = 1505). Lot 1: 10 units, cost 1505.
+      // Sell 1: 5 @ 200.
+      // FIFO consumes 5 from Lot 1.
+      // Cost Basis Used: (1505 / 10) * 5 = 752.5.
+      // Proceeds: (5 * 200) - 5 fee = 995.
+      // Realized PL: 995 - 752.5 = 242.5.
+
+      // Remaining: 5 units from Lot 1.
+      // Remaining Cost: 1505 - 752.5 = 752.5.
+      // Avg Cost: 752.5 / 5 = 150.5.
+
+      // Current Value: 5 * 200 = 1000.
+      // Unrealized PL (Asset Gain): 1000 - 752.5 = 247.5.
+
       expect(result.details.symbol).toBe('AAPL');
       expect(result.details.avg_cost).toBe(150.5);
       expect(result.details.total_quantity).toBe(5);
       expect(result.details.realized_pl).toBe(242.5);
       expect(result.details.asset_gain).toBe(247.5);
       expect(result.details.unrealized_pl).toBe(247.5);
-      expect(result.details.calculation_method).toBe('WEIGHTED_AVG');
+      expect(result.details.calculation_method).toBe('FIFO');
     });
 
     it('should throw NotFoundException if asset has no transactions in portfolio', async () => {
