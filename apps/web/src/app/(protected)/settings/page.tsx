@@ -9,25 +9,37 @@ export default function SettingsPage() {
   return (
     <div className="space-y-6 container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
       <div>
-        <h3 className="text-lg font-medium">Settings</h3>
-        <p className="text-sm text-muted-foreground">
-          Manage your account settings and preferences.
-        </p>
+        <h3 className="text-2xl font-bold font-sans tracking-tight">Settings</h3>
+        <p className="text-muted-foreground mb-6">Manage your account settings and preferences.</p>
       </div>
-      <Separator />
+      <Separator className="bg-border/50" />
 
-      <Tabs defaultValue="profile" className="space-y-6">
-        <TabsList>
-          <TabsTrigger value="profile">Profile</TabsTrigger>
-          <TabsTrigger value="preferences">Preferences</TabsTrigger>
+      <Tabs defaultValue="profile" className="flex-1 mt-6">
+        <TabsList className="bg-muted/10 border border-border/10">
+          <TabsTrigger
+            value="profile"
+            className="data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm"
+          >
+            Profile
+          </TabsTrigger>
+          <TabsTrigger
+            value="preferences"
+            className="data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm"
+          >
+            Preferences
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="profile" className="max-w-xl">
-          <ProfileForm />
+          <div className="glass-card p-6">
+            <ProfileForm />
+          </div>
         </TabsContent>
 
         <TabsContent value="preferences" className="max-w-xl">
-          <PreferenceForm />
+          <div className="glass-card p-6">
+            <PreferenceForm />
+          </div>
         </TabsContent>
       </Tabs>
     </div>

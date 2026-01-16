@@ -93,19 +93,19 @@
 :root {
   --radius: 0.5rem;
   --background: oklch(0.9824 0.0013 286.3757);
-  --foreground: oklch(0.3211 0 0);
+  --foreground: oklch(0.145 0 0);
   --card: oklch(1.0000 0 0);
-  --card-foreground: oklch(0.3211 0 0);
+  --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1.0000 0 0);
-  --popover-foreground: oklch(0.3211 0 0);
+  --popover-foreground: oklch(0.145 0 0);
   --primary: oklch(0.6487 0.1538 150.3071);
   --primary-foreground: oklch(1.0000 0 0);
-  --secondary: oklch(0.6746 0.1414 261.3380);
-  --secondary-foreground: oklch(1.0000 0 0);
-  --muted: oklch(0.8828 0.0285 98.1033);
-  --muted-foreground: oklch(0.5382 0 0);
-  --accent: oklch(0.8269 0.1080 211.9627);
-  --accent-foreground: oklch(0.3211 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.145 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.40 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.145 0 0);
   --destructive: oklch(0.6368 0.2078 25.3313);
   --border: oklch(0.8699 0 0);
   --input: oklch(0.8699 0 0);
@@ -257,8 +257,8 @@
     background-color: var(--surface-glass);
     backdrop-filter: blur(24px);
     box-shadow:
-      0 10px 15px -3px rgb(0 0 0 / 0.1),
-      0 4px 6px -4px rgb(0 0 0 / 0.1);
+      0 10px 15px -3px var(--shadow-color),
+      0 4px 6px -4px var(--shadow-color);
   }
 
   .glass-card-hover {

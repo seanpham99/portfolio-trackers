@@ -64,7 +64,7 @@ export function AppSidebar({ user }: AppSidebarProps) {
     >
       <SidebarHeader className="pb-4 pt-6 z-20">
         <div className="flex items-center gap-3 px-2 group-data-[collapsible=icon]:justify-center">
-          <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 shadow-lg shadow-indigo-500/25 border border-white/10 transition-transform hover:scale-105 group-data-[collapsible=icon]:h-8 group-data-[collapsible=icon]:w-8">
+          <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-linear-to-br from-indigo-500 to-violet-600 shadow-lg shadow-indigo-500/25 border border-white/10 transition-transform hover:scale-105 group-data-[collapsible=icon]:h-8 group-data-[collapsible=icon]:w-8">
             <Briefcase className="h-5 w-5 text-white group-data-[collapsible=icon]:h-4 group-data-[collapsible=icon]:w-4" />
             <div className="absolute inset-0 rounded-xl ring-1 ring-inset ring-white/20" />
           </div>
@@ -97,7 +97,7 @@ export function AppSidebar({ user }: AppSidebarProps) {
                       h-10 transition-all duration-200 ease-in-out rounded-lg
                       ${
                         isActive
-                          ? "bg-gradient-to-r from-indigo-500/10 to-transparent text-indigo-300 shadow-[inset_2px_0_0_0_theme(colors.indigo.500)]"
+                          ? "bg-linear-to-r from-indigo-500/10 to-transparent text-indigo-300 shadow-[inset_2px_0_0_0_var(--color-indigo-500)]"
                           : "text-muted-foreground hover:text-white hover:bg-white/5"
                       }
                     `}
@@ -154,6 +154,7 @@ export function AppSidebar({ user }: AppSidebarProps) {
                 <DropdownMenuItem className="focus:bg-white/10 focus:text-white cursor-pointer rounded-lg my-0.5">
                   <Settings className="mr-2 h-4 w-4 opacity-70" /> Preferences
                 </DropdownMenuItem>
+
                 <div className="h-px bg-white/5 my-1" />
                 <DropdownMenuItem
                   asChild

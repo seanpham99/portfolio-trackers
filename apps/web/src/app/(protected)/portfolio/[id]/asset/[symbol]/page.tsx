@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useAssetDetails } from "@/api/hooks/use-asset-details";
 import { usePortfolio } from "@/features/portfolio/hooks/use-portfolios";
 import {
-  History,
   TrendingUp,
   ArrowUpRight,
   ArrowDownRight,
@@ -14,6 +13,7 @@ import {
   Clock,
   ExternalLink,
   ChevronRight,
+  ArrowLeftRight,
 } from "lucide-react";
 import {
   Breadcrumb,
@@ -34,7 +34,6 @@ import {
   TableRow,
 } from "@workspace/ui/components/table";
 import { ScrollArea } from "@workspace/ui/components/scroll-area";
-import { HoverCard, HoverCardTrigger, HoverCardContent } from "@workspace/ui/components/hover-card";
 import TradingViewWidget from "@/features/portfolio/trading-view-widget";
 
 export default function AssetDetailPage() {
@@ -65,14 +64,16 @@ export default function AssetDetailPage() {
         >
           <Info className="h-8 w-8" />
         </div>
-        <h2 className="mb-2 text-2xl font-semibold text-white">
-          {isNoTransactions ? "No Transactions Found" : "Asset data not found"}
-        </h2>
-        <p className="mb-6 max-w-md text-zinc-400">
-          {isNoTransactions
-            ? `You haven't recorded any transactions for ${symbol} in this portfolio yet.`
-            : `We couldn't retrieve the details for ${symbol}. It might have been deleted or moved.`}
-        </p>
+        <div className="p-4 bg-rose-500/10 border border-rose-500/20 rounded-xl mb-6">
+          <h2 className="mb-2 text-2xl font-semibold text-foreground">
+            {isNoTransactions ? "No Transactions Found" : "Asset data not found"}
+          </h2>
+          <p className="mb-6 max-w-md text-zinc-400">
+            {isNoTransactions
+              ? `You haven't recorded any transactions for ${symbol} in this portfolio yet.`
+              : `We couldn't retrieve the details for ${symbol}. It might have been deleted or moved.`}
+          </p>
+        </div>
         <Link href={`/portfolio/${portfolioId}`}>
           <Button variant="outline" className="gap-2">
             <ChevronLeft className="h-4 w-4" /> Back to Portfolio
@@ -95,43 +96,50 @@ export default function AssetDetailPage() {
   const isStale = new Date().getTime() - new Date(details.last_updated).getTime() > 3600000;
 
   return (
-    <div className="flex h-full flex-col bg-background">
-      {/* Header Section */}
-      <div className="border-b border-border bg-surface/40 px-8 py-4 backdrop-blur-md">
+    <div className="flex h-full flex-col">
+      {/* Header Section - Glassmorphic */}
+      <div className="border-b border-border/50 bg-background/60 backdrop-blur-md px-8 py-4 sticky top-0 z-10 transition-colors duration-300">
         <div className="mx-auto max-w-7xl">
           <Breadcrumb className="mb-4">
             <BreadcrumbList>
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link href="/dashboard">Dashboard</Link>
+                  <Link href="/dashboard" className="hover:text-foreground transition-colors">
+                    Dashboard
+                  </Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link href={`/portfolio/${portfolioId}`}>{portfolio?.name || "Portfolio"}</Link>
+                  <Link
+                    href={`/portfolio/${portfolioId}`}
+                    className="hover:text-foreground transition-colors"
+                  >
+                    {portfolio?.name || "Portfolio"}
+                  </Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbPage className="text-emerald-400">{symbol}</BreadcrumbPage>
+                <BreadcrumbPage className="text-emerald-400 font-medium">{symbol}</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
 
           <div className="flex flex-wrap items-center justify-between gap-6">
             <div className="flex items-center gap-4">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 text-2xl font-bold text-emerald-400 shadow-inner ring-1 ring-emerald-500/20">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-linear-to-br from-emerald-500/20 to-emerald-500/5 text-2xl font-bold text-emerald-400 shadow-inner ring-1 ring-emerald-500/20 border border-emerald-500/10">
                 {symbol?.[0]}
               </div>
               <div>
-                <div className="flex items-center gap-2">
-                  <h1 className="text-3xl font-bold text-foreground tracking-tight">
+                <div className="flex items-center gap-3">
+                  <h1 className="text-3xl font-bold text-foreground tracking-tight font-sans">
                     {details.name}
                   </h1>
                   <Badge
                     variant="outline"
-                    className="border-border bg-overlay-light text-muted-foreground uppercase tracking-widest text-[10px]"
+                    className="border-border/50 bg-muted/20 text-muted-foreground uppercase tracking-widest text-[10px]"
                   >
                     {details.asset_class}
                   </Badge>
@@ -148,16 +156,22 @@ export default function AssetDetailPage() {
                   <span className="text-muted-foreground">
                     {symbol} • {details.market}
                   </span>
-                  <span className="h-1 w-1 rounded-full bg-border" />
+                  {/* Dot separator */}
+                  <span className="h-1 w-1 rounded-full bg-muted-foreground/30" />
                   <span className="text-muted-foreground font-medium">
-                    Last Price: {formatCurrency(details.current_price)}
+                    Last Price:{" "}
+                    <div className="flex items-baseline gap-1 text-2xl">
+                      <span className="text-foreground">
+                        {formatCurrency(details.current_price)}
+                      </span>
+                    </div>
                   </span>
                 </div>
               </div>
             </div>
 
             <div className="flex items-center gap-3">
-              <Button className="bg-emerald-600 hover:bg-emerald-500 text-white font-medium shadow-lg shadow-emerald-600/20">
+              <Button className="bg-emerald-600 hover:bg-emerald-500 text-white font-medium shadow-lg shadow-emerald-600/20 rounded-full transition-all hover:scale-105">
                 Trade on Exchange <ExternalLink className="ml-2 h-4 w-4" />
               </Button>
             </div>
@@ -192,9 +206,9 @@ export default function AssetDetailPage() {
           {/* Chart & History Row */}
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
             {/* TradingView Widget Integration */}
-            <div className="lg:col-span-2 flex flex-col gap-4">
-              <div className="rounded-2xl border border-border bg-surface-elevated p-0 shadow-xl relative overflow-hidden h-[500px]">
-                <div className="flex items-center justify-between p-6 border-b border-border">
+            <div className="glass-card lg:col-span-2 flex flex-col gap-4 overflow-hidden p-0">
+              <div className="rounded-none border-b border-white/5 bg-transparent p-0 shadow-none relative overflow-hidden h-[500px]">
+                <div className="glass-card p-6 h-[400px]">
                   <h3 className="font-medium text-foreground flex items-center gap-2">
                     <TrendingUp className="h-4 w-4 text-emerald-400" /> Interactive Chart
                   </h3>
@@ -207,15 +221,15 @@ export default function AssetDetailPage() {
 
             {/* Transaction History Sidebar */}
             <div className="flex flex-col gap-4">
-              <div className="rounded-2xl border border-border bg-surface-elevated p-0 shadow-xl overflow-hidden flex flex-col h-[500px]">
-                <div className="flex items-center gap-2 p-5 border-b border-border bg-overlay-light">
-                  <History className="h-5 w-5 text-muted-foreground" />
+              <div className="overflow-hidden rounded-xl border border-border/50 bg-background/40">
+                <div className="flex items-center gap-2 p-5 border-b border-border/50 bg-muted/5">
+                  <ArrowLeftRight className="h-4 w-4 text-emerald-400" />
                   <h3 className="font-medium text-foreground">Recent Transactions</h3>
                 </div>
                 <ScrollArea className="flex-1">
                   <Table>
-                    <TableHeader className="bg-overlay-light">
-                      <TableRow className="border-border hover:bg-transparent">
+                    <TableHeader className="bg-transparent hover:bg-transparent">
+                      <TableRow className="border-white/5 hover:bg-transparent">
                         <TableHead className="text-muted-foreground pl-5">Date</TableHead>
                         <TableHead className="text-muted-foreground">Type</TableHead>
                         <TableHead className="text-muted-foreground text-right pr-5">
@@ -227,7 +241,7 @@ export default function AssetDetailPage() {
                       {transactions.map((tx) => (
                         <TableRow
                           key={tx.id}
-                          className="border-border hover:bg-overlay-light transition-colors group"
+                          className="border-border/50 hover:bg-muted/5 transition-colors group"
                         >
                           <TableCell className="pl-5 text-muted-foreground text-xs py-4">
                             {new Date(tx.date).toLocaleDateString()}
@@ -249,11 +263,13 @@ export default function AssetDetailPage() {
                             </span>
                           </TableCell>
                           <TableCell className="text-right pr-5">
-                            <div className="text-sm font-medium text-foreground">
-                              {tx.quantity} units
-                            </div>
-                            <div className="text-[10px] text-muted-foreground">
-                              @ {formatCurrency(tx.price)}
+                            <div className="flex items-center gap-2">
+                              <div className="text-sm font-medium text-foreground">
+                                {tx.quantity} units
+                              </div>
+                              <div className="text-[10px] text-muted-foreground">
+                                @ {formatCurrency(tx.price)}
+                              </div>
                             </div>
                           </TableCell>
                         </TableRow>
@@ -262,8 +278,8 @@ export default function AssetDetailPage() {
                   </Table>
                 </ScrollArea>
                 <Link
-                  href={`/portfolio/${portfolioId}/transactions`}
-                  className="p-4 text-center text-xs font-medium text-muted-foreground hover:text-emerald-400 border-t border-border bg-overlay-light transition-colors"
+                  href="#"
+                  className="p-4 text-center text-xs font-medium text-muted-foreground hover:text-emerald-400 border-t border-border/50 bg-muted/5 hover:bg-muted/10 transition-colors"
                 >
                   View full history <ChevronRight className="inline h-3 w-3 ml-1" />
                 </Link>
@@ -292,13 +308,15 @@ function StatCard({
   const isPositive = percentage !== undefined && percentage >= 0;
 
   return (
-    <div className="relative group rounded-2xl border border-white/5 bg-zinc-900/50 p-5 shadow-lg transition-all hover:bg-zinc-900/80 hover:border-white/10 overflow-hidden">
+    <div className="relative group glass-card p-5 hover:border-indigo-500/30 overflow-hidden">
       <div className="flex items-center justify-between mb-2">
-        <p className="text-xs font-medium text-zinc-500 uppercase tracking-tight">{label}</p>
+        <p className="text-xs font-medium text-muted-foreground uppercase tracking-tight">
+          {label}
+        </p>
       </div>
 
-      <div className="flex items-baseline gap-2">
-        <span className="text-2xl font-bold text-white tracking-tight">{value}</span>
+      <div className="mt-2 flex items-baseline gap-2">
+        <span className="text-2xl font-bold text-foreground tracking-tight font-sans">{value}</span>
       </div>
 
       {type === "dynamic" && percentage !== undefined && (
@@ -314,10 +332,12 @@ function StatCard({
         </div>
       )}
 
-      {subValue && <p className="mt-2 text-xs text-zinc-600 font-medium">{subValue}</p>}
+      {subValue && <p className="mt-2 text-xs text-muted-foreground font-medium">{subValue}</p>}
 
       {type === "neutral" && (
-        <p className="mt-2 text-xs text-zinc-600 font-medium italic">Breakdown of FX impact</p>
+        <p className="mt-2 text-xs text-muted-foreground font-medium italic">
+          Breakdown of FX impact
+        </p>
       )}
     </div>
   );
