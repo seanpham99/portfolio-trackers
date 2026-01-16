@@ -25,14 +25,7 @@ const nextConfig: NextConfig = {
   pageExtensions: ["js", "jsx", "md", "mdx", "ts", "tsx"],
 
   // Allow all hosts for development in Replit
-  experimental: {
-    serverActions: {
-      allowedOrigins: ["*"],
-    },
-  },
-  devIndicators: {
-    appIsrStatus: false,
-  },
+  allowedDevOrigins: ["*"],
 };
 
 const withMDX = createMDX({

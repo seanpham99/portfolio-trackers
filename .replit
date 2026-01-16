@@ -17,6 +17,10 @@ author = "agent"
 task = "workflow.run"
 args = "Next.js Dev Server"
 
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "NestJS API Server"
+
 [[workflows.workflow]]
 name = "Next.js Dev Server"
 author = "agent"
@@ -29,9 +33,25 @@ waitForPort = 5000
 [workflows.workflow.metadata]
 outputType = "webview"
 
+[[workflows.workflow]]
+name = "NestJS API Server"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "pnpm run dev --filter @workspace/api"
+waitForPort = 3001
+
+[workflows.workflow.metadata]
+outputType = "console"
+
 [[ports]]
 localPort = 5000
 externalPort = 80
+
+[[ports]]
+localPort = 3001
+externalPort = 3001
 
 [deployment]
 deploymentTarget = "autoscale"
