@@ -32,7 +32,7 @@ args = "cd apps/web && pnpm run dev"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "cd apps/api && pnpm run start:dev"
+args = "cd services/api && pnpm run start:dev"
 waitForPort = 3001
 
 [workflows.workflow.metadata]
