@@ -187,19 +187,14 @@ function Sidebar({
           data-sidebar="sidebar"
           data-slot="sidebar"
           data-mobile="true"
-          className="bg-sidebar text-sidebar-foreground w-[var(--sidebar-width-mobile)] max-w-[80vw] p-0 [&>button]:hidden"
+          className="bg-sidebar text-sidebar-foreground w-72 p-0 [&>button]:hidden"
           side={side}
-          style={
-            {
-              "--sidebar-width-mobile": SIDEBAR_WIDTH_MOBILE,
-            } as React.CSSProperties
-          }
         >
           <SheetHeader className="sr-only">
             <SheetTitle>Sidebar</SheetTitle>
             <SheetDescription>Displays the mobile sidebar.</SheetDescription>
           </SheetHeader>
-          <div className="flex h-full w-full flex-col overflow-y-auto">{children}</div>
+          <div className="flex h-full w-full flex-col">{children}</div>
         </SheetContent>
       </Sheet>
     )
@@ -217,34 +212,26 @@ function Sidebar({
       {/* This is what handles the sidebar gap on desktop */}
       <div
         data-slot="sidebar-gap"
-        data-collapsible={collapsible}
         className={cn(
-          "relative h-full bg-transparent transition-[width] duration-300 ease-in-out",
-          "w-[var(--sidebar-width)]",
+          "relative w-64 h-full bg-transparent transition-[width] duration-200 ease-linear",
+          "group-data-[collapsible=offcanvas]:w-0",
           "group-data-[side=right]:rotate-180",
-          collapsible === "offcanvas" && "group-data-[state=collapsed]:w-0",
-          collapsible === "icon" && "group-data-[state=collapsed]:w-[var(--sidebar-width-icon)]"
+          variant === "floating" || variant === "inset"
+            ? "group-data-[collapsible=icon]:w-16"
+            : "group-data-[collapsible=icon]:w-12"
         )}
       />
       <div
         data-slot="sidebar-container"
-        data-collapsible={collapsible}
         className={cn(
-          "fixed top-0 bottom-0 z-30 hidden h-svh transition-[left,right,width] duration-300 ease-in-out md:flex",
-          "w-[var(--sidebar-width)]",
-          collapsible === "icon" && "group-data-[state=collapsed]:w-[var(--sidebar-width-icon)]",
+          "fixed top-0 bottom-0 z-10 hidden h-svh w-64 transition-[left,right,width] duration-200 ease-linear md:flex",
           side === "left"
-            ? cn(
-                "left-0",
-                collapsible === "offcanvas" && "group-data-[state=collapsed]:left-[calc(var(--sidebar-width)*-1)]"
-              )
-            : cn(
-                "right-0", 
-                collapsible === "offcanvas" && "group-data-[state=collapsed]:right-[calc(var(--sidebar-width)*-1)]"
-              ),
+            ? "left-0 group-data-[collapsible=offcanvas]:left-[-16rem]"
+            : "right-0 group-data-[collapsible=offcanvas]:right-[-16rem]",
+          // Adjust the padding for floating and inset variants.
           variant === "floating" || variant === "inset"
-            ? "p-2"
-            : "group-data-[side=left]:border-r group-data-[side=right]:border-l",
+            ? "p-2 group-data-[collapsible=icon]:w-16"
+            : "group-data-[collapsible=icon]:w-12 group-data-[side=left]:border-r group-data-[side=right]:border-l",
           className
         )}
         {...props}
@@ -252,7 +239,7 @@ function Sidebar({
         <div
           data-sidebar="sidebar"
           data-slot="sidebar-inner"
-          className="bg-sidebar group-data-[variant=floating]:border-sidebar-border flex h-full w-full flex-col group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:shadow-sm overflow-hidden"
+          className="bg-sidebar group-data-[variant=floating]:border-sidebar-border flex h-full w-full flex-col group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:shadow-sm"
         >
           {children}
         </div>
@@ -297,6 +284,7 @@ function SidebarRail({ className, ...props }: React.ComponentProps<"button">) {
       aria-label="Toggle Sidebar"
       tabIndex={-1}
       onClick={toggleSidebar}
+      title="Toggle Sidebar"
       className={cn(
         "hover:after:bg-sidebar-border absolute inset-y-0 z-20 hidden w-4 -translate-x-1/2 transition-all ease-linear group-data-[side=left]:-right-4 group-data-[side=right]:left-0 after:absolute after:inset-y-0 after:left-1/2 after:w-[2px] sm:flex",
         "in-data-[side=left]:cursor-w-resize in-data-[side=right]:cursor-e-resize",
@@ -316,7 +304,7 @@ function SidebarInset({ className, ...props }: React.ComponentProps<"main">) {
     <main
       data-slot="sidebar-inset"
       className={cn(
-        "bg-background relative flex min-h-svh w-full flex-1 flex-col overflow-hidden",
+        "bg-background relative flex w-full flex-1 flex-col",
         "md:peer-data-[variant=inset]:m-2 md:peer-data-[variant=inset]:ml-0 md:peer-data-[variant=inset]:rounded-xl md:peer-data-[variant=inset]:shadow-sm md:peer-data-[variant=inset]:peer-data-[state=collapsed]:ml-2",
         className
       )}

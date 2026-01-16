@@ -19,13 +19,13 @@ export default async function ProtectedLayout({ children }: { children: React.Re
       <AppSidebar user={user} />
       <SidebarInset>
         {/* Premium Background for all protected pages */}
-        <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-950/20 via-background to-background pointer-events-none -z-10" />
+        <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-950/20 via-background to-background pointer-events-none -z-20" />
 
         {/* Header with Sidebar Trigger */}
-        <header className="flex h-14 shrink-0 items-center gap-2 border-b border-white/5 px-4 sticky top-0 z-40 bg-background/95 backdrop-blur-md">
-          <SidebarTrigger className="-ml-1 size-8 text-muted-foreground hover:text-white hover:bg-white/10 rounded-lg transition-colors shrink-0" />
+        <header className="flex h-14 shrink-0 items-center gap-2 border-b border-white/5 px-4 sticky top-0 z-10 bg-background/80 backdrop-blur-sm">
+          <SidebarTrigger className="-ml-1 size-8 text-muted-foreground hover:text-white hover:bg-white/10 rounded-lg transition-colors" />
           <Separator orientation="vertical" className="h-4 bg-white/10" />
-          <span className="text-sm font-medium text-muted-foreground whitespace-nowrap">Menu</span>
+          <span className="text-sm font-medium text-muted-foreground">Menu</span>
         </header>
 
         {/* Page content */}

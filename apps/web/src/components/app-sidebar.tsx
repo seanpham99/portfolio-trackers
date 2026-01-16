@@ -60,19 +60,19 @@ export function AppSidebar({ user }: AppSidebarProps) {
     <Sidebar
       collapsible="icon"
       variant="sidebar"
-      className="border-r border-white/5 bg-sidebar/95 backdrop-blur-xl"
+      className="border-r border-white/5 bg-black/40 backdrop-blur-xl transition-all duration-300"
     >
-      <SidebarHeader className="pb-4 pt-6">
+      <SidebarHeader className="pb-4 pt-6 z-20">
         <div className="flex items-center gap-3 px-2 group-data-[collapsible=icon]:justify-center">
-          <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 shadow-lg shadow-indigo-500/25 border border-white/10 transition-all duration-200 hover:scale-105 group-data-[collapsible=icon]:h-8 group-data-[collapsible=icon]:w-8">
-            <Briefcase className="h-5 w-5 text-white transition-all duration-200 group-data-[collapsible=icon]:h-4 group-data-[collapsible=icon]:w-4" />
+          <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 shadow-lg shadow-indigo-500/25 border border-white/10 transition-transform hover:scale-105 group-data-[collapsible=icon]:h-8 group-data-[collapsible=icon]:w-8">
+            <Briefcase className="h-5 w-5 text-white group-data-[collapsible=icon]:h-4 group-data-[collapsible=icon]:w-4" />
             <div className="absolute inset-0 rounded-xl ring-1 ring-inset ring-white/20" />
           </div>
-          <div className="flex flex-col overflow-hidden transition-all duration-200 group-data-[collapsible=icon]:w-0 group-data-[collapsible=icon]:opacity-0">
+          <div className="flex flex-col group-data-[collapsible=icon]:hidden overflow-hidden transition-all duration-300">
             <span className="font-serif text-lg font-bold tracking-tight text-white whitespace-nowrap drop-shadow-md">
               Portfolio Tracker
             </span>
-            <span className="text-[10px] uppercase tracking-widest text-indigo-300 font-bold whitespace-nowrap">
+            <span className="text-[10px] uppercase tracking-widest text-indigo-300 font-bold">
               Premium Edition
             </span>
           </div>
