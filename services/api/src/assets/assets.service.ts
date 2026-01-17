@@ -71,12 +71,26 @@ export class AssetsService {
 
   /**
    * Get popular assets
+   * Hardcoded list of top assets across markets
    */
   async getPopular(): Promise<PopularAssetDto[]> {
+    const TOP_SYMBOLS = [
+      'BTC',
+      'ETH',
+      'AAPL',
+      'NVDA',
+      'TSLA',
+      'MSFT',
+      'GOOGL',
+      'AMZN',
+      'VCB',
+      'HPG',
+    ];
+
     const { data, error } = await this.supabase
       .from('assets')
       .select('*')
-      .limit(5);
+      .in('symbol', TOP_SYMBOLS);
 
     if (error) {
       throw error;

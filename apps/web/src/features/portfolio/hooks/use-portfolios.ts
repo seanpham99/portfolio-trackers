@@ -40,6 +40,7 @@ export const useAddTransaction = (portfolioId: string) => {
       quantity: number;
       price: number;
       fee?: number;
+      exchange_rate?: number;
       transaction_date?: string;
       notes?: string;
     }) =>

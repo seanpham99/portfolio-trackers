@@ -64,7 +64,7 @@ development_status:
 
   epic-4: in-progress
   4-1-cross-provider-asset-discovery: done
-  4-2-asset-request-capture-queue: backlog
+  4-2-asset-request-capture-queue: done
   4-3-mock-data-eviction-service-hardening: backlog
   4-4-data-source-reliability-staleness-controls: backlog
   epic-4-retrospective: optional

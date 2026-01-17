@@ -1,4 +1,4 @@
-import { Injectable, Logger, Inject } from '@nestjs/common';
+import { Injectable, Logger, Inject, ConflictException } from '@nestjs/common';
 import YahooFinance from 'yahoo-finance2';
 import { CacheService } from '../common/cache/index';
 import { SupabaseClient } from '@supabase/supabase-js';
@@ -262,7 +262,7 @@ export class DiscoveryService {
     if (error) {
       // Handle duplicate request error
       if (error.code === '23505') {
-        throw new Error(
+        throw new ConflictException(
           `You have already requested tracking for ${symbol}. Please wait for admin review.`,
         );
       }

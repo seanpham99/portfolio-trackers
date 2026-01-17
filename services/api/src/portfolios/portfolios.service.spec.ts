@@ -151,6 +151,7 @@ describe('PortfoliosService', () => {
     });
 
     it('should return all portfolios for user from DB with summary', async () => {
+      mockCacheService.get.mockResolvedValue(null);
       const mockPortfolios = [mockPortfolio];
       const mockTxs = [
         {
@@ -160,6 +161,11 @@ describe('PortfoliosService', () => {
             market: 'US',
             asset_class: 'US Equity',
           },
+          type: 'BUY',
+          quantity: 10,
+          price: 150,
+          fee: 0,
+          exchange_rate: 1,
         },
       ];
 

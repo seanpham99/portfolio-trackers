@@ -12,6 +12,7 @@ import {
   Assets,
   Portfolios,
 } from '@workspace/shared-types/database';
+import { Decimal } from 'decimal.js';
 import { CreatePortfolioDto, UpdatePortfolioDto } from './dto';
 import {
   HoldingDto,
@@ -337,6 +338,8 @@ export class PortfoliosService {
       throw new Error('Failed to update portfolio');
     }
 
+    await this.cacheService.invalidatePortfolio(userId, id);
+
     return data as Portfolio;
   }
 
@@ -488,12 +491,17 @@ export class PortfoliosService {
       entry.lastPrice = tx.price;
 
       if (tx.type === 'BUY') {
-        const AssetTotal = tx.total ?? tx.quantity * tx.price + (tx.fee || 0);
-        const costBasis = AssetTotal * (tx.exchange_rate ?? 1);
-        entry.lots.push({ qty: tx.quantity, cost: costBasis });
+        const qty = new Decimal(tx.quantity);
+        const price = new Decimal(tx.price);
+        const fee = new Decimal(tx.fee || 0);
+        const exchangeRate = new Decimal(tx.exchange_rate ?? 1);
+
+        const assetTotal = qty.times(price).plus(fee);
+        const costBasis = assetTotal.times(exchangeRate);
+        entry.lots.push({ qty: qty.toNumber(), cost: costBasis.toNumber() });
       } else if (tx.type === 'SELL') {
-        let qtyToSell = tx.quantity;
-        let costBasisRemoved = 0;
+        let qtyToSell = new Decimal(tx.quantity).toNumber();
+        let costBasisRemoved = new Decimal(0);
 
         while (qtyToSell > 0.00000001 && entry.lots.length > 0) {
           const currentLot = entry.lots[0];
@@ -501,22 +509,31 @@ export class PortfoliosService {
 
           if (currentLot.qty > qtyToSell) {
             const ratio = qtyToSell / currentLot.qty;
-            const costToRemove = currentLot.cost * ratio;
+            const costToRemove = new Decimal(currentLot.cost).times(ratio);
 
             currentLot.qty -= qtyToSell;
-            currentLot.cost -= costToRemove;
-            costBasisRemoved += costToRemove;
+            currentLot.cost = new Decimal(currentLot.cost)
+              .minus(costToRemove)
+              .toNumber();
+            costBasisRemoved = costBasisRemoved.plus(costToRemove);
             qtyToSell = 0;
           } else {
-            costBasisRemoved += currentLot.cost;
+            costBasisRemoved = costBasisRemoved.plus(currentLot.cost);
             qtyToSell -= currentLot.qty;
             entry.lots.shift();
           }
         }
 
-        const AssetTotal = tx.total ?? tx.quantity * tx.price - (tx.fee || 0);
-        const proceeds = AssetTotal * (tx.exchange_rate ?? 1);
-        entry.realizedPL += proceeds - costBasisRemoved;
+        const qty = new Decimal(tx.quantity);
+        const price = new Decimal(tx.price);
+        const fee = new Decimal(tx.fee || 0);
+        const exchangeRate = new Decimal(tx.exchange_rate ?? 1);
+
+        const assetTotal = qty.times(price).minus(fee);
+        const proceeds = assetTotal.times(exchangeRate);
+        entry.realizedPL = new Decimal(entry.realizedPL)
+          .plus(proceeds.minus(costBasisRemoved))
+          .toNumber();
       }
     }
 
@@ -647,17 +664,23 @@ export class PortfoliosService {
 
     for (const tx of transactions) {
       if (tx.type === 'BUY') {
-        const AssetTotal = tx.total ?? tx.quantity * tx.price + (tx.fee || 0);
-        const costBasis = AssetTotal * (tx.exchange_rate ?? 1);
+        const qty = new Decimal(tx.quantity);
+        const price = new Decimal(tx.price);
+        const fee = new Decimal(tx.fee || 0);
+        const exchangeRate = new Decimal(tx.exchange_rate ?? 1);
+
+        const assetTotal = qty.times(price).plus(fee);
+        const costBasis = assetTotal.times(exchangeRate);
+
         lots.push({
-          quantity: tx.quantity,
-          cost: costBasis,
+          quantity: qty.toNumber(),
+          cost: costBasis.toNumber(),
           date: tx.transaction_date,
         });
-        totalQty += tx.quantity;
+        totalQty = new Decimal(totalQty).plus(qty).toNumber();
       } else if (tx.type === 'SELL') {
-        let qtyToSell = tx.quantity;
-        let costBasisRemoved = 0;
+        let qtyToSell = new Decimal(tx.quantity).toNumber();
+        let costBasisRemoved = new Decimal(0);
 
         while (qtyToSell > 0.00000001 && lots.length > 0) {
           const currentLot = lots[0];
@@ -665,22 +688,32 @@ export class PortfoliosService {
 
           if (currentLot.quantity > qtyToSell) {
             const ratio = qtyToSell / currentLot.quantity;
-            const costPortion = currentLot.cost * ratio;
-            costBasisRemoved += costPortion;
+            const costPortion = new Decimal(currentLot.cost).times(ratio);
+            costBasisRemoved = costBasisRemoved.plus(costPortion);
+
             currentLot.quantity -= qtyToSell;
-            currentLot.cost -= costPortion;
+            currentLot.cost = new Decimal(currentLot.cost)
+              .minus(costPortion)
+              .toNumber();
             qtyToSell = 0;
           } else {
-            costBasisRemoved += currentLot.cost;
+            costBasisRemoved = costBasisRemoved.plus(currentLot.cost);
             qtyToSell -= currentLot.quantity;
             lots.shift();
           }
         }
 
-        const AssetTotal = tx.total ?? tx.quantity * tx.price - (tx.fee || 0);
-        const proceeds = AssetTotal * (tx.exchange_rate ?? 1);
-        realizedPL += proceeds - costBasisRemoved;
-        totalQty -= tx.quantity;
+        const qty = new Decimal(tx.quantity);
+        const price = new Decimal(tx.price);
+        const fee = new Decimal(tx.fee || 0);
+        const exchangeRate = new Decimal(tx.exchange_rate ?? 1);
+
+        const assetTotal = qty.times(price).minus(fee);
+        const proceeds = assetTotal.times(exchangeRate);
+        realizedPL = new Decimal(realizedPL)
+          .plus(proceeds.minus(costBasisRemoved))
+          .toNumber();
+        totalQty = new Decimal(totalQty).minus(qty).toNumber();
       }
     }
 

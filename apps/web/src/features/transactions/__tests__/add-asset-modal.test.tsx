@@ -88,7 +88,7 @@ describe("AddAssetModal", () => {
   it("renders popular assets initially", () => {
     render(<AddAssetModal {...defaultProps} />);
 
-    expect(screen.getByPlaceholderText(/search by symbol/i)).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/search symbol/i)).toBeInTheDocument();
     expect(screen.getByText("AAPL")).toBeInTheDocument();
     expect(screen.getByText("BTC")).toBeInTheDocument();
   });
@@ -101,7 +101,7 @@ describe("AddAssetModal", () => {
 
     render(<AddAssetModal {...defaultProps} />);
 
-    const input = screen.getByPlaceholderText(/search by symbol/i);
+    const input = screen.getByPlaceholderText(/search symbol/i);
     fireEvent.change(input, { target: { value: "TSLA" } });
 
     expect(screen.getByText("TSLA")).toBeInTheDocument();
@@ -114,10 +114,11 @@ describe("AddAssetModal", () => {
 
     render(<AddAssetModal {...defaultProps} />);
 
-    const input = screen.getByPlaceholderText(/search by symbol/i);
+    const input = screen.getByPlaceholderText(/search symbol/i);
     fireEvent.change(input, { target: { value: "UNKNOWN" } });
 
-    expect(screen.getByText(/Asset not found in our registry/i)).toBeInTheDocument();
+    // New Text: "No results found"
+    expect(screen.getByText(/No results found/i)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Search External Providers/i })).toBeInTheDocument();
   });
 
@@ -127,7 +128,7 @@ describe("AddAssetModal", () => {
     mockUseSearchAssets.mockReturnValue({ data: [], isLoading: false });
 
     render(<AddAssetModal {...defaultProps} />);
-    const input = screen.getByPlaceholderText(/search by symbol/i);
+    const input = screen.getByPlaceholderText(/search symbol/i);
     fireEvent.change(input, { target: { value: "NEW" } });
 
     // 2. Click "Search External Providers"
@@ -149,9 +150,8 @@ describe("AddAssetModal", () => {
     });
   });
 
-  // State: EXTERNAL_RESULTS -> ASSET_FORM -> ADD
-  // State: EXTERNAL_RESULTS -> ASSET_FORM -> ADD
-  it("selects an external asset and adds it to portfolio", async () => {
+  // State: EXTERNAL_RESULTS -> CONFIRMATION -> ASSET_FORM -> ADD
+  it("selects an external asset, confirms it, and adds it to portfolio", async () => {
     const user = userEvent.setup();
 
     // Setup state where external results are shown
@@ -161,7 +161,7 @@ describe("AddAssetModal", () => {
     render(<AddAssetModal {...defaultProps} />);
 
     // Skip to external results state (simulated by inputs)
-    const input = screen.getByPlaceholderText(/search by symbol/i);
+    const input = screen.getByPlaceholderText(/search symbol/i);
     await user.type(input, "NEW");
     await user.click(screen.getByRole("button", { name: /Search External Providers/i }));
     await user.click(screen.getByText("US Stock"));
@@ -170,15 +170,22 @@ describe("AddAssetModal", () => {
     await waitFor(() => expect(screen.getByText("NEW")).toBeInTheDocument());
     await user.click(screen.getByText("NEW"));
 
+    // Verify Confirmation Step [NEW]
+    await waitFor(() => {
+      expect(screen.getByText("Is this the asset you want to add?")).toBeInTheDocument();
+      expect(screen.getByText("New Stock")).toBeInTheDocument();
+    });
+
+    // Click Confirm
+    await user.click(screen.getByRole("button", { name: /Yes, Continue/i }));
+
     // Verify Form
-    // Title changes to asset symbol, logic covered by next assertion
-    // Wait for logic to settle - title becomes symbol
-    await waitFor(() => expect(screen.getByText("NEW")).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText("Add Transaction")).toBeInTheDocument());
     expect(screen.getByLabelText(/Quantity/i)).toBeInTheDocument();
 
     // Fill Form
     const qtyInput = screen.getByLabelText(/Quantity/i);
-    const priceInput = screen.getByLabelText(/Price per unit/i);
+    const priceInput = screen.getByLabelText(/Price/i); // Matches "Price (USD)"
 
     await user.clear(qtyInput);
     await user.type(qtyInput, "10");
@@ -210,7 +217,7 @@ describe("AddAssetModal", () => {
     render(<AddAssetModal {...defaultProps} />);
 
     // Navigate to external search
-    const input = screen.getByPlaceholderText(/search by symbol/i);
+    const input = screen.getByPlaceholderText(/search symbol/i);
     fireEvent.change(input, { target: { value: "OBSCURE" } });
     fireEvent.click(screen.getByRole("button", { name: /Search External Providers/i }));
     fireEvent.click(screen.getByText("US Stock"));
@@ -230,6 +237,33 @@ describe("AddAssetModal", () => {
         assetClass: DiscoverableAssetClass.US_STOCK,
       });
       expect(screen.getByText(/Request Submitted!/i)).toBeInTheDocument();
+    });
+  });
+
+  // State: CONFIRMATION -> NO_RESULTS_PICKER (Pre-fill logic)
+  it("pre-fills search query when clicking 'Cant Find' from confirmation screen", async () => {
+    // Setup: Internal search returns result
+    mockUseSearchAssets.mockReturnValue({ data: mockSearchResults, isLoading: false });
+
+    render(<AddAssetModal {...defaultProps} />);
+
+    // Search and select asset
+    const input = screen.getByPlaceholderText(/search symbol/i);
+    fireEvent.change(input, { target: { value: "TSLA" } });
+    fireEvent.click(screen.getByText("TSLA"));
+
+    // Verify Confirmation
+    await waitFor(() => {
+      expect(screen.getByText("Is this the asset you want to add?")).toBeInTheDocument();
+    });
+
+    // Click "Can't find your asset? Search external."
+    fireEvent.click(screen.getByText(/Can't find your asset\? Search external/i));
+
+    // Verify Picker state with pre-filled query
+    await waitFor(() => {
+      expect(screen.getByText(/What type of asset is/i)).toBeInTheDocument();
+      expect(screen.getByText("TSLA")).toBeInTheDocument(); // Should show the symbol
     });
   });
 });
