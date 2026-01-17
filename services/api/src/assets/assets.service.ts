@@ -12,9 +12,24 @@ export class AssetsService {
 
   /**
    * Search for assets by symbol or name
+   * Prioritizes exact symbol matches, then fuzzy matches on symbol/name
    */
   async search(query: string) {
-    const { data, error } = await this.supabase
+    const upperQuery = query.toUpperCase();
+
+    // First try exact symbol match (case-insensitive)
+    const { data: exactMatch, error: exactError } = await this.supabase
+      .from('assets')
+      .select('*')
+      .ilike('symbol', upperQuery)
+      .limit(1);
+
+    if (exactError) {
+      throw exactError;
+    }
+
+    // Then do fuzzy search on symbol and names
+    const { data: fuzzyMatches, error: fuzzyError } = await this.supabase
       .from('assets')
       .select('*')
       .or(
@@ -22,11 +37,18 @@ export class AssetsService {
       )
       .limit(10);
 
-    if (error) {
-      throw error;
+    if (fuzzyError) {
+      throw fuzzyError;
     }
 
-    return (data as Assets[]) ?? [];
+    // Combine results, removing duplicates, with exact match first
+    const exactIds = new Set((exactMatch ?? []).map((a) => a.id));
+    const combined = [
+      ...(exactMatch ?? []),
+      ...(fuzzyMatches ?? []).filter((a) => !exactIds.has(a.id)),
+    ].slice(0, 10);
+
+    return combined as Assets[];
   }
 
   /**

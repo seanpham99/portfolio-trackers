@@ -48,7 +48,7 @@ Investors managing multi-asset portfolios across Vietnamese and global markets f
 
 Portfolios Tracker transforms an existing institutional-grade data pipeline (Apache Airflow + ClickHouse) into an interactive web application that:
 
-1. Unifies Multi-Asset Tracking — Vietnamese stocks (HSX/HNX via vnstock), US equities (yfinance/Polygon.io), Global Stocks (on-demand ingestion), and cryptocurrency (CoinGecko/Binance) in a single portfolio view.
+1. Unifies Multi-Asset Tracking — Vietnamese stocks, any global equity (via Yahoo Finance), and cryptocurrency (CoinGecko/Binance) in a single portfolio view.
 2. Delivers Professional Analytics — Technical indicators (RSI, MACD, MA) from TradingView and 3rd-party providers, with advanced charting via TradingView widgets; fallback to internal calculation when external data is absent.
 3. Provides Transparent Calculations — Drill down from net worth → portfolio → asset → transaction with clear formulas for cost basis, returns, and allocations.
 4. Handles Multi-Currency Fluency — Seamless USD/VND/USDT conversion with accurate FX rates, separating asset gains from currency gains.
@@ -60,11 +60,11 @@ Portfolios Tracker transforms an existing institutional-grade data pipeline (Apa
 
 **Unique Differentiators**
 
-1. Vietnamese Market Excellence — Deep HSX/HNX integration via vnstock, understanding T+2 settlement and foreign ownership mechanics.
-2. Multi-Asset Parity — VN stocks, US equities, Global Stocks, and crypto treated as first-class citizens with equal feature depth.
+1. Vietnamese Market Excellence — Deep HSX/HNX integration, understanding T+2 settlement and foreign ownership mechanics.
+2. Global Asset Parity — Any global equity (via Yahoo Finance) and crypto treated as first-class citizens with equal feature depth.
 3. Institutional Data + Consumer UX — Professional-grade technical indicators from TradingView/3rd-party providers wrapped in a minimalist, premium interface with smooth micro-interactions.
 4. Transparent Methodology — Every metric (cost basis, returns, allocations) shows underlying formulas and data sources.
-5. Cross-Border Intelligence — Built for overseas Vietnamese and tech-savvy investors managing VN + US + Global + crypto with automatic multi-currency reconciliation.
+5. Cross-Border Intelligence — Built for investors managing any global stock + crypto with automatic multi-currency reconciliation.
 
 ## Project Classification
 
@@ -144,7 +144,7 @@ Dimensional modeling + ClickHouse columnar storage yields fast analytics, clean 
 ### User Success
 
 - **Portfolio-First Navigation:** Dashboard displays a list of portfolio cards; clicking a portfolio drills into that portfolio's unified holdings view with asset-class filtering. Navigation flow: **Dashboard (portfolio list) → Portfolio Detail (holdings) → Asset Detail (transactions)**; ≤ 3 clicks to drill from dashboard → portfolio → asset → transaction.
-- Consolidated multi‑asset view within each portfolio across VN stocks, US equities, Global Stocks, and crypto.
+- Consolidated multi‑asset view within each portfolio across VN stocks, Global Equities, and crypto.
 - Time‑to‑first‑complete‑portfolio ≤ 15 minutes (from signup to consolidated view via manual entry).
 - Add transactions quickly: manual entry ≤ 30 seconds per transaction with autocomplete and keyboard shortcuts.
 - Crypto API sync: ≥ 98% successful connection rate for Binance and OKX; real-time balance sync within 5 seconds.
@@ -204,9 +204,9 @@ Consolidated in Project Scoping & Phased Development. See that section for MVP (
 - Payment processed; webhook idempotency with retries; dashboard reflects tier change; failure shows retriable state.
 - Outcome: Conversion; payment success ≥ 98%; reconciliation nightly; cohort tracked for funnel metrics.
 
-### Cross‑Border Portfolio (Overseas Vietnamese)
+### Cross‑Border Portfolio (Global Investor)
 
-- Adds US equities (AAPL, MSFT), VN holdings, and Global Stocks (e.g., TSMC, LVMH); FX rates apply; net worth shows USD base with FX gain breakdown.
+- Adds any global equities (e.g., AAPL, MSFT from US; TSMC, LVMH from Global; FPT, HPG from VN); FX rates apply; net worth shows USD base with FX gain breakdown.
 - Drill‑down shows transaction lots and separate asset vs currency gain.
 - Outcome: Correctness ±0.5%; FX breakdown visible; export CSV in ≤ 2 seconds.
 

@@ -4,3 +4,6 @@ export type { Database } from "./supabase-types.js";
 
 // Re-export all public schema types for convenience
 export * from "./supabase-types.js";
+
+// Custom enums (not auto-generated, maintained manually)
+export * from "./enums.js";

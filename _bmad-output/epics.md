@@ -17,7 +17,7 @@ This document provides the complete epic and story breakdown for portfolios-trac
 
 ### Functional Requirements
 
-FR1: Unified Multi-Asset Tracking (VN stocks, US equities, Global Equities, Crypto)
+FR1: Unified Multi-Asset Tracking (VN stocks, any Global Equities, Crypto)
 FR2: Professional Analytics (Technical indicators: RSI, MACD, MA via TradingView/3rd-party)
 FR3: Transparent Calculations (Drill-down Net Worth -> Portfolio -> Asset -> Transaction with visible formulas)
 FR4: Multi-Currency Fluency (Auto-conversion between VND/USD/USDT; separation of asset vs FX gains)
@@ -25,7 +25,7 @@ FR5: AI-Enhanced Insights (Personalized portfolio analysis and market commentary
 FR6: Manual Transaction Entry (Autocomplete symbol search, recent assets, keyboard shortcuts)
 FR7: Crypto API Sync (OAuth/Read-only balance sync for Binance and OKX via CCXT)
 FR8: Multi-Portfolio Management (Dashboard showing a list of portfolio cards with summary metrics)
-FR9: Portfolio Detail View (Unified holdings table with asset-class filtering: All/VN/US/Crypto)
+FR9: Portfolio Detail View (Unified holdings table with asset-class filtering: All/VN/Global/Crypto)
 FR10: Asset Detail View (TradingView charts, transaction lot history, realized/unrealized P&L)
 FR11: Connections Settings (Manage API keys and OAuth connections for external providers)
 FR12: Freemium Model (Free: 1 portfolio, 20 assets, manual entry. Paid: Unlimited, faster polling, AI insights)
@@ -74,7 +74,7 @@ FR14: Epic 4 - Universal Asset Discovery & Request Queue
 
 ### Epic 1: Foundation & Unified Multi-Asset Dashboard
 
-Establish the core monorepo foundation and provide users with a unified "cockpit" view of their multi-asset wealth (VN stocks, US equities, Global Stocks, and Crypto) across multiple portfolios.
+Establish the core monorepo foundation and provide users with a unified "cockpit" view of their multi-asset wealth (VN stocks, any global equities, and Crypto) across multiple portfolios.
 **FRs covered:** FR1, FR6, FR8, FR9
 
 #### Story 1.1: Project Initialization
@@ -115,7 +115,7 @@ As a user, I want to see a dashboard showing all my portfolios as cards with sum
 
 #### Story 1.5: Unified Portfolio Detail View
 
-As a user, I want to click a portfolio and see a single list mixing my VN, US, and Crypto assets, so that I don't have to switch between tabs to see my consolidated holdings.
+As a user, I want to click a portfolio and see a single list mixing my VN, Global, and Crypto assets, so that I don't have to switch between tabs to see my consolidated holdings.
 **Acceptance Criteria:**
 
 - **Given** a selected portfolio.
@@ -124,7 +124,7 @@ As a user, I want to click a portfolio and see a single list mixing my VN, US, a
 
 #### Story 1.6: Asset Class Filtering
 
-As a user, I want to filter my holdings by Asset Class (All, VN, US, Crypto) using the tab bar, so that I can quickly focus on specific components of my portfolio.
+As a user, I want to filter my holdings by Asset Class (All, VN, Global, Crypto) using the tab bar, so that I can quickly focus on specific components of my portfolio.
 **Acceptance Criteria:**
 
 - **Given** the Unified Holdings view.
@@ -170,7 +170,7 @@ Provide professional-grade technical analysis tools, including TradingView chart
 
 #### Story 3.1: TradingView Chart Integration
 
-As a user, I want to see an interactive TradingView chart for any selected asset (VN, US, or Crypto), so that I can visualize historical price action and trends.
+As a user, I want to see an interactive TradingView chart for any selected asset (VN, Global, or Crypto), so that I can visualize historical price action and trends.
 **Acceptance Criteria:**
 
 - **Given** an Asset Detail page.

@@ -75,6 +75,7 @@ _This file contains critical rules and patterns that AI agents must follow when 
 - **Direct DB Access**: Apps must use shared types from `@workspace/shared-types`; do not define schemas locally.
 - **Resiliency**: UI must handle stale data scenarios (staleness > 60s) with "Staleness Banners" or badges.
 - **Rate Limits**: Implement exponential backoff for all external API calls (e.g., CCXT/Binance).
+- **Global Parity**: Track ANY global stock (not just US/VN). Support for any nation's ticker via Yahoo Finance is a first-class requirement.
 - **Security**: filtering via Supabase RLS is mandatory. Never bypass RLS in the client or standard API routes.
 
 ---

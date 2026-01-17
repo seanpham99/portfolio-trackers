@@ -10,6 +10,7 @@ import {
   type Assets,
   type InsertTransactions,
   type Transactions,
+  DiscoverableAssetClass,
 } from "@workspace/shared-types/database";
 import { apiFetch } from "@/lib/api";
 
@@ -79,6 +80,101 @@ export async function searchAssets(query: string): Promise<Assets[]> {
   const response = await apiFetch(`/assets/search?q=${encodeURIComponent(query)}`);
   if (!response.ok) {
     throw new Error("Failed to search assets");
+  }
+  return response.json();
+}
+
+// ============ Discovery API ============
+
+/**
+ * Discovered asset from external providers
+ */
+export interface DiscoveredAsset {
+  symbol: string;
+  name_en: string;
+  name_local?: string | null;
+  asset_class: string;
+  market?: string | null;
+  exchange?: string | null;
+  currency?: string;
+  logo_url?: string | null;
+  source: string;
+}
+
+/**
+ * Asset request response
+ */
+export interface AssetRequestResponse {
+  id: string;
+  symbol: string;
+  status: string;
+  message: string;
+}
+
+/**
+ * Union type for assets that can be selected in the AddAssetModal
+ * Includes both internal registry assets and externally discovered assets
+ */
+export type SelectableAsset = Assets | DiscoveredAsset;
+
+/**
+ * Type guard to check if an asset is from internal registry
+ */
+export function isInternalAsset(asset: SelectableAsset): asset is Assets {
+  return "id" in asset && typeof asset.id === "string";
+}
+
+/**
+ * Common interface for assets that can be displayed in the UI
+ * Works across internal Assets, PopularAssetDto, and DiscoveredAsset
+ */
+export interface DisplayableAsset {
+  id?: string;
+  symbol: string;
+  name_en: string;
+  name_local?: string | null;
+  asset_class: string;
+  logo_url?: string | null;
+  market?: string | null;
+  currency?: string;
+}
+
+// Re-export DiscoverableAssetClass for convenience
+export { DiscoverableAssetClass };
+
+/**
+ * Discover assets from external providers (Yahoo Finance, CoinGecko)
+ * Used when asset is not found in internal registry
+ */
+export async function discoverAssets(
+  query: string,
+  assetClass: DiscoverableAssetClass
+): Promise<DiscoveredAsset[]> {
+  const params = new URLSearchParams({
+    q: query,
+    assetClass,
+  });
+  const response = await apiFetch(`/assets/discover?${params.toString()}`);
+  if (!response.ok) {
+    throw new Error("Failed to discover assets");
+  }
+  return response.json();
+}
+
+/**
+ * Submit an asset tracking request to the pending queue
+ */
+export async function submitAssetRequest(
+  symbol: string,
+  assetClass: DiscoverableAssetClass
+): Promise<AssetRequestResponse> {
+  const response = await apiFetch("/assets/request", {
+    method: "POST",
+    body: JSON.stringify({ symbol, assetClass }),
+  });
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.message || "Failed to submit asset request");
   }
   return response.json();
 }

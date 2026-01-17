@@ -29,7 +29,7 @@ date: "2026-01-15"
 The system must unify tracking for VN stocks, US equities, Global Equities, and Crypto, requiring complex data normalization. Key features include professional analytics with TradingView integration, transparent calculation methodologies (drill-down to formulas), and multi-currency handling (separation of FX vs. asset gains). The system also requires secure payment integrations (SePay) and automated crypto exchange syncing.
 
 **Non-Functional Requirements:**
-Architecture must support high performance (P95 < 200ms) with a specific polling strategy (~60s) and staleness indicators (>5m). Security is paramount, with strict adherence to PDPA/GDPR, secure webhook handling, and Supabase RLS. Accessibility (WCAG 2.1 AA) and "calm" UX design principles (handling volatility without panic) drive frontend architecture.
+Architecture must support high performance (P95 < 200ms) with a specific polling strategy (~60s) and staleness indicators (>5m). Security is paramount, with strict adherence to PDPA/GDPR, secure webhook handling, and Supabase RLS. Accessibility (WCAG 2.1 AA) and "calm" UX design principles (handling volatility without panic) drive frontend architecture. Global stock support is powered universally by Yahoo Finance.
 
 **Scale & Complexity:**
 
@@ -108,7 +108,7 @@ Fast HMR, unified linting/formatting (ESLint/Prettier), and centralized dependen
 
 **Important Decisions (Shape Architecture):**
 
-- **Lazy-Load Asset Registry:** On-demand ingestion of global market data to manage costs.
+- **Universal Global Asset Registry:** On-demand ingestion of any global market data via Yahoo Finance to manage costs.
 - **Graceful Degradation:** UI-first handling of stale data and API timeouts to maintain "Calm" UX.
 - **Monorepo Strategy:** Turborepo for shared types between calculation services and frontend.
 
@@ -305,7 +305,7 @@ portfolios-tracker/
 
 **Feature/Epic Mapping:**
 
-- **Multi-Asset Support (VN, US, Global, Crypto):** Logic in `@workspace/finance`, ingestion in `apps/api/src/portfolios`.
+- **Multi-Asset Support (VN, Global, Crypto):** Logic in `@workspace/finance`, ingestion in `apps/api/src/portfolios`.
 - **Unified Dashboard:** UI in `apps/web/src/features/dashboard`, server state in `apps/web/src/hooks`.
 
 **Cross-Cutting Concerns:**

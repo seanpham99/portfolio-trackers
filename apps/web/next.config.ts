@@ -13,7 +13,16 @@ const nextConfig: NextConfig = {
 
   // Image configuration (add domains as needed)
   images: {
-    remotePatterns: [],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "assets.coingecko.com",
+      },
+      {
+        protocol: "https",
+        hostname: "coin-images.coingecko.com",
+      },
+    ],
   },
 
   // Environment variables exposed to the browser

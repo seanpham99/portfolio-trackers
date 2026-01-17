@@ -57,6 +57,47 @@ export type Database = {
         };
         Relationships: [];
       };
+      pending_assets: {
+        Row: {
+          admin_notes: string | null;
+          asset_class: string;
+          created_at: string | null;
+          id: string;
+          requested_by: string;
+          status: string | null;
+          symbol: string;
+          updated_at: string | null;
+        };
+        Insert: {
+          admin_notes?: string | null;
+          asset_class: string;
+          created_at?: string | null;
+          id?: string;
+          requested_by: string;
+          status?: string | null;
+          symbol: string;
+          updated_at?: string | null;
+        };
+        Update: {
+          admin_notes?: string | null;
+          asset_class?: string;
+          created_at?: string | null;
+          id?: string;
+          requested_by?: string;
+          status?: string | null;
+          symbol?: string;
+          updated_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "pending_assets_requested_by_fkey";
+            columns: ["requested_by"];
+            isOneToOne: false;
+            referencedRelation: "users";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       portfolios: {
         Row: {
           base_currency: string;
@@ -435,6 +476,10 @@ export enum ExchangeId {
 export type Assets = Database["public"]["Tables"]["assets"]["Row"];
 export type InsertAssets = Database["public"]["Tables"]["assets"]["Insert"];
 export type UpdateAssets = Database["public"]["Tables"]["assets"]["Update"];
+
+export type PendingAssets = Database["public"]["Tables"]["pending_assets"]["Row"];
+export type InsertPendingAssets = Database["public"]["Tables"]["pending_assets"]["Insert"];
+export type UpdatePendingAssets = Database["public"]["Tables"]["pending_assets"]["Update"];
 
 export type Portfolios = Database["public"]["Tables"]["portfolios"]["Row"];
 export type InsertPortfolios = Database["public"]["Tables"]["portfolios"]["Insert"];
