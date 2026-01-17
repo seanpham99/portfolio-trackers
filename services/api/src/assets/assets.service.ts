@@ -1,18 +1,7 @@
-import {
-  Inject,
-  Injectable,
-  InternalServerErrorException,
-} from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
 import { SupabaseClient } from '@supabase/supabase-js';
-import { Database } from '@workspace/shared-types/database';
+import { Database, Assets } from '@workspace/shared-types/database';
 import { PopularAssetDto } from '@workspace/shared-types/api';
-
-/**
- * Escape special characters in LIKE patterns to prevent injection
- */
-function escapeLikePattern(input: string): string {
-  return input.replace(/[%_\\]/g, (char) => `\\${char}`);
-}
 
 @Injectable()
 export class AssetsService {
@@ -22,99 +11,58 @@ export class AssetsService {
   ) {}
 
   /**
-   * Search assets using pg_trgm fuzzy matching
-   * Uses similarity search on symbol, name_en, and name_local
+   * Search for assets by symbol or name
    */
   async search(query: string) {
-    if (!query || query.length < 1) {
-      return [];
-    }
-
-    // Sanitize query for LIKE pattern
-    const sanitizedQuery = escapeLikePattern(query.trim());
-
-    // Use ilike for basic search - pg_trgm GIN index will optimize this
-    // For true fuzzy search, we would use similarity() function, but ilike works well with trigram indexes
     const { data, error } = await this.supabase
       .from('assets')
-      .select(
-        'id, symbol, name_en, name_local, asset_class, market, logo_url, currency',
-      )
+      .select('*')
       .or(
-        `symbol.ilike.%${sanitizedQuery}%,name_en.ilike.%${sanitizedQuery}%,name_local.ilike.%${sanitizedQuery}%`,
+        `symbol.ilike.%${query}%,name_en.ilike.%${query}%,name_local.ilike.%${query}%`,
       )
-      .order('symbol', { ascending: true })
-      .limit(20);
+      .limit(10);
 
     if (error) {
-      throw new InternalServerErrorException(error.message);
+      throw error;
     }
 
-    return data;
+    return (data as Assets[]) ?? [];
   }
 
   /**
-   * Find a single asset by exact symbol match (case-insensitive)
-   * @param symbol - The asset symbol to look up
-   * @returns The asset or null if not found
+   * Get an asset by symbol
    */
-  async findBySymbol(symbol: string) {
-    if (!symbol) {
-      return null;
-    }
-
+  async findBySymbol(symbol: string): Promise<Assets | null> {
     const { data, error } = await this.supabase
       .from('assets')
-      .select(
-        'id, symbol, name_en, name_local, asset_class, market, exchange, logo_url, currency',
-      )
-      .ilike('symbol', symbol)
-      .limit(1)
+      .select('*')
+      .eq('symbol', symbol)
       .single();
 
     if (error) {
-      // PGRST116 = no rows returned (not found)
-      if (error.code === 'PGRST116') {
-        return null;
-      }
-      throw new InternalServerErrorException(error.message);
+      if (error.code === 'PGRST116') return null;
+      throw error;
     }
 
-    return data;
+    return data as Assets;
   }
 
   /**
-   * Get popular/common assets for quick access
-   * Returns top assets across different categories
+   * Get popular assets
    */
   async getPopular(): Promise<PopularAssetDto[]> {
-    // For MVP, we'll return a curated list of the most common assets
-    // In future, this could be dynamic based on user activity or trading volume
-    const symbols = [
-      'AAPL', // US Tech
-      'MSFT', // US Tech
-      'GOOGL', // US Tech
-      'AMZN', // US Tech
-      'NVDA', // US Tech
-      'BTC', // Crypto
-      'ETH', // Crypto
-      'VNM', // VN Index ETF
-      'VIC', // VN Stock
-      'VHM', // VN Stock
-    ];
-
     const { data, error } = await this.supabase
       .from('assets')
-      .select('id, symbol, name_en, asset_class, market, logo_url')
-      .in('symbol', symbols)
-      .order('symbol', { ascending: true });
+      .select('*')
+      .limit(5);
 
     if (error) {
-      throw new InternalServerErrorException(error.message);
+      throw error;
     }
 
-    // Transform null to undefined for DTO compatibility
-    return (data || []).map((asset) => ({
+    const assets = (data as Assets[]) ?? [];
+
+    return assets.map((asset) => ({
       id: asset.id,
       symbol: asset.symbol,
       name_en: asset.name_en,
