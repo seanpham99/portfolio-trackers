@@ -6,6 +6,7 @@ import { ArrowLeft, TrendingUp, Info } from "lucide-react";
 import { AssetChartSkeleton } from "@/features/asset/components/asset-chart-skeleton";
 import { mapToTradingViewSymbol } from "@/features/asset/utils/symbol-mapper";
 import { getAsset } from "@/api/client";
+import { MetricInfoCard, MetricKeys } from "@/features/metrics";
 
 // Lazy load the TradingView chart - it's heavy and relies on window
 const AssetChart = dynamic(
@@ -54,6 +55,7 @@ export default async function AssetPage({ params }: AssetPageProps) {
             <h1 className="flex items-center gap-2 text-2xl font-semibold text-foreground">
               <TrendingUp className="h-6 w-6 text-primary" />
               {asset.symbol}
+              <MetricInfoCard metricKey={MetricKeys.MARKET_VALUE} iconSize="sm" />
             </h1>
             <p className="text-sm text-muted-foreground">
               {asset.name_en} • {asset.asset_class}

@@ -9,6 +9,7 @@ import { PortfolioHistoryChart } from "@/features/portfolio/portfolio-history-ch
 import { AllocationDonut } from "@/features/portfolio/allocation-donut";
 import { AddAssetModal } from "@/features/transactions/add-asset-modal";
 import { PerformanceDashboard } from "@/features/analytics/performance-dashboard";
+import { MetricInfoCard, MetricKeys } from "@/features/metrics";
 import { Button } from "@workspace/ui/components/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@workspace/ui/components/tabs";
 import {
@@ -91,8 +92,8 @@ export default function PortfolioDetailPage() {
     }).format(value);
   };
 
-  // Calculate total gain/loss (mock - ideally from API)
-  const totalGain = portfolio.netWorth * 0.12; // Example: 12% gain
+  // Calculate total gain/loss
+  const totalGain = portfolio.totalGain ?? 0;
   const isPositive = totalGain >= 0;
 
   return (
@@ -144,9 +145,12 @@ export default function PortfolioDetailPage() {
             {/* Net Worth & Action */}
             <div className="flex items-center gap-6">
               <div className="text-right">
-                <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide mb-1">
-                  Net Worth
-                </p>
+                <div className="flex items-center justify-end gap-1 mb-1">
+                  <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">
+                    Net Worth
+                  </p>
+                  <MetricInfoCard metricKey={MetricKeys.NET_WORTH} iconSize="sm" />
+                </div>
                 <div className="flex items-baseline gap-2">
                   <span className="text-3xl font-bold text-foreground tabular-nums">
                     {formatCurrency(portfolio.netWorth)}
@@ -161,6 +165,7 @@ export default function PortfolioDetailPage() {
                     )}
                     {isPositive ? "+" : ""}
                     {formatCurrency(totalGain)}
+                    <MetricInfoCard metricKey={MetricKeys.TOTAL_GAIN} iconSize="sm" />
                   </span>
                 </div>
               </div>

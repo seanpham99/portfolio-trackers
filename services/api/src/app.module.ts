@@ -9,6 +9,7 @@ import { AssetsModule } from './assets/assets.module';
 import { UsersModule } from './users/users.module';
 import { CacheModule } from './common/cache';
 import { ConnectionsModule } from './crypto';
+import { MarketDataModule } from './market-data';
 
 @Module({
   imports: [
@@ -27,7 +28,9 @@ import { ConnectionsModule } from './crypto';
     PortfoliosModule,
     AssetsModule,
     UsersModule,
+    UsersModule,
     ConnectionsModule,
+    MarketDataModule,
   ],
   controllers: [AppController],
   providers: [AppService],

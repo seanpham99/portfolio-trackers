@@ -6,8 +6,7 @@
     "dev": "next dev --port 5000 --hostname 0.0.0.0",
     "build": "next build",
     "start": "next start --hostname 0.0.0.0",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
+    "lint": "eslint . --fix",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {

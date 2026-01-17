@@ -16,6 +16,7 @@ import {
 } from '@workspace/shared-types/api';
 import { Portfolio } from './portfolio.entity';
 import { CacheService } from '../common/cache';
+import { MarketDataService } from '../market-data';
 
 /**
  * Service for portfolio CRUD operations
@@ -28,6 +29,7 @@ export class PortfoliosService {
     @Inject('SUPABASE_CLIENT')
     private readonly supabase: SupabaseClient<Database>,
     private readonly cacheService: CacheService,
+    private readonly marketDataService: MarketDataService,
   ) {}
 
   /**
@@ -123,29 +125,79 @@ export class PortfoliosService {
 
     const allTransactions = transactionsResult.data ?? [];
 
-    const portfoliosWithSummary = portfolios.map((portfolio) => {
-      // Filter transactions for this portfolio
-      const portfolioTxs = allTransactions.filter(
-        (tx) => tx.portfolio_id === portfolio.id,
-      );
+    const portfoliosWithSummary = await Promise.all(
+      portfolios.map(async (portfolio) => {
+        // Filter transactions for this portfolio
+        const portfolioTxs = allTransactions.filter(
+          (tx) => tx.portfolio_id === portfolio.id,
+        );
 
-      // Calculate holdings
-      const holdings = this.calculateHoldings(portfolioTxs);
+        // Fetch prices for assets in this portfolio
+        const uniqueAssets = new Map<
+          string,
+          { symbol: string; market: string; assetClass: string }
+        >();
+        portfolioTxs.forEach((tx) => {
+          if (tx.assets && !Array.isArray(tx.assets)) {
+            const asset = tx.assets as any;
+            uniqueAssets.set(asset.symbol, {
+              symbol: asset.symbol,
+              market: asset.market,
+              assetClass: asset.asset_class,
+            });
+          }
+        });
 
-      // Calculate Net Worth
-      const netWorth = holdings.reduce(
-        (sum, h) => sum + h.total_quantity * h.avg_cost,
-        0,
-      );
+        // Resolve prices
+        const priceMap = new Map<string, number>();
+        await Promise.all(
+          Array.from(uniqueAssets.values()).map(async (asset) => {
+            const price = await this.marketDataService.getCurrentPrice(
+              asset.symbol,
+              asset.market,
+              asset.assetClass,
+            );
+            if (price !== null) {
+              priceMap.set(asset.symbol, price);
+            }
+          }),
+        );
 
-      return {
-        ...portfolio,
-        netWorth,
-        change24h: 0, // Placeholder: Requires historical price service
-        change24hPercent: 0, // Placeholder
-        allocation: [], // Placeholder
-      };
-    });
+        // Calculate holdings with prices
+        const holdings = this.calculateHoldings(portfolioTxs, priceMap);
+
+        // Calculate Net Worth (Sum of Market Values)
+        const netWorth = holdings.reduce((sum, h) => sum + (h.value || 0), 0);
+
+        // Calculate Total Gain (Unrealized + Realized)
+        const totalUnrealizedPL = holdings.reduce(
+          (sum, h) => sum + (h.pl || 0),
+          0,
+        );
+        const totalRealizedPL = holdings.reduce(
+          (sum, h) => sum + (h.realized_pl || 0),
+          0,
+        );
+
+        // Total Cost Basis
+        const totalCostBasis = holdings.reduce(
+          (sum, h) => sum + h.total_quantity * h.avg_cost,
+          0,
+        );
+
+        return {
+          ...portfolio,
+          netWorth,
+          totalGain: totalUnrealizedPL + totalRealizedPL,
+          unrealizedPL: totalUnrealizedPL,
+          realizedPL: totalRealizedPL,
+          totalCostBasis,
+          change24h: 0, // Placeholder: Requires historical price
+          change24hPercent: 0, // Placeholder
+          allocation: [], // Placeholder
+        };
+      }),
+    );
 
     // Cache the result
     await this.cacheService.set(cacheKey, portfoliosWithSummary);
@@ -205,8 +257,41 @@ export class PortfoliosService {
 
     if (txError) throw txError;
 
-    const holdings = this.calculateHoldings(transactions || []);
-    const netWorth = holdings.reduce(
+    // Fetch prices
+    const uniqueAssets = new Set<string>();
+    (transactions || []).forEach((tx) => {
+      if (tx.assets && !Array.isArray(tx.assets)) {
+        uniqueAssets.add((tx.assets as any).symbol);
+      }
+    });
+
+    const priceMap = new Map<string, number>();
+    await Promise.all(
+      Array.from(uniqueAssets).map(async (symbol) => {
+        const txWithAsset = (transactions || []).find(
+          (t) => (t.assets as any)?.symbol === symbol,
+        );
+        const market = (txWithAsset?.assets as any)?.market;
+        const price = await this.marketDataService.getCurrentPrice(
+          symbol,
+          market,
+        );
+        if (price !== null) {
+          priceMap.set(symbol, price);
+        }
+      }),
+    );
+
+    const holdings = this.calculateHoldings(transactions || [], priceMap);
+
+    // Calculate Metrics
+    const netWorth = holdings.reduce((sum, h) => sum + (h.value || 0), 0);
+    const totalUnrealizedPL = holdings.reduce((sum, h) => sum + (h.pl || 0), 0);
+    const totalRealizedPL = holdings.reduce(
+      (sum, h) => sum + (h.realized_pl || 0),
+      0,
+    );
+    const totalCostBasis = holdings.reduce(
       (sum, h) => sum + h.total_quantity * h.avg_cost,
       0,
     );
@@ -214,6 +299,10 @@ export class PortfoliosService {
     return {
       ...data,
       netWorth,
+      totalGain: totalUnrealizedPL + totalRealizedPL,
+      unrealizedPL: totalUnrealizedPL,
+      realizedPL: totalRealizedPL,
+      totalCostBasis,
       change24h: 0,
       change24hPercent: 0,
       allocation: [],
@@ -342,7 +431,32 @@ export class PortfoliosService {
       throw error;
     }
 
-    const holdings = this.calculateHoldings(transactions || []);
+    // Fetch prices
+    const uniqueAssets = new Set<string>();
+    (transactions || []).forEach((tx) => {
+      if (tx.assets && !Array.isArray(tx.assets)) {
+        uniqueAssets.add((tx.assets as any).symbol);
+      }
+    });
+
+    const priceMap = new Map<string, number>();
+    await Promise.all(
+      Array.from(uniqueAssets).map(async (symbol) => {
+        const txWithAsset = (transactions || []).find(
+          (t) => (t.assets as any)?.symbol === symbol,
+        );
+        const market = (txWithAsset?.assets as any)?.market;
+        const price = await this.marketDataService.getCurrentPrice(
+          symbol,
+          market,
+        );
+        if (price !== null) {
+          priceMap.set(symbol, price);
+        }
+      }),
+    );
+
+    const holdings = this.calculateHoldings(transactions || [], priceMap);
 
     // Cache result
     await this.cacheService.set(cacheKey, holdings);
@@ -353,12 +467,17 @@ export class PortfoliosService {
   /**
    * Helper to aggregates transactions into holdings using FIFO Logic
    */
-  private calculateHoldings(transactions: any[]): HoldingDto[] {
-    // Map assetId -> FIFO Lots Queue
+  private calculateHoldings(
+    transactions: any[],
+    priceMap: Map<string, number> = new Map(),
+  ): HoldingDto[] {
+    // Map assetId -> FIFO Lots Queue & Metrics
     const lotsMap = new Map<
       string,
       {
         lots: { qty: number; cost: number }[];
+        realizedPL: number;
+        lastPrice: number;
         asset: any;
       }
     >();
@@ -371,10 +490,15 @@ export class PortfoliosService {
       if (!lotsMap.has(assetId)) {
         lotsMap.set(assetId, {
           lots: [],
+          realizedPL: 0,
+          lastPrice: 0,
           asset: Array.isArray(tx.assets) ? tx.assets[0] : tx.assets,
         });
       }
       const entry = lotsMap.get(assetId)!;
+
+      // Update last price seen in transactions (fallback)
+      entry.lastPrice = tx.price;
 
       if (tx.type === 'BUY') {
         // FR2.3: Base Cost = Asset Total (calculated by DB) * Exchange Rate
@@ -383,6 +507,7 @@ export class PortfoliosService {
         entry.lots.push({ qty: tx.quantity, cost: costBasis });
       } else if (tx.type === 'SELL') {
         let qtyToSell = tx.quantity;
+        let costBasisRemoved = 0;
 
         // FIFO Consumption
         while (qtyToSell > 0.00000001 && entry.lots.length > 0) {
@@ -396,13 +521,20 @@ export class PortfoliosService {
 
             currentLot.qty -= qtyToSell;
             currentLot.cost -= costToRemove;
+            costBasisRemoved += costToRemove;
             qtyToSell = 0;
           } else {
             // Full consumption
+            costBasisRemoved += currentLot.cost;
             qtyToSell -= currentLot.qty;
             entry.lots.shift();
           }
         }
+
+        // Calculate Realized P/L
+        const AssetTotal = tx.total ?? tx.quantity * tx.price - (tx.fee || 0);
+        const proceeds = AssetTotal * (tx.exchange_rate ?? 1);
+        entry.realizedPL += proceeds - costBasisRemoved;
       }
     }
 
@@ -411,6 +543,14 @@ export class PortfoliosService {
       .map((entry) => {
         const totalQty = entry.lots.reduce((sum, lot) => sum + lot.qty, 0);
         const totalCost = entry.lots.reduce((sum, lot) => sum + lot.cost, 0);
+        const avgCost = totalQty > 0 ? totalCost / totalQty : 0;
+
+        // Determine Market Price: API Price > Last Tx Price
+        const apiPrice = priceMap.get(entry.asset.symbol);
+        const marketPrice = apiPrice ?? entry.lastPrice;
+
+        const value = totalQty * marketPrice;
+        const unrealizedPL = value - totalCost;
 
         return {
           asset_id: entry.asset.id,
@@ -421,9 +561,17 @@ export class PortfoliosService {
           market: entry.asset.market ?? undefined,
           currency: entry.asset.currency,
           total_quantity: totalQty,
-          avg_cost: totalQty > 0 ? totalCost / totalQty : 0,
-          calculationMethod: CalculationMethod.FIFO, // Now accurate
-          dataSource: 'Manual Entry',
+          avg_cost: avgCost,
+
+          // Enhanced Metrics
+          price: marketPrice,
+          value: value,
+          pl: unrealizedPL,
+          pl_percent: totalCost > 0 ? (unrealizedPL / totalCost) * 100 : 0,
+          realized_pl: entry.realizedPL,
+
+          calculationMethod: CalculationMethod.FIFO,
+          dataSource: apiPrice ? 'Market Data' : 'Last Transaction',
         };
       })
       .filter((h) => h.total_quantity > 0.000001); // Filter out zero balances
@@ -592,11 +740,15 @@ export class PortfoliosService {
     const lastTx = transactions[transactions.length - 1];
     if (!lastTx) throw new Error('Unexpected error: No transactions found');
 
-    const currentPrice = lastTx.price;
-    // Current Value (Base) = Qty * Price * Current_FX_Rate (Assumed same as initial for now or 1)
-    // NOTE: We don't have a live FX feed yet. So we assume Current FX = 1 (or same as historical).
-    // This effectively means "Asset Gain" is calculated in the Asset's currency, then converted to Base.
-    // Ideally: Current Value = Qty * Current_Price * (Latest_Exchange_Rate ?? 1)
+    // Fetch current price
+    const apiPrice = await this.marketDataService.getCurrentPrice(
+      asset.symbol,
+      asset.market,
+      asset.asset_class,
+    );
+    const currentPrice = apiPrice ?? lastTx.price;
+
+    // Current Value (Base) = Qty * Price
     const currentValue = totalQty * currentPrice;
 
     // Unrealized P/L = Current Value - Remaining Cost Basis

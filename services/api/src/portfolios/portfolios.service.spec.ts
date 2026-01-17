@@ -4,6 +4,7 @@ import { PortfoliosService } from './portfolios.service';
 import { CreatePortfolioDto, UpdatePortfolioDto } from './dto';
 import { Portfolio } from './portfolio.entity';
 import { CacheService } from '../common/cache';
+import { MarketDataService } from '../market-data';
 
 // Mock portfolio data
 const mockUserId = 'user-123';
@@ -55,6 +56,11 @@ const mockCacheService = {
   invalidatePortfolio: jest.fn(),
 };
 
+// Mock MarketDataService
+const mockMarketDataService = {
+  getCurrentPrice: jest.fn(),
+};
+
 describe('PortfoliosService', () => {
   let service: PortfoliosService;
   let mockChain: any;
@@ -62,6 +68,7 @@ describe('PortfoliosService', () => {
   beforeEach(async () => {
     mockChain = createMockChain();
     mockSupabaseClient.from.mockReturnValue(mockChain);
+    mockMarketDataService.getCurrentPrice.mockResolvedValue(null); // Default: fallback to lastTx
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -73,6 +80,10 @@ describe('PortfoliosService', () => {
         {
           provide: CacheService,
           useValue: mockCacheService,
+        },
+        {
+          provide: MarketDataService,
+          useValue: mockMarketDataService,
         },
       ],
     }).compile();
@@ -140,8 +151,17 @@ describe('PortfoliosService', () => {
     });
 
     it('should return all portfolios for user from DB with summary', async () => {
-      mockCacheService.get.mockResolvedValue(null);
       const mockPortfolios = [mockPortfolio];
+      const mockTxs = [
+        {
+          portfolio_id: mockPortfolio.id,
+          assets: {
+            symbol: 'AAPL',
+            market: 'US',
+            asset_class: 'US Equity',
+          },
+        },
+      ];
 
       mockSupabaseClient.from.mockImplementation((table) => {
         const c = createMockChain();
@@ -151,7 +171,7 @@ describe('PortfoliosService', () => {
           );
         } else if (table === 'transactions') {
           c.then.mockImplementation((resolve: any) =>
-            resolve({ data: [], error: null }),
+            resolve({ data: mockTxs, error: null }),
           );
         }
         return c;
@@ -162,6 +182,10 @@ describe('PortfoliosService', () => {
       const expectedPortfolios = mockPortfolios.map((p) => ({
         ...p,
         netWorth: 0,
+        totalGain: 0,
+        unrealizedPL: 0,
+        realizedPL: 0,
+        totalCostBasis: 0,
         change24h: 0,
         change24hPercent: 0,
         allocation: [],
@@ -170,6 +194,14 @@ describe('PortfoliosService', () => {
       expect(result).toEqual(expectedPortfolios);
       expect(mockSupabaseClient.from).toHaveBeenCalledWith('portfolios');
       expect(mockSupabaseClient.from).toHaveBeenCalledWith('transactions');
+
+      // Verify assetClass is passed
+      expect(mockMarketDataService.getCurrentPrice).toHaveBeenCalledWith(
+        'AAPL',
+        'US',
+        'US Equity',
+      );
+
       expect(mockCacheService.set).toHaveBeenCalledWith(
         `portfolios:${mockUserId}`,
         expectedPortfolios,
@@ -196,6 +228,10 @@ describe('PortfoliosService', () => {
       expect(result).toEqual({
         ...mockPortfolio,
         netWorth: 0,
+        totalGain: 0,
+        unrealizedPL: 0,
+        realizedPL: 0,
+        totalCostBasis: 0,
         change24h: 0,
         change24hPercent: 0,
         allocation: [],
@@ -437,7 +473,7 @@ describe('PortfoliosService', () => {
 
       // Verify methodology fields are populated
       expect(holding.calculationMethod).toBe('FIFO');
-      expect(holding.dataSource).toBe('Manual Entry');
+      expect(holding.dataSource).toBe('Last Transaction');
     });
   });
 
@@ -522,6 +558,12 @@ describe('PortfoliosService', () => {
 
       // Current Value: 5 * 200 = 1000.
       // Unrealized PL (Asset Gain): 1000 - 752.5 = 247.5.
+
+      expect(mockMarketDataService.getCurrentPrice).toHaveBeenCalledWith(
+        'AAPL',
+        'US',
+        'US Equity',
+      );
 
       expect(result.details.symbol).toBe('AAPL');
       expect(result.details.avg_cost).toBe(150.5);

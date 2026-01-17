@@ -45,6 +45,10 @@ export class HoldingDto {
   @IsOptional()
   pl_percent?: number;
 
+  @IsNumber()
+  @IsOptional()
+  realized_pl?: number;
+
   // Methodology transparency fields
   @IsEnum(CalculationMethod)
   @IsOptional()
