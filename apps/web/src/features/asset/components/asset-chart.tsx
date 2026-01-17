@@ -33,6 +33,7 @@ export function AssetChart({ symbol }: AssetChartProps) {
         details={true}
         hotlist={false}
         calendar={false}
+        interval="D"
         studies={["MASimple@tv-basicstudies", "RSI@tv-basicstudies", "MACD@tv-basicstudies"]}
         container_id={`tradingview-chart-${symbol.replace(/[^a-zA-Z0-9]/g, "-")}`}
       />

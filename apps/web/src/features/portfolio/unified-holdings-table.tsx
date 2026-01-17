@@ -18,9 +18,8 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useHoldings } from "@/features/portfolio/hooks/use-holdings";
-import { HoldingDto as Holding, CalculationMethod } from "@workspace/shared-types/api";
+import { HoldingDto as Holding } from "@workspace/shared-types/api";
 import { MetricInfoCard, MetricKeys } from "@/features/metrics";
-import { HoverCard, HoverCardTrigger, HoverCardContent } from "@workspace/ui/components/hover-card";
 import {
   Empty,
   EmptyHeader,
@@ -55,22 +54,6 @@ export function UnifiedHoldingsTable({ portfolioId, onAddAsset }: UnifiedHolding
       return true;
     });
   }, [allHoldings, filter]);
-
-  // Methodology content helper
-  const getMethodologyContent = (calculationMethod?: CalculationMethod) => {
-    const METHODOLOGY_CONTENT: Record<CalculationMethod, { title: string; formula: string }> = {
-      [CalculationMethod.WEIGHTED_AVG]: {
-        title: "Weighted Average Cost Basis",
-        formula: "Avg Cost = Total Cost / Total Quantity",
-      },
-      [CalculationMethod.FIFO]: {
-        title: "First-In, First-Out (FIFO)",
-        formula: "Cost Basis = Oldest Purchased Shares Sold First",
-      },
-    };
-
-    return calculationMethod ? METHODOLOGY_CONTENT[calculationMethod] : null;
-  };
 
   const columns = useMemo(
     () => [
@@ -183,8 +166,6 @@ export function UnifiedHoldingsTable({ portfolioId, onAddAsset }: UnifiedHolding
         ),
         cell: (info) => {
           const val = info.getValue();
-          const holding = info.row.original;
-          const methodologyContent = getMethodologyContent(holding.calculationMethod);
 
           if (val === undefined) return <div className="text-right text-zinc-500">-</div>;
 
@@ -199,36 +180,7 @@ export function UnifiedHoldingsTable({ portfolioId, onAddAsset }: UnifiedHolding
                   currency: "USD",
                 }).format(val)}
               </div>
-              {methodologyContent && (
-                <HoverCard>
-                  <HoverCardTrigger asChild>
-                    <button
-                      aria-label="View methodology for this asset"
-                      className="inline-flex items-center justify-center text-zinc-500 hover:text-zinc-300 transition-colors"
-                      tabIndex={0}
-                    >
-                      <Info className="h-3.5 w-3.5" />
-                    </button>
-                  </HoverCardTrigger>
-                  <HoverCardContent side="left" className="max-w-xs">
-                    <div className="space-y-2">
-                      <div>
-                        <p className="text-xs font-medium text-white">{methodologyContent.title}</p>
-                        <p className="text-xs text-zinc-400 mt-1">
-                          Formula: {methodologyContent.formula}
-                        </p>
-                      </div>
-                      {holding.dataSource && (
-                        <div className="pt-2 border-t border-white/10">
-                          <p className="text-xs text-zinc-500">
-                            <span className="font-medium">Data Source:</span> {holding.dataSource}
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                  </HoverCardContent>
-                </HoverCard>
-              )}
+              <MetricInfoCard metricKey={MetricKeys.UNREALIZED_PL} />
             </div>
           );
         },

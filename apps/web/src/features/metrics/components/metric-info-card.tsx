@@ -1,7 +1,7 @@
 "use client";
 
 import { Info } from "lucide-react";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@workspace/ui/components/hover-card";
+import { Popover, PopoverContent, PopoverTrigger } from "@workspace/ui/components/popover";
 import { type MetricKey, getMetricDefinition } from "../constants/metric-definitions";
 
 export interface MetricInfoCardProps {
@@ -38,8 +38,8 @@ export function MetricInfoCard({
   const iconClasses = iconSize === "sm" ? "h-3.5 w-3.5" : "h-4 w-4";
 
   return (
-    <HoverCard openDelay={200} closeDelay={100}>
-      <HoverCardTrigger asChild>
+    <Popover>
+      <PopoverTrigger asChild>
         <button
           type="button"
           className={`inline-flex items-center justify-center rounded-full p-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background ${className}`}
@@ -47,8 +47,8 @@ export function MetricInfoCard({
         >
           <Info className={iconClasses} aria-hidden="true" />
         </button>
-      </HoverCardTrigger>
-      <HoverCardContent className="w-80" align="start" sideOffset={8}>
+      </PopoverTrigger>
+      <PopoverContent className="w-80" align="start" sideOffset={8}>
         <div className="space-y-3">
           {/* Header */}
           <div className="flex items-center gap-2">
@@ -86,7 +86,7 @@ export function MetricInfoCard({
             </div>
           )}
         </div>
-      </HoverCardContent>
-    </HoverCard>
+      </PopoverContent>
+    </Popover>
   );
 }

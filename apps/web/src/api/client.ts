@@ -6,6 +6,11 @@ import {
   type CreateConnectionDto,
   type ValidationResultDto,
 } from "@workspace/shared-types/api";
+import {
+  type Assets,
+  type InsertTransactions,
+  type Transactions,
+} from "@workspace/shared-types/database";
 import { apiFetch } from "@/lib/api";
 
 export * from "@/lib/api";
@@ -70,7 +75,7 @@ export async function getAssetDetails(
 /**
  * Search for assets by symbol or name
  */
-export async function searchAssets(query: string): Promise<any[]> {
+export async function searchAssets(query: string): Promise<Assets[]> {
   const response = await apiFetch(`/assets/search?q=${encodeURIComponent(query)}`);
   if (!response.ok) {
     throw new Error("Failed to search assets");
@@ -81,18 +86,13 @@ export async function searchAssets(query: string): Promise<any[]> {
 /**
  * Fetch asset by exact symbol match
  */
-export async function getAsset(symbol: string): Promise<{
-  id: string;
-  symbol: string;
-  name_en: string;
-  name_local?: string;
-  asset_class: string;
-  market?: string;
-  exchange?: string;
-  logo_url?: string;
-  currency: string;
-} | null> {
-  const response = await apiFetch(`/assets/${encodeURIComponent(symbol)}`);
+export async function getAsset(symbol: string, token?: string): Promise<Assets | null> {
+  const options: RequestInit = {};
+  if (token) {
+    options.headers = { Authorization: `Bearer ${token}` };
+  }
+
+  const response = await apiFetch(`/assets/${encodeURIComponent(symbol)}`, options);
   if (response.status === 404) {
     return null;
   }
@@ -105,7 +105,10 @@ export async function getAsset(symbol: string): Promise<{
 /**
  * Add a transaction to a portfolio
  */
-export async function addTransaction(portfolioId: string, transaction: any): Promise<any> {
+export async function addTransaction(
+  portfolioId: string,
+  transaction: InsertTransactions
+): Promise<Transactions> {
   const response = await apiFetch(`/portfolios/${portfolioId}/transactions`, {
     method: "POST",
     body: JSON.stringify(transaction),

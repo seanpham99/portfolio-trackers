@@ -186,7 +186,7 @@ The `PortfolioCalculator` shared service depends on the unified `Trade[]` type f
 **Project Organization:**
 
 - **Shared Logic:** All financial math (FIFO, FX gains) **MUST** live in `@workspace/finance`.
-- **Shared Types:** All DTOs and Database models live in `@workspace/shared-types`.
+- **Shared Types:** All DTOs and Database models live in `@workspace/shared-types`. AI Agents **MUST** use `supabase-types.ts` via the `@workspace/shared-types/database` export for all entity definitions to ensure consistency with the schema.
 - **UI Components:** Reusable primitive components live in `@workspace/ui`.
 
 **File Structure Patterns:**
@@ -331,7 +331,7 @@ User Transaction -> NestJS API -> Postgres (Active) -> BullMQ (Sync Job) -> Clic
 **Architecture Decision Workflow:** COMPLETED ✅
 **Total Steps Completed:** 8
 **Date Completed:** 2026-01-15
-**Document Location:** _bmad-output/architecture.md
+**Document Location:** \_bmad-output/architecture.md
 
 ### Final Architecture Deliverables
 

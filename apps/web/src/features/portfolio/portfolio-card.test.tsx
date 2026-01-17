@@ -16,6 +16,9 @@ describe("PortfolioCard", () => {
     updated_at: "",
     description: null,
     allocation: [],
+    totalGain: 1000,
+    unrealizedPL: 600,
+    realizedPL: 400,
   };
 
   it("renders portfolio details correctly", () => {

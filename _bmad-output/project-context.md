@@ -36,7 +36,7 @@ _This file contains critical rules and patterns that AI agents must follow when 
 ### Language-Specific Rules
 
 - **ESM-First Imports**: Internal imports **MUST** include the `.js` extension (e.g., `import { x } from "./utils.js"`).
-- **Type Safety**: Import all shared DTOs and models from `@workspace/shared-types`. Never redefine shared types.
+- **Type Safety**: Import all shared DTOs from `@workspace/shared-types/api` and database entities from `@workspace/shared-types/database/supabase-types`. Never redefine shared types.
 - **Financial Precision**: **NEVER** use float math for currency. Use string-based decimals or high-precision math libraries.
 - **Dual Validation**: Mirror **Zod** (Frontend) validation with **Class-Validator** (Backend) DTO decorators.
 - **Standard Envelope**: API responses must follow: `{ success: boolean, data: any, error: any, meta: any }`.

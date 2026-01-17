@@ -39,6 +39,7 @@ import {
 } from "@workspace/ui/components/table";
 import { ScrollArea } from "@workspace/ui/components/scroll-area";
 import TradingViewWidget from "@/features/portfolio/trading-view-widget";
+import { MetricInfoCard, MetricKeys, type MetricKey } from "@/features/metrics";
 
 export default function AssetDetailPage() {
   const params = useParams<{ id: string; symbol: string }>();
@@ -147,8 +148,9 @@ export default function AssetDetailPage() {
               {/* Asset Details */}
               <div className="space-y-1">
                 <div className="flex items-center gap-3">
-                  <h1 className="text-2xl font-bold text-foreground tracking-tight">
+                  <h1 className="text-2xl font-bold text-foreground tracking-tight flex items-center gap-2">
                     {details.name}
+                    <MetricInfoCard metricKey={MetricKeys.MARKET_VALUE} iconSize="sm" />
                   </h1>
                   <Badge
                     variant="secondary"
@@ -212,12 +214,14 @@ export default function AssetDetailPage() {
             <StatCard
               icon={<DollarSign className="h-4 w-4" />}
               label="Average Cost"
+              metricKey={MetricKeys.COST_BASIS}
               value={formatCurrency(details.avg_cost)}
               subValue="Weighted average per unit"
             />
             <StatCard
               icon={<Activity className="h-4 w-4" />}
               label="Asset Gain"
+              metricKey={MetricKeys.ASSET_GAIN}
               value={formatCurrency(details.asset_gain)}
               percentage={details.total_return_pct}
               variant="dynamic"
@@ -225,12 +229,14 @@ export default function AssetDetailPage() {
             <StatCard
               icon={<Percent className="h-4 w-4" />}
               label="FX Gain"
+              metricKey={MetricKeys.FX_GAIN}
               value={formatCurrency(details.fx_gain)}
               subValue="Currency impact"
             />
             <StatCard
               icon={<Wallet className="h-4 w-4" />}
               label="Realized P/L"
+              metricKey={MetricKeys.REALIZED_PL}
               value={formatCurrency(details.realized_pl || 0)}
               subValue="From closed positions"
             />
@@ -321,6 +327,7 @@ export default function AssetDetailPage() {
 interface StatCardProps {
   icon: React.ReactNode;
   label: string;
+  metricKey?: MetricKey;
   value: string;
   percentage?: number;
   subValue?: string;
@@ -330,6 +337,7 @@ interface StatCardProps {
 function StatCard({
   icon,
   label,
+  metricKey,
   value,
   percentage,
   subValue,
@@ -344,7 +352,10 @@ function StatCard({
         <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10 text-primary">
           {icon}
         </div>
-        <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{label}</p>
+        <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide flex items-center gap-1">
+          {label}
+          {metricKey && <MetricInfoCard metricKey={metricKey} iconSize="sm" />}
+        </p>
       </div>
 
       {/* Value */}
