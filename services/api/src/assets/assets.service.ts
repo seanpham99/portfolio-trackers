@@ -54,6 +54,36 @@ export class AssetsService {
   }
 
   /**
+   * Find a single asset by exact symbol match (case-insensitive)
+   * @param symbol - The asset symbol to look up
+   * @returns The asset or null if not found
+   */
+  async findBySymbol(symbol: string) {
+    if (!symbol) {
+      return null;
+    }
+
+    const { data, error } = await this.supabase
+      .from('assets')
+      .select(
+        'id, symbol, name_en, name_local, asset_class, market, exchange, logo_url, currency',
+      )
+      .ilike('symbol', symbol)
+      .limit(1)
+      .single();
+
+    if (error) {
+      // PGRST116 = no rows returned (not found)
+      if (error.code === 'PGRST116') {
+        return null;
+      }
+      throw new InternalServerErrorException(error.message);
+    }
+
+    return data;
+  }
+
+  /**
    * Get popular/common assets for quick access
    * Returns top assets across different categories
    */

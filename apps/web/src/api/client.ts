@@ -79,6 +79,30 @@ export async function searchAssets(query: string): Promise<any[]> {
 }
 
 /**
+ * Fetch asset by exact symbol match
+ */
+export async function getAsset(symbol: string): Promise<{
+  id: string;
+  symbol: string;
+  name_en: string;
+  name_local?: string;
+  asset_class: string;
+  market?: string;
+  exchange?: string;
+  logo_url?: string;
+  currency: string;
+} | null> {
+  const response = await apiFetch(`/assets/${encodeURIComponent(symbol)}`);
+  if (response.status === 404) {
+    return null;
+  }
+  if (!response.ok) {
+    throw new Error(`Failed to fetch asset: ${symbol}`);
+  }
+  return response.json();
+}
+
+/**
  * Add a transaction to a portfolio
  */
 export async function addTransaction(portfolioId: string, transaction: any): Promise<any> {

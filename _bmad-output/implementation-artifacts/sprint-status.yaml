@@ -57,7 +57,7 @@ development_status:
 
   epic-3: in-progress
   3-1-tradingview-chart-integration: done
-  3-2-professional-technical-indicators: backlog
+  3-2-professional-technical-indicators: done
   3-3-calculation-methodology-data-transparency: backlog
   3-4-asset-performance-dashboard: done
   epic-3-retrospective: optional
