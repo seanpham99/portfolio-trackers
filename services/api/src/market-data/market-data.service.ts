@@ -11,15 +11,22 @@ export class MarketDataService {
   private readonly logger = new Logger(MarketDataService.name);
   private readonly CACHE_TTL = 300; // 5 minutes
   private readonly COIN_ID_TTL = 86400; // 24 hours
-  private readonly yahooFinance = new YahooFinance({
-    suppressNotices: ['yahooSurvey'],
-  });
+  private yf: any;
 
   constructor(
     @Inject('SUPABASE_CLIENT')
     private readonly supabase: SupabaseClient<Database>,
     private readonly cacheService: CacheService,
-  ) {}
+  ) {
+    // Fix for CommonJS/ESM interop issues with yahoo-finance2
+    const PostgresYahooFinance = (YahooFinance as any).default || YahooFinance;
+    // The library requires instantiation in this version/env
+    this.yf = new PostgresYahooFinance();
+
+    if (this.yf?.suppressNotices) {
+      this.yf.suppressNotices(['yahooSurvey']);
+    }
+  }
 
   /**
    * Get current price for an asset
@@ -155,7 +162,8 @@ export class MarketDataService {
     }
 
     try {
-      const quote = await this.yahooFinance.quote(yfSymbol);
+      const quote = await this.yf.quote(yfSymbol);
+
       const price = (quote as any).regularMarketPrice;
 
       if (price) {
@@ -166,6 +174,68 @@ export class MarketDataService {
     } catch (error) {
       this.logger.warn(
         `Failed to fetch Yahoo price for ${originalSymbol} (${yfSymbol}): ${(error as Error).message}`,
+      );
+      return null;
+    }
+  }
+
+  /**
+   * Get historical exchange rate between two currencies
+   */
+  async getHistoricalExchangeRate(
+    from: string,
+    to: string,
+    date: Date,
+  ): Promise<number | null> {
+    const fromCode = from.toUpperCase();
+    const toCode = to.toUpperCase();
+
+    if (fromCode === toCode) {
+      return 1;
+    }
+
+    const dateStr = date.toISOString().split('T')[0]; // YYYY-MM-DD
+    const cacheKey = `fx:rate:${fromCode}:${toCode}:${dateStr}`;
+
+    // 1. Check Cache
+    const cachedRate = await this.cacheService.get<number>(cacheKey);
+    if (cachedRate !== null && cachedRate !== undefined) {
+      return cachedRate;
+    }
+
+    // 2. Fetch from Yahoo Finance
+    const symbol = `${fromCode}${toCode}=X`;
+    try {
+      this.logger.log(`Fetching FX rate for ${symbol} on ${dateStr}`);
+
+      // We fetch a range to ensure we get a quote if the exact date is a weekend/holiday
+      // Yahoo Historical expects period1 (start) and period2 (end)
+      const queryOptions = {
+        period1: dateStr,
+        period2: new Date(date.getTime() + 86400000)
+          .toISOString()
+          .split('T')[0], // Next day
+      };
+
+      const response = await this.yf.chart(symbol, queryOptions as any);
+      const quotes = response?.quotes;
+
+      if (quotes && quotes.length > 0 && quotes[0]) {
+        // Use the close price of the first result
+        const rate = quotes[0].close;
+
+        if (rate) {
+          // Cache with long TTL (7 days) as historical rates don't change
+          await this.cacheService.set(cacheKey, rate, 604800);
+          return rate;
+        }
+      }
+
+      this.logger.warn(`No chart data found for ${symbol} on ${dateStr}`);
+      return null;
+    } catch (error) {
+      this.logger.error(
+        `Failed to fetch FX rate for ${symbol}: ${(error as Error).message}`,
       );
       return null;
     }

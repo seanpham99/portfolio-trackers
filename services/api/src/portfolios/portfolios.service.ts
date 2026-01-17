@@ -615,7 +615,18 @@ export class PortfoliosService {
     portfolioId: string,
     symbol: string,
   ): Promise<AssetDetailsResponseDto> {
-    await this.findOne(userId, portfolioId);
+    // Verify portfolio exists and belongs to user (lightweight check)
+    // Avoids calculating entire portfolio performance (O(N) API calls) just for ownership check
+    const { count, error } = await this.supabase
+      .from('portfolios')
+      .select('id', { count: 'exact', head: true })
+      .eq('id', portfolioId)
+      .eq('user_id', userId);
+
+    if (error) throw error;
+    if (count === 0 || count === null) {
+      throw new NotFoundException(`Portfolio ${portfolioId} not found`);
+    }
 
     const { data: transactionsData, error: txError } = await this.supabase
       .from('transactions')

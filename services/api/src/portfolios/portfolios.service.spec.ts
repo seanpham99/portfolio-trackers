@@ -187,11 +187,11 @@ describe('PortfoliosService', () => {
 
       const expectedPortfolios = mockPortfolios.map((p) => ({
         ...p,
-        netWorth: 0,
+        netWorth: 1500,
         totalGain: 0,
         unrealizedPL: 0,
         realizedPL: 0,
-        totalCostBasis: 0,
+        totalCostBasis: 1500,
         change24h: 0,
         change24hPercent: 0,
         allocation: [],
@@ -528,7 +528,10 @@ describe('PortfoliosService', () => {
       mockSupabaseClient.from.mockImplementation((table) => {
         const c = createMockChain();
         if (table === 'portfolios') {
-          c.single.mockResolvedValue({ data: mockPortfolio, error: null });
+          // New lightweight check awaits the chain directly to get `count`
+          c.then.mockImplementation((resolve: any) =>
+            resolve({ data: [mockPortfolio], error: null, count: 1 }),
+          );
         } else if (table === 'transactions') {
           // getAssetDetails: calls from('transactions').select('..., assets!inner(...)')
           c.then.mockImplementation((resolve: any) =>
@@ -584,7 +587,10 @@ describe('PortfoliosService', () => {
       mockSupabaseClient.from.mockImplementation((table) => {
         const c = createMockChain();
         if (table === 'portfolios') {
-          c.single.mockResolvedValue({ data: mockPortfolio, error: null });
+          // New lightweight check awaits the chain directly to get `count`
+          c.then.mockImplementation((resolve: any) =>
+            resolve({ data: [mockPortfolio], error: null, count: 1 }),
+          );
         } else if (table === 'transactions') {
           c.then.mockImplementation((resolve: any) =>
             resolve({ data: [], error: null }),

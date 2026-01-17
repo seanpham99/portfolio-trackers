@@ -67,6 +67,7 @@ development_status:
   4-2-asset-request-capture-queue: done
   4-3-mock-data-eviction-service-hardening: backlog
   4-4-data-source-reliability-staleness-controls: backlog
+  4-5-tech-debt-automated-fx-rate-resolution: done
   epic-4-retrospective: optional
 
   epic-5: backlog

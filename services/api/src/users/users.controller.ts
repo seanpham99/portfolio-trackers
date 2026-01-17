@@ -15,7 +15,7 @@ import { UserId } from '../portfolios/decorators/user-id.decorator';
 
 @ApiTags('users')
 @ApiBearerAuth()
-@Controller('me')
+@Controller('users/me')
 @UseGuards(AuthGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}

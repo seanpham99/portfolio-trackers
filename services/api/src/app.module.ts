@@ -28,7 +28,6 @@ import { MarketDataModule } from './market-data';
     PortfoliosModule,
     AssetsModule,
     UsersModule,
-    UsersModule,
     ConnectionsModule,
     MarketDataModule,
   ],

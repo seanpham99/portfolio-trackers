@@ -1,7 +1,6 @@
 "use client";
 
 import { useTheme } from "next-themes";
-import { Button } from "@workspace/ui/components/button";
 import {
   Card,
   CardContent,
@@ -9,12 +8,34 @@ import {
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card";
-import { Label } from "@workspace/ui/components/label";
 import { Monitor, Moon, Sun } from "lucide-react";
 import { toast } from "sonner";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@workspace/ui/components/select";
+import { useUserSettings, useUpdateUserSettings } from "../hooks/use-user-settings";
+import { Currency } from "@workspace/shared-types/api";
 
 export function PreferenceForm() {
   const { setTheme, theme } = useTheme();
+  const { data: settings } = useUserSettings();
+  const updateSettings = useUpdateUserSettings();
+
+  const isUpdating = updateSettings.isPending;
+
+  const handleCurrencyChange = (currency: Currency) => {
+    updateSettings.mutate(
+      { currency },
+      {
+        onSuccess: () => toast.success("Currency updated"),
+        onError: () => toast.error("Failed to update currency"),
+      }
+    );
+  };
 
   return (
     <div className="space-y-6">
@@ -70,14 +91,31 @@ export function PreferenceForm() {
           Set your preferred display currency (Currently USD only).
         </p>
       </div>
-      <Card className="opacity-50">
+      <Card>
         <CardHeader>
           <CardTitle className="text-base">Base Currency</CardTitle>
           <CardDescription>Global currency for portfolio aggregation</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center space-x-2">
-            <div className="text-sm font-medium">USD - United States Dollar</div>
+          <div className="flex items-center space-x-4">
+            <div className="w-[200px]">
+              <Select
+                value={settings?.currency || Currency.USD}
+                onValueChange={(value) => handleCurrencyChange(value as Currency)}
+                disabled={isUpdating}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select currency" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={Currency.USD}>USD - US Dollar</SelectItem>
+                  <SelectItem value={Currency.VND}>VND - Vietnamese Dong</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            {isUpdating && (
+              <span className="text-xs text-muted-foreground animate-pulse">Saving...</span>
+            )}
           </div>
         </CardContent>
       </Card>

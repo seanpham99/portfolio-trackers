@@ -5,6 +5,8 @@ import {
   type ConnectionDto,
   type CreateConnectionDto,
   type ValidationResultDto,
+  type UserSettingsDto,
+  type UpdateUserSettingsDto,
 } from "@workspace/shared-types/api";
 import {
   type Assets,
@@ -268,4 +270,55 @@ export async function deleteConnection(id: string): Promise<void> {
   if (!response.ok) {
     throw new Error("Failed to delete connection");
   }
+}
+
+// ============ Market Data API ============
+
+/**
+ * Get historical exchange rate
+ */
+export async function getExchangeRate(
+  from: string,
+  to: string,
+  date: string
+): Promise<{ rate: number | null }> {
+  const params = new URLSearchParams({
+    from,
+    to,
+    date,
+  });
+  const response = await apiFetch(`/market-data/exchange-rate?${params.toString()}`);
+  if (!response.ok) {
+    // Return null mostly, but let's conform to API contract
+    if (response.status === 404) return { rate: null };
+    throw new Error("Failed to fetch exchange rate");
+  }
+  return response.json();
+}
+
+// ============ User Settings API ============
+
+/**
+ * Get current user settings
+ */
+export async function getUserSettings(): Promise<UserSettingsDto> {
+  const response = await apiFetch("/users/me/settings");
+  if (!response.ok) {
+    throw new Error("Failed to fetch user settings");
+  }
+  return response.json();
+}
+
+/**
+ * Update user settings
+ */
+export async function updateUserSettings(data: UpdateUserSettingsDto): Promise<UserSettingsDto> {
+  const response = await apiFetch("/users/me/settings", {
+    method: "PATCH",
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) {
+    throw new Error("Failed to update user settings");
+  }
+  return response.json();
 }

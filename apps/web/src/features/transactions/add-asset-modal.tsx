@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm, useWatch, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -19,7 +19,12 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { Button } from "@workspace/ui/components/button";
-import { useSearchAssets, useAddTransaction } from "@/features/portfolio/hooks/use-portfolios";
+import {
+  useSearchAssets,
+  useAddTransaction,
+  usePortfolio,
+} from "@/features/portfolio/hooks/use-portfolios";
+import { useExchangeRate } from "@/features/portfolio/hooks/use-exchange-rate"; // [NEW]
 import { usePopularAssets } from "@/api/hooks/use-popular-assets";
 import { useDiscoverAssets, useSubmitAssetRequest } from "@/features/portfolio/hooks/use-discovery";
 import { TransactionType } from "@workspace/shared-types/api";
@@ -136,7 +141,31 @@ export function AddAssetModal({ isOpen, onClose, stageId, portfolioId }: AddAsse
   // Hooks
   const { data: searchResults = [], isLoading: isSearching } = useSearchAssets(searchQuery);
   const { data: popularAssets = [], isLoading: isLoadingPopular } = usePopularAssets();
+  const { data: portfolio } = usePortfolio(portfolioId); // [NEW] Get portfolio for base currency
   const addTransaction = useAddTransaction(portfolioId);
+
+  // Exchange Rate Logic [NEW]
+  const transactionDate = useWatch({ control: addForm.control, name: "transactionDate" });
+  const assetCurrency = selectedAsset?.currency || "USD"; // Default to USD if missing
+  const portfolioCurrency = portfolio?.base_currency || "VND"; // Default to VND if missing
+
+  // Fetch exchange rate if currencies differ
+  const { data: automatedRate, isLoading: isLoadingRate } = useExchangeRate(
+    assetCurrency,
+    portfolioCurrency,
+    transactionDate || new Date().toISOString(),
+    !!selectedAsset // Only fetch when asset is selected
+  );
+
+  // Auto-fill exchange rate when fetched
+  useEffect(() => {
+    if (automatedRate) {
+      addForm.setValue("exchangeRate", automatedRate.toString(), {
+        shouldValidate: true,
+        shouldDirty: true,
+      });
+    }
+  }, [automatedRate, addForm]);
 
   // External discovery hooks
   const { data: externalResults = [], isLoading: isDiscovering } = useDiscoverAssets(
@@ -179,9 +208,9 @@ export function AddAssetModal({ isOpen, onClose, stageId, portfolioId }: AddAsse
 
       toast.success("Asset added successfully");
       onClose();
-    } catch (err: any) {
-      console.error("Failed to add asset:", err);
-      toast.error(err.message || "Failed to add asset");
+    } catch (err) {
+      console.error("Failed to action:", err);
+      toast.error(err instanceof Error ? err.message : "An error occurred");
     }
   };
 
@@ -244,6 +273,16 @@ export function AddAssetModal({ isOpen, onClose, stageId, portfolioId }: AddAsse
     setModalState("ASSET_FORM");
   };
 
+  // Auto-fill exchange rate when fetched
+  useEffect(() => {
+    if (automatedRate) {
+      addForm.setValue("exchangeRate", automatedRate.toString(), {
+        shouldValidate: true,
+        shouldDirty: true,
+      });
+    }
+  }, [automatedRate, addForm]);
+
   const handleRequestTracking = async () => {
     if (!selectedAssetClass) return;
 
@@ -253,9 +292,9 @@ export function AddAssetModal({ isOpen, onClose, stageId, portfolioId }: AddAsse
         assetClass: selectedAssetClass,
       });
       setModalState("QUEUE_SUBMIT");
-    } catch (err: any) {
+    } catch (err) {
       console.error("Failed to submit request:", err);
-      toast.error(err.message || "Failed to submit request");
+      toast.error(err instanceof Error ? err.message : "Failed to submit request");
     }
   };
 
@@ -748,16 +787,31 @@ export function AddAssetModal({ isOpen, onClose, stageId, portfolioId }: AddAsse
                         >
                           Ex. Rate
                         </FieldLabel>
-                        <Input
-                          id={field.name}
-                          type="number"
-                          {...field}
-                          className="bg-muted/30 border-border focus-visible:ring-emerald-500/50"
-                          placeholder="1.0"
-                        />
-                        <p className="text-[10px] text-muted-foreground mt-1.5 font-mono">
-                          1 {selectedAsset?.symbol} = X {selectedAsset?.currency || "Base"}
-                        </p>
+                        <div className="relative">
+                          <Input
+                            id={field.name}
+                            type="number"
+                            step="any"
+                            {...field}
+                            className={`bg-muted/30 border-border focus-visible:ring-emerald-500/50 pr-8 transition-colors ${
+                              isLoadingRate ? "border-emerald-500/50 bg-emerald-500/5" : ""
+                            }`}
+                            placeholder="1.0"
+                          />
+                          {isLoadingRate && (
+                            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                              <Loader2 className="h-3.5 w-3.5 animate-spin text-emerald-500" />
+                            </div>
+                          )}
+                        </div>
+                        {assetCurrency !== portfolioCurrency && (
+                          <p className="text-[10px] text-muted-foreground mt-1.5 font-mono flex items-center justify-between">
+                            <span>
+                              1 {assetCurrency} ≈ {field.value} {portfolioCurrency}
+                            </span>
+                            {isLoadingRate && <span className="text-emerald-500">Updating...</span>}
+                          </p>
+                        )}
                       </Field>
                     )}
                   />

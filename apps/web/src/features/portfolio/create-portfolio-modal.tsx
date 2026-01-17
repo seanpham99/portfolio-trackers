@@ -9,6 +9,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 
 import { apiFetch } from "@/lib/api";
+import { useUserSettings } from "@/features/settings/hooks/use-user-settings";
 import { Button } from "@workspace/ui/components/button";
 import {
   Dialog,
@@ -64,17 +65,19 @@ export function CreatePortfolioModal({ isOpen, onClose }: CreatePortfolioModalPr
     },
   });
 
+  const { data: userSettings } = useUserSettings();
+
   // Reset form when modal opens
   useEffect(() => {
     if (isOpen) {
       form.reset({
         name: "",
         description: "",
-        baseCurrency: "USD",
+        baseCurrency: userSettings?.currency || "USD",
       });
       setError(null);
     }
-  }, [isOpen, form]);
+  }, [isOpen, form, userSettings]);
 
   const onSubmit = async (values: FormValues) => {
     setError(null);
@@ -115,7 +118,7 @@ export function CreatePortfolioModal({ isOpen, onClose }: CreatePortfolioModalPr
 
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-[425px] bg-zinc-900 border-white/[0.08] text-white">
+      <DialogContent className="sm:max-w-[425px] bg-zinc-900 border-white/8 text-white">
         <DialogHeader>
           <DialogTitle className="font-serif text-xl font-light">Create Portfolio</DialogTitle>
           <DialogDescription className="text-zinc-500">
@@ -143,7 +146,7 @@ export function CreatePortfolioModal({ isOpen, onClose }: CreatePortfolioModalPr
                   id={field.name}
                   aria-invalid={fieldState.invalid}
                   placeholder="e.g., Retirement Fund"
-                  className="bg-white/[0.03] border-white/[0.08] focus-visible:ring-emerald-500/50"
+                  className="bg-white/3 border-white/8 focus-visible:ring-emerald-500/50"
                 />
                 {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
               </Field>
@@ -163,7 +166,7 @@ export function CreatePortfolioModal({ isOpen, onClose }: CreatePortfolioModalPr
                   id={field.name}
                   aria-invalid={fieldState.invalid}
                   placeholder="Add notes about this portfolio..."
-                  className="resize-none bg-white/[0.03] border-white/[0.08] focus-visible:ring-emerald-500/50"
+                  className="resize-none bg-white/3 border-white/8 focus-visible:ring-emerald-500/50"
                   rows={3}
                   value={field.value || ""}
                 />
@@ -184,16 +187,16 @@ export function CreatePortfolioModal({ isOpen, onClose }: CreatePortfolioModalPr
                   <SelectTrigger
                     id={field.name}
                     aria-invalid={fieldState.invalid}
-                    className="bg-white/[0.03] border-white/[0.08] focus:ring-emerald-500/50"
+                    className="bg-white/3 border-white/8 focus:ring-emerald-500/50"
                   >
                     <SelectValue placeholder="Select a currency" />
                   </SelectTrigger>
-                  <SelectContent className="bg-zinc-900 border-white/[0.08] text-white">
+                  <SelectContent className="bg-zinc-900 border-white/8 text-white">
                     {currencies.map((currency) => (
                       <SelectItem
                         key={currency.value}
                         value={currency.value}
-                        className="focus:bg-white/[0.08] focus:text-white cursor-pointer"
+                        className="focus:bg-white/8 focus:text-white cursor-pointer"
                       >
                         {currency.label}
                       </SelectItem>
@@ -210,7 +213,7 @@ export function CreatePortfolioModal({ isOpen, onClose }: CreatePortfolioModalPr
               type="button"
               variant="ghost"
               onClick={onClose}
-              className="text-zinc-400 hover:text-white hover:bg-white/[0.05]"
+              className="text-zinc-400 hover:text-white hover:bg-white/5"
             >
               Cancel
             </Button>

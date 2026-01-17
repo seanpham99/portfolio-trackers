@@ -245,6 +245,15 @@ As a user, I want to see clear visual cues if my asset data is stale or if a pro
 - **When** data is older than 5 minutes.
 - **Then** a "Stale Data" banner or indicator appears with a refresh trigger.
 
+#### Story 4.5: Tech Debt - Automated FX Rate Resolution
+
+As a user, I want the system to automatically fetch the historical exchange rate when I enter a transaction for a foreign asset, so that I don't have to look it up manually.
+**Acceptance Criteria:**
+
+- **Given** I am adding a transaction for a USD asset in a VND portfolio.
+- **When** I enter the Transaction Date.
+- **Then** the "Exchange Rate" field is auto-filled with the historical rate for that date (provider: Yahoo/OpenExchangeRates).
+
 ### Epic 5: Automated Exchange Sync & Connections
 
 Automate portfolio tracking by enabling zero-maintenance syncing for crypto holdings via Binance and OKX APIs, and provide a centralized hub for managing external provider connections.
