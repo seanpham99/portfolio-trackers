@@ -44,6 +44,7 @@ const mockPortfoliosService = {
   addTransaction: jest.fn(),
   getHoldings: jest.fn(),
   getPortfolioHoldings: jest.fn(),
+  getAssetDetails: jest.fn(),
 };
 
 describe('PortfoliosController', () => {
@@ -87,7 +88,11 @@ describe('PortfoliosController', () => {
 
       const result = await controller.create(mockUserId, createDto);
 
-      expect(result).toEqual(mockPortfolio);
+      expect(result).toEqual({
+        data: mockPortfolio,
+        success: true,
+        meta: {},
+      });
       expect(mockPortfoliosService.create).toHaveBeenCalledWith(
         mockUserId,
         createDto,
@@ -106,20 +111,35 @@ describe('PortfoliosController', () => {
           allocation: [],
         },
       ];
-      mockPortfoliosService.findAll.mockResolvedValue(portfolios);
+      // Mock service returning { data, meta }
+      mockPortfoliosService.findAll.mockResolvedValue({
+        data: portfolios,
+        meta: { staleness: '2025-01-01T12:00:00Z' },
+      });
 
-      const result = await controller.findAll(mockUserId);
+      const result = await controller.findAll(mockUserId, false);
 
-      expect(result).toEqual(portfolios);
+      expect(result).toEqual({
+        data: portfolios,
+        success: true,
+        meta: { staleness: '2025-01-01T12:00:00Z' },
+      });
       expect(mockPortfoliosService.findAll).toHaveBeenCalledWith(mockUserId);
     });
 
     it('should return empty array when no portfolios', async () => {
-      mockPortfoliosService.findAll.mockResolvedValue([]);
+      mockPortfoliosService.findAll.mockResolvedValue({
+        data: [],
+        meta: { staleness: '2025-01-01T12:00:00Z' },
+      });
 
-      const result = await controller.findAll(mockUserId);
+      const result = await controller.findAll(mockUserId, false);
 
-      expect(result).toEqual([]);
+      expect(result).toEqual({
+        data: [],
+        success: true,
+        meta: { staleness: '2025-01-01T12:00:00Z' },
+      });
     });
   });
 
@@ -136,11 +156,18 @@ describe('PortfoliosController', () => {
         },
       ];
 
-      mockPortfoliosService.getHoldings.mockResolvedValue(holdings);
+      mockPortfoliosService.getHoldings.mockResolvedValue({
+        data: holdings,
+        meta: { staleness: '2025-01-01T12:00:00Z' },
+      });
 
-      const result = await controller.getHoldings(mockUserId);
+      const result = await controller.getHoldings(mockUserId, false);
 
-      expect(result).toEqual(holdings);
+      expect(result).toEqual({
+        data: holdings,
+        success: true,
+        meta: { staleness: '2025-01-01T12:00:00Z' },
+      });
       expect(mockPortfoliosService.getHoldings).toHaveBeenCalledWith(
         mockUserId,
       );
@@ -159,14 +186,22 @@ describe('PortfoliosController', () => {
         },
       ];
 
-      mockPortfoliosService.getHoldings.mockResolvedValue(holdings);
+      mockPortfoliosService.getHoldings.mockResolvedValue({
+        data: holdings,
+        meta: { staleness: '2025-01-01T12:00:00Z' },
+      });
 
       const result = await controller.getPortfolioHoldings(
         mockUserId,
         mockPortfolio.id,
+        false,
       );
 
-      expect(result).toEqual(holdings);
+      expect(result).toEqual({
+        data: holdings,
+        success: true,
+        meta: { staleness: '2025-01-01T12:00:00Z' },
+      });
       expect(mockPortfoliosService.getHoldings).toHaveBeenCalledWith(
         mockUserId,
         mockPortfolio.id,
@@ -176,11 +211,22 @@ describe('PortfoliosController', () => {
 
   describe('findOne', () => {
     it('should return a portfolio by id', async () => {
-      mockPortfoliosService.findOne.mockResolvedValue(mockPortfolio);
+      mockPortfoliosService.findOne.mockResolvedValue({
+        data: mockPortfolio,
+        meta: { staleness: '2025-01-01T12:00:00Z' },
+      });
 
-      const result = await controller.findOne(mockUserId, mockPortfolio.id);
+      const result = await controller.findOne(
+        mockUserId,
+        mockPortfolio.id,
+        false,
+      );
 
-      expect(result).toEqual(mockPortfolio);
+      expect(result).toEqual({
+        data: mockPortfolio,
+        success: true,
+        meta: { staleness: '2025-01-01T12:00:00Z' },
+      });
       expect(mockPortfoliosService.findOne).toHaveBeenCalledWith(
         mockUserId,
         mockPortfolio.id,
@@ -193,7 +239,7 @@ describe('PortfoliosController', () => {
       );
 
       await expect(
-        controller.findOne(mockUserId, 'non-existent-id'),
+        controller.findOne(mockUserId, 'non-existent-id', false),
       ).rejects.toThrow(NotFoundException);
     });
   });
@@ -213,7 +259,11 @@ describe('PortfoliosController', () => {
         updateDto,
       );
 
-      expect(result).toEqual(updatedPortfolio);
+      expect(result).toEqual({
+        data: updatedPortfolio,
+        success: true,
+        meta: {},
+      });
       expect(mockPortfoliosService.update).toHaveBeenCalledWith(
         mockUserId,
         mockPortfolio.id,
@@ -264,7 +314,11 @@ describe('PortfoliosController', () => {
         createTransactionDto,
       );
 
-      expect(result).toEqual(mockTransaction);
+      expect(result).toEqual({
+        data: mockTransaction,
+        success: true,
+        meta: {},
+      });
       expect(mockPortfoliosService.addTransaction).toHaveBeenCalledWith(
         mockUserId,
         'portfolio-1',

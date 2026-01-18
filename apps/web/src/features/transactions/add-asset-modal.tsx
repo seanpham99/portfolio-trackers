@@ -147,7 +147,7 @@ export function AddAssetModal({ isOpen, onClose, stageId, portfolioId }: AddAsse
   // Exchange Rate Logic [NEW]
   const transactionDate = useWatch({ control: addForm.control, name: "transactionDate" });
   const assetCurrency = selectedAsset?.currency || "USD"; // Default to USD if missing
-  const portfolioCurrency = portfolio?.base_currency || "VND"; // Default to VND if missing
+  const portfolioCurrency = portfolio?.data?.base_currency || "VND"; // Default to VND if missing
 
   // Fetch exchange rate if currencies differ
   const { data: automatedRate, isLoading: isLoadingRate } = useExchangeRate(

@@ -61,7 +61,7 @@ export function PerformanceDashboard({ portfolioId, onAddAsset }: PerformanceDas
   );
 
   // Check if portfolio has any holdings
-  const hasHoldings = portfolio && portfolio.netWorth > 0;
+  const hasHoldings = portfolio?.data && portfolio.data.netWorth > 0;
 
   if (isLoading) {
     return <PerformanceChartSkeleton />;
@@ -128,11 +128,11 @@ export function PerformanceDashboard({ portfolioId, onAddAsset }: PerformanceDas
       {/* Metrics Panel */}
       <PerformanceMetricsPanel
         metrics={data.metrics}
-        currency={portfolio?.base_currency || "USD"}
+        currency={portfolio?.data?.base_currency || "USD"}
       />
 
       {/* Chart */}
-      <PerformanceChart data={data.dataPoints} currency={portfolio?.base_currency || "USD"} />
+      <PerformanceChart data={data.dataPoints} currency={portfolio?.data?.base_currency || "USD"} />
     </div>
   );
 }

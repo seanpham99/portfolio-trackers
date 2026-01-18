@@ -5,6 +5,9 @@ import { usePortfolios } from "@/features/portfolio/hooks/use-portfolios";
 import { PortfolioCard } from "@/features/portfolio/portfolio-card";
 import { CreatePortfolioModal } from "@/features/portfolio/create-portfolio-modal";
 import { Badge } from "@workspace/ui/components/badge";
+import { StalenessBadge } from "@workspace/ui/components/staleness-badge";
+import { useStaleness } from "@/hooks/use-staleness";
+import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@workspace/ui/components/button";
 import {
   Plus,
@@ -39,14 +42,13 @@ const MOCK_HISTORY_DATA = [
   { name: "Sun", value: 7490 },
 ];
 
-const MOCK_ALLOCATION_DATA = [
-  { name: "Stocks", value: 45, color: "#10b981" }, // Emerald 500
-  { name: "Crypto", value: 35, color: "#6366f1" }, // Indigo 500
-  { name: "Cash", value: 20, color: "#f59e0b" }, // Amber 500
-];
+// MOCK_ALLOCATION_DATA removed - using real data aggregation
 
 export function DashboardClient() {
-  const { data: portfolios, isLoading } = usePortfolios();
+  const { data: response, isLoading, refresh, isRefetching } = usePortfolios();
+  const portfolios = response?.data;
+  const { isStale, label } = useStaleness(response?.meta?.staleness);
+
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   // Calculate aggregates
@@ -55,6 +57,32 @@ export function DashboardClient() {
   // Weighted average percent change roughly
   const totalChangePercent =
     totalNetWorth > 0 ? (totalChange24h / (totalNetWorth - totalChange24h)) * 100 : 0;
+
+  // Aggregate Allocation Data from all portfolios
+  const allocationMap = new Map<string, { value: number; color: string }>();
+  if (portfolios) {
+    for (const portfolio of portfolios) {
+      if (portfolio.allocation) {
+        for (const item of portfolio.allocation) {
+          const current = allocationMap.get(item.label) || { value: 0, color: item.color };
+          current.value += item.value;
+          // Ensure color is set
+          if (!current.color && item.color) current.color = item.color;
+          allocationMap.set(item.label, current);
+        }
+      }
+    }
+  }
+
+  // Convert to chart format and calculate percentages
+  const allocationData = Array.from(allocationMap.entries())
+    .map(([name, { value, color }]) => ({
+      name,
+      value: totalNetWorth > 0 ? parseFloat(((value / totalNetWorth) * 100).toFixed(1)) : 0,
+      rawValue: value,
+      color: color || "#9CA3AF",
+    }))
+    .sort((a, b) => b.value - a.value);
 
   const isPositive = totalChange24h >= 0;
 
@@ -127,6 +155,16 @@ export function DashboardClient() {
           >
             <Plus className="mr-2 h-4 w-4" /> New Portfolio
           </Button>
+        </div>
+
+        {/* Global Staleness Indicator */}
+        <div className="flex justify-end -mt-4">
+          <StalenessBadge
+            isStale={isStale}
+            label={label}
+            onRefresh={refresh}
+            isRefreshing={isRefetching}
+          />
         </div>
 
         {/* Bento Grid - Top Stats */}
@@ -251,7 +289,7 @@ export function DashboardClient() {
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                       <Pie
-                        data={MOCK_ALLOCATION_DATA}
+                        data={allocationData}
                         cx="50%"
                         cy="50%"
                         innerRadius={40}
@@ -259,7 +297,7 @@ export function DashboardClient() {
                         paddingAngle={5}
                         dataKey="value"
                       >
-                        {MOCK_ALLOCATION_DATA.map((entry, index) => (
+                        {allocationData.map((entry, index) => (
                           <Cell key={`cell-${index}`} fill={entry.color} stroke="none" />
                         ))}
                       </Pie>
@@ -268,7 +306,7 @@ export function DashboardClient() {
                 </div>
                 {/* Legend */}
                 <div className="w-1/2 space-y-2">
-                  {MOCK_ALLOCATION_DATA.map((item) => (
+                  {allocationData.map((item) => (
                     <div key={item.name} className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <div
@@ -324,11 +362,7 @@ export function DashboardClient() {
                           24h
                         </Badge>
                       </div>
-                      <div className="text-sm text-muted-foreground">
-                        User average: <span className="text-foreground">+4.2%</span>
-                      </div>
-
-                      <div className="h-1.5 w-full bg-muted/20 rounded-full mt-2 overflow-hidden">
+                      <div className="h-1.5 w-full bg-muted/20 rounded-full mt-auto overflow-hidden">
                         <motion.div
                           initial={{ width: 0 }}
                           animate={{ width: "100%" }}

@@ -1,4 +1,4 @@
-import { IsString, IsNumber, IsOptional, IsEnum } from "class-validator";
+import { IsString, IsNumber, IsOptional, IsEnum, IsBoolean } from "class-validator";
 import { CalculationMethod } from "./calculation-method.enum.js";
 
 export class HoldingDto {
@@ -57,4 +57,22 @@ export class HoldingDto {
   @IsString()
   @IsOptional()
   dataSource?: string;
+
+  // NFR3: Staleness Indicators for UI badges
+  @IsBoolean()
+  @IsOptional()
+  isStale?: boolean;
+
+  @IsString()
+  @IsOptional()
+  lastUpdated?: string;
+
+  @IsString()
+  @IsOptional()
+  providerStatus?: 'live' | 'cached' | 'fallback';
+
+  @IsString()
+  @IsOptional()
+  provider?: 'Yahoo' | 'CoinGecko' | 'cached' | 'fallback';
 }
+

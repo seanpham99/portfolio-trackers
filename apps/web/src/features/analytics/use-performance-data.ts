@@ -37,7 +37,7 @@ export function usePerformanceData(portfolioId: string, timeRange: TimeRange) {
   return useQuery({
     queryKey: ["portfolio", portfolioId, "performance", timeRange],
     queryFn: (): PerformanceData => {
-      const currentValue = portfolio?.netWorth || 0;
+      const currentValue = portfolio?.data?.netWorth || 0;
       const days = getTimeRangeDays(timeRange);
       const dataPoints = generateMockPerformanceData(currentValue, days).map(
         (point, index, array) => {

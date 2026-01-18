@@ -92,7 +92,8 @@ const mockTransactions = [
 ];
 
 export default function HistoryPage() {
-  const { data: portfolios } = usePortfolios();
+  const { data: response } = usePortfolios();
+  const portfolios = response?.data;
   const [searchQuery, setSearchQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState<string>("all");
   const [portfolioFilter, setPortfolioFilter] = useState<string>("all");

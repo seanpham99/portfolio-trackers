@@ -254,6 +254,18 @@ As a user, I want the system to automatically fetch the historical exchange rate
 - **When** I enter the Transaction Date.
 - **Then** the "Exchange Rate" field is auto-filled with the historical rate for that date (provider: Yahoo/OpenExchangeRates).
 
+- **When** I enter the Transaction Date.
+- **Then** the "Exchange Rate" field is auto-filled with the historical rate for that date (provider: Yahoo/OpenExchangeRates).
+
+#### Story 4.6: Portfolio Analytics & History Backfill
+
+As a generic user, I want to see the historical performance of my portfolios on a chart (1D, 1W, 1M, etc.), so that I can visualize my wealth progression over time instead of just the current snapshot.
+**Acceptance Criteria:**
+
+- **Given** a portfolio with history.
+- **When** I view the Dashboard or Portfolio Details.
+- **Then** the history chart displays real aggregated value over time (from `portfolio_snapshots` table).
+
 ### Epic 5: Automated Exchange Sync & Connections
 
 Automate portfolio tracking by enabling zero-maintenance syncing for crypto holdings via Binance and OKX APIs, and provide a centralized hub for managing external provider connections.

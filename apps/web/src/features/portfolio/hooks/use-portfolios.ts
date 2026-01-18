@@ -3,22 +3,45 @@ import { getPortfolios, getPortfolio, addTransaction, searchAssets } from "@/api
 import { TransactionType } from "@workspace/shared-types/api";
 
 export const usePortfolios = () => {
-  return useQuery({
+  const queryClient = useQueryClient();
+
+  const query = useQuery({
     queryKey: ["portfolios"],
-    queryFn: getPortfolios,
-    staleTime: 30 * 1000, // 30s - matches backend cache TTL
-    gcTime: 5 * 60 * 1000, // 5 min garbage collection
+    queryFn: () => getPortfolios(),
+    staleTime: 30 * 1000,
+    gcTime: 5 * 60 * 1000,
   });
+
+  const refresh = async () => {
+    return queryClient.fetchQuery({
+      queryKey: ["portfolios"],
+      queryFn: () => getPortfolios({ refresh: true }),
+    });
+  };
+
+  return { ...query, refresh };
 };
 
 export const usePortfolio = (id: string) => {
-  return useQuery({
+  const queryClient = useQueryClient();
+
+  const query = useQuery({
     queryKey: ["portfolio", id],
     queryFn: () => getPortfolio(id),
     enabled: !!id,
     staleTime: 30 * 1000,
     gcTime: 5 * 60 * 1000,
   });
+
+  const refresh = async () => {
+    if (!id) return;
+    return queryClient.fetchQuery({
+      queryKey: ["portfolio", id],
+      queryFn: () => getPortfolio(id, { refresh: true }),
+    });
+  };
+
+  return { ...query, refresh };
 };
 
 export const useSearchAssets = (query: string) => {

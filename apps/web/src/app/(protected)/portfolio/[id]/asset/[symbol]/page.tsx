@@ -46,8 +46,10 @@ export default function AssetDetailPage() {
   const portfolioId = params.id;
   const symbol = params.symbol;
 
-  const { data: portfolio } = usePortfolio(portfolioId);
-  const { data: assetData, isLoading, isError } = useAssetDetails(portfolioId, symbol);
+  const { data: portfolioResponse } = usePortfolio(portfolioId);
+  const portfolio = portfolioResponse?.data;
+  const { data: assetResponse, isLoading, isError } = useAssetDetails(portfolioId, symbol);
+  const assetData = assetResponse?.data;
 
   if (isLoading && !assetData) {
     return (

@@ -7,6 +7,7 @@ import {
   type ValidationResultDto,
   type UserSettingsDto,
   type UpdateUserSettingsDto,
+  type ApiResponse,
 } from "@workspace/shared-types/api";
 import {
   type Assets,
@@ -21,8 +22,11 @@ export * from "@/lib/api";
 /**
  * Fetch all portfolios with summary data
  */
-export async function getPortfolios(): Promise<PortfolioSummaryDto[]> {
-  const response = await apiFetch("/portfolios");
+export async function getPortfolios(options?: {
+  refresh?: boolean;
+}): Promise<ApiResponse<PortfolioSummaryDto[]>> {
+  const query = options?.refresh ? "?refresh=true" : "";
+  const response = await apiFetch(`/portfolios${query}`);
   if (!response.ok) {
     throw new Error("Failed to fetch portfolios");
   }
@@ -32,8 +36,12 @@ export async function getPortfolios(): Promise<PortfolioSummaryDto[]> {
 /**
  * Fetch a specific portfolio by ID
  */
-export async function getPortfolio(id: string): Promise<PortfolioSummaryDto> {
-  const response = await apiFetch(`/portfolios/${id}`);
+export async function getPortfolio(
+  id: string,
+  options?: { refresh?: boolean }
+): Promise<ApiResponse<PortfolioSummaryDto>> {
+  const query = options?.refresh ? "?refresh=true" : "";
+  const response = await apiFetch(`/portfolios/${id}${query}`);
   if (!response.ok) {
     throw new Error("Failed to fetch portfolio");
   }
@@ -43,8 +51,12 @@ export async function getPortfolio(id: string): Promise<PortfolioSummaryDto> {
 /**
  * Fetch holdings for a specific portfolio
  */
-export async function getPortfolioHoldings(portfolioId: string): Promise<HoldingDto[]> {
-  const response = await apiFetch(`/portfolios/${portfolioId}/holdings`);
+export async function getPortfolioHoldings(
+  portfolioId: string,
+  options?: { refresh?: boolean }
+): Promise<ApiResponse<HoldingDto[]>> {
+  const query = options?.refresh ? "?refresh=true" : "";
+  const response = await apiFetch(`/portfolios/${portfolioId}/holdings${query}`);
   if (!response.ok) {
     throw new Error("Failed to fetch portfolio holdings");
   }
@@ -54,8 +66,11 @@ export async function getPortfolioHoldings(portfolioId: string): Promise<Holding
 /**
  * Fetch all holdings across all portfolios
  */
-export async function getAllHoldings(): Promise<HoldingDto[]> {
-  const response = await apiFetch("/portfolios/holdings");
+export async function getAllHoldings(options?: {
+  refresh?: boolean;
+}): Promise<ApiResponse<HoldingDto[]>> {
+  const query = options?.refresh ? "?refresh=true" : "";
+  const response = await apiFetch(`/portfolios/holdings${query}`);
   if (!response.ok) {
     throw new Error("Failed to fetch holdings");
   }
@@ -67,9 +82,11 @@ export async function getAllHoldings(): Promise<HoldingDto[]> {
  */
 export async function getAssetDetails(
   portfolioId: string,
-  symbol: string
-): Promise<AssetDetailsResponseDto> {
-  const response = await apiFetch(`/portfolios/${portfolioId}/assets/${symbol}/details`);
+  symbol: string,
+  options?: { refresh?: boolean }
+): Promise<ApiResponse<AssetDetailsResponseDto>> {
+  const query = options?.refresh ? "?refresh=true" : "";
+  const response = await apiFetch(`/portfolios/${portfolioId}/assets/${symbol}/details${query}`);
   if (!response.ok) {
     throw new Error(`Failed to fetch asset details for ${symbol}`);
   }

@@ -5,6 +5,7 @@ const mockSupabase = {
   from: jest.fn().mockReturnThis(),
   select: jest.fn().mockReturnThis(),
   or: jest.fn().mockReturnThis(),
+  ilike: jest.fn().mockReturnThis(),
   order: jest.fn().mockReturnThis(),
   limit: jest.fn().mockReturnThis(),
   then: jest.fn((callback) => callback({ data: [], error: null })),
@@ -36,6 +37,7 @@ describe('AssetsService', () => {
       from: jest.fn().mockReturnThis(),
       select: jest.fn().mockReturnThis(),
       or: jest.fn().mockReturnThis(),
+      ilike: jest.fn().mockReturnThis(),
       order: jest.fn().mockReturnThis(),
       limit: jest.fn().mockResolvedValue({ data: mockData, error: null }),
     };

@@ -23,7 +23,7 @@ import {
 } from '@workspace/shared-types/api';
 import { Portfolio } from './portfolio.entity';
 import { CacheService } from '../common/cache';
-import { MarketDataService } from '../market-data';
+import { MarketDataService, QuoteWithMetadata } from '../market-data';
 
 /**
  * Type representing a transaction joined with its asset data
@@ -82,12 +82,20 @@ export class PortfoliosService {
   /**
    * Find all portfolios for the authenticated user
    */
-  async findAll(userId: string): Promise<PortfolioSummaryDto[]> {
-    // Check cache first
+  async findAll(
+    userId: string,
+    refresh = false,
+  ): Promise<{ data: PortfolioSummaryDto[]; meta: { staleness: string } }> {
+    // Check cache first (unless refresh requested)
     const cacheKey = `portfolios:${userId}`;
-    const cached = await this.cacheService.get<PortfolioSummaryDto[]>(cacheKey);
-    if (cached) {
-      return cached;
+    if (!refresh) {
+      const cached = await this.cacheService.get<{
+        data: PortfolioSummaryDto[];
+        meta: { staleness: string };
+      }>(cacheKey);
+      if (cached) {
+        return cached;
+      }
     }
 
     // First, fetch portfolios ONLY (lightweight query)
@@ -103,8 +111,12 @@ export class PortfoliosService {
 
     // EARLY RETURN: If no portfolios, skip expensive transactions query
     if (portfolios.length === 0) {
-      await this.cacheService.set(cacheKey, []);
-      return [];
+      const result = {
+        data: [],
+        meta: { staleness: new Date().toISOString() },
+      };
+      await this.cacheService.set(cacheKey, result);
+      return result;
     }
 
     // Only fetch transactions if portfolios exist
@@ -136,7 +148,7 @@ export class PortfoliosService {
           (tx) => tx.portfolio_id === portfolio.id,
         );
 
-        // Fetch prices for assets in this portfolio
+        // Fetch prices with metadata for assets in this portfolio
         const uniqueAssets = new Map<
           string,
           { symbol: string; market: string | null; assetClass: string }
@@ -152,17 +164,37 @@ export class PortfoliosService {
           }
         });
 
-        // Resolve prices
+        // Resolve quotes with metadata for 24h change calculation
+        const quoteMap = new Map<string, QuoteWithMetadata>();
         const priceMap = new Map<string, number>();
+        let hasStaleData = false;
+        let latestUpdate = '';
+        let worstStatus: 'live' | 'cached' | 'fallback' = 'live';
+
         await Promise.all(
           Array.from(uniqueAssets.values()).map(async (asset) => {
-            const price = await this.marketDataService.getCurrentPrice(
+            const quote = await this.marketDataService.getQuoteWithMetadata(
               asset.symbol,
               asset.market || undefined,
               asset.assetClass,
             );
-            if (price !== null) {
-              priceMap.set(asset.symbol, price);
+            if (quote) {
+              quoteMap.set(asset.symbol, quote);
+              priceMap.set(asset.symbol, quote.price);
+              // Track overall staleness
+              if (quote.isStale) hasStaleData = true;
+              if (!latestUpdate || quote.lastUpdated > latestUpdate) {
+                latestUpdate = quote.lastUpdated;
+              }
+              // Track worst provider status
+              if (quote.providerStatus === 'fallback') {
+                worstStatus = 'fallback';
+              } else if (
+                quote.providerStatus === 'cached' &&
+                worstStatus !== 'fallback'
+              ) {
+                worstStatus = 'cached';
+              }
             }
           }),
         );
@@ -170,23 +202,65 @@ export class PortfoliosService {
         // Calculate holdings with prices
         const holdings = this.calculateHoldings(portfolioTxs, priceMap);
 
-        // Calculate Net Worth (Sum of Market Values)
-        const netWorth = holdings.reduce((sum, h) => sum + (h.value || 0), 0);
+        // Calculate Net Worth using decimal.js (Sum of Market Values)
+        const netWorthDecimal = holdings.reduce(
+          (sum, h) => sum.plus(h.value || 0),
+          new Decimal(0),
+        );
+        const netWorth = netWorthDecimal.toNumber();
 
         // Calculate Total Gain (Unrealized + Realized)
-        const totalUnrealizedPL = holdings.reduce(
-          (sum, h) => sum + (h.pl || 0),
-          0,
-        );
-        const totalRealizedPL = holdings.reduce(
-          (sum, h) => sum + (h.realized_pl || 0),
-          0,
-        );
+        const totalUnrealizedPL = holdings
+          .reduce((sum, h) => sum.plus(h.pl || 0), new Decimal(0))
+          .toNumber();
+        const totalRealizedPL = holdings
+          .reduce((sum, h) => sum.plus(h.realized_pl || 0), new Decimal(0))
+          .toNumber();
 
         // Total Cost Basis
-        const totalCostBasis = holdings.reduce(
-          (sum, h) => sum + h.total_quantity * h.avg_cost,
-          0,
+        const totalCostBasis = holdings
+          .reduce(
+            (sum, h) =>
+              sum.plus(new Decimal(h.total_quantity).times(h.avg_cost)),
+            new Decimal(0),
+          )
+          .toNumber();
+
+        // Calculate 24h change from quote metadata
+        // Portfolio change = Sum(Holdings[i].value * Holdings[i].changePercent)
+        let change24h = new Decimal(0);
+        for (const h of holdings) {
+          const quote = quoteMap.get(h.symbol);
+          if (quote && h.value) {
+            // Value change = currentValue * (changePercent / 100)
+            const assetChange = new Decimal(h.value)
+              .times(quote.regularMarketChangePercent)
+              .dividedBy(100);
+            change24h = change24h.plus(assetChange);
+          }
+        }
+        const change24hVal = change24h.toNumber();
+        const change24hPct =
+          netWorth > 0
+            ? new Decimal(change24hVal)
+                .dividedBy(netWorth)
+                .times(100)
+                .toNumber()
+            : 0;
+
+        // Calculate allocation breakdown by asset class
+        const allocationMap = new Map<string, number>();
+        for (const h of holdings) {
+          const assetClass = h.asset_class || 'Other';
+          const currentValue = allocationMap.get(assetClass) || 0;
+          allocationMap.set(assetClass, currentValue + (h.value || 0));
+        }
+        const allocation = Array.from(allocationMap.entries()).map(
+          ([label, value]) => ({
+            label,
+            value,
+            color: this.getAssetClassColor(label),
+          }),
         );
 
         return {
@@ -196,23 +270,48 @@ export class PortfoliosService {
           unrealizedPL: totalUnrealizedPL,
           realizedPL: totalRealizedPL,
           totalCostBasis,
-          change24h: 0, // Placeholder: Requires historical price
-          change24hPercent: 0, // Placeholder
-          allocation: [], // Placeholder
+          change24h: change24hVal,
+          change24hPercent: change24hPct,
+          allocation,
+          // NFR3: Staleness indicators
+          isStale: hasStaleData,
+          lastUpdated: latestUpdate || new Date().toISOString(),
+          providerStatus: worstStatus,
+          provider:
+            quoteMap.size > 0
+              ? Array.from(quoteMap.values())[0]?.provider
+              : undefined, // Simplification: take first provider as rep
         };
       }),
     );
 
-    // Cache the result
-    await this.cacheService.set(cacheKey, portfoliosWithSummary);
+    const staleness =
+      portfoliosWithSummary.length > 0
+        ? portfoliosWithSummary
+            .map((p) => p.lastUpdated)
+            .filter(Boolean)
+            .sort()[0] || new Date().toISOString()
+        : new Date().toISOString();
 
-    return portfoliosWithSummary;
+    const result = {
+      data: portfoliosWithSummary,
+      meta: { staleness },
+    };
+
+    // Cache the result
+    await this.cacheService.set(cacheKey, result);
+
+    return result;
   }
 
   /**
    * Find a specific portfolio by id
    */
-  async findOne(userId: string, id: string): Promise<PortfolioSummaryDto> {
+  async findOne(
+    userId: string,
+    id: string,
+    refresh = false,
+  ): Promise<{ data: PortfolioSummaryDto; meta: { staleness: string } }> {
     const { data, error } = await this.supabase
       .from('portfolios')
       .select('*')
@@ -252,30 +351,48 @@ export class PortfoliosService {
     const portfolioTxs =
       (transactions as unknown as TransactionWithAsset[]) ?? [];
 
-    // Fetch prices
-    const uniqueAssets = new Set<string>();
+    // Fetch quotes with metadata for 24h change calculation
+    const uniqueAssets = new Map<
+      string,
+      { symbol: string; market: string | null; assetClass: string }
+    >();
     portfolioTxs.forEach((tx) => {
       if (tx.assets && !Array.isArray(tx.assets)) {
-        uniqueAssets.add(tx.assets.symbol);
+        uniqueAssets.set(tx.assets.symbol, {
+          symbol: tx.assets.symbol,
+          market: tx.assets.market,
+          assetClass: tx.assets.asset_class,
+        });
       }
     });
 
+    const quoteMap = new Map<string, QuoteWithMetadata>();
     const priceMap = new Map<string, number>();
-    await Promise.all(
-      Array.from(uniqueAssets).map(async (symbol) => {
-        const txWithAsset = portfolioTxs.find(
-          (t) => t.assets?.symbol === symbol,
-        );
-        const asset = txWithAsset?.assets;
+    let hasStaleData = false;
+    let latestUpdate = '';
+    let worstStatus: 'live' | 'cached' | 'fallback' = 'live';
 
-        if (asset) {
-          const price = await this.marketDataService.getCurrentPrice(
-            symbol,
-            asset.market ?? undefined,
-            asset.asset_class,
-          );
-          if (price !== null) {
-            priceMap.set(symbol, price);
+    await Promise.all(
+      Array.from(uniqueAssets.values()).map(async (asset) => {
+        const quote = await this.marketDataService.getQuoteWithMetadata(
+          asset.symbol,
+          asset.market || undefined,
+          asset.assetClass,
+        );
+        if (quote) {
+          quoteMap.set(asset.symbol, quote);
+          priceMap.set(asset.symbol, quote.price);
+          if (quote.isStale) hasStaleData = true;
+          if (!latestUpdate || quote.lastUpdated > latestUpdate) {
+            latestUpdate = quote.lastUpdated;
+          }
+          if (quote.providerStatus === 'fallback') {
+            worstStatus = 'fallback';
+          } else if (
+            quote.providerStatus === 'cached' &&
+            worstStatus !== 'fallback'
+          ) {
+            worstStatus = 'cached';
           }
         }
       }),
@@ -283,29 +400,79 @@ export class PortfoliosService {
 
     const holdings = this.calculateHoldings(portfolioTxs, priceMap);
 
-    // Calculate Metrics
-    const netWorth = holdings.reduce((sum, h) => sum + (h.value || 0), 0);
-    const totalUnrealizedPL = holdings.reduce((sum, h) => sum + (h.pl || 0), 0);
-    const totalRealizedPL = holdings.reduce(
-      (sum, h) => sum + (h.realized_pl || 0),
-      0,
-    );
-    const totalCostBasis = holdings.reduce(
-      (sum, h) => sum + h.total_quantity * h.avg_cost,
-      0,
+    // Calculate Metrics using decimal.js
+    const netWorth = holdings
+      .reduce((sum, h) => sum.plus(h.value || 0), new Decimal(0))
+      .toNumber();
+    const totalUnrealizedPL = holdings
+      .reduce((sum, h) => sum.plus(h.pl || 0), new Decimal(0))
+      .toNumber();
+    const totalRealizedPL = holdings
+      .reduce((sum, h) => sum.plus(h.realized_pl || 0), new Decimal(0))
+      .toNumber();
+    const totalCostBasis = holdings
+      .reduce(
+        (sum, h) => sum.plus(new Decimal(h.total_quantity).times(h.avg_cost)),
+        new Decimal(0),
+      )
+      .toNumber();
+
+    // Calculate 24h change from quote metadata
+    let change24h = new Decimal(0);
+    for (const h of holdings) {
+      const quote = quoteMap.get(h.symbol);
+      if (quote && h.value) {
+        const assetChange = new Decimal(h.value)
+          .times(quote.regularMarketChangePercent)
+          .dividedBy(100);
+        change24h = change24h.plus(assetChange);
+      }
+    }
+    const change24hVal = change24h.toNumber();
+    const change24hPct =
+      netWorth > 0
+        ? new Decimal(change24hVal).dividedBy(netWorth).times(100).toNumber()
+        : 0;
+
+    // Calculate allocation breakdown by asset class
+    const allocationMap = new Map<string, number>();
+    for (const h of holdings) {
+      const assetClass = h.asset_class || 'Other';
+      const currentValue = allocationMap.get(assetClass) || 0;
+      allocationMap.set(assetClass, currentValue + (h.value || 0));
+    }
+    const allocation = Array.from(allocationMap.entries()).map(
+      ([label, value]) => ({
+        label,
+        value,
+        color: this.getAssetClassColor(label),
+      }),
     );
 
-    return {
-      ...portfolio,
-      netWorth,
-      totalGain: totalUnrealizedPL + totalRealizedPL,
-      unrealizedPL: totalUnrealizedPL,
-      realizedPL: totalRealizedPL,
-      totalCostBasis,
-      change24h: 0,
-      change24hPercent: 0,
-      allocation: [],
+    const result = {
+      data: {
+        ...portfolio,
+        netWorth,
+        totalGain: totalUnrealizedPL + totalRealizedPL,
+        unrealizedPL: totalUnrealizedPL,
+        realizedPL: totalRealizedPL,
+        totalCostBasis,
+        change24h: change24hVal,
+        change24hPercent: change24hPct,
+        allocation,
+        // NFR3: Staleness indicators (kept in DTO for backward compat if needed, but primary is meta)
+        isStale: hasStaleData,
+        lastUpdated: latestUpdate || new Date().toISOString(),
+        providerStatus: worstStatus,
+        provider:
+          quoteMap.size > 0
+            ? Array.from(quoteMap.values())[0]?.provider
+            : undefined,
+      },
+      meta: { staleness: latestUpdate || new Date().toISOString() },
     };
+
+    return result;
   }
 
   /**
@@ -375,19 +542,45 @@ export class PortfoliosService {
   }
 
   /**
+   * Get color for asset class in allocation chart
+   * Colors are designed for good visual distinction and accessibility
+   */
+  private getAssetClassColor(assetClass: string): string {
+    const colorMap: Record<string, string> = {
+      EQUITY: '#3B82F6', // Blue
+      CRYPTO: '#F59E0B', // Amber
+      BOND: '#10B981', // Emerald
+      CASH: '#6B7280', // Gray
+      COMMODITY: '#8B5CF6', // Violet
+      REAL_ESTATE: '#F97316', // Orange
+      ETF: '#06B6D4', // Cyan
+      MUTUAL_FUND: '#EC4899', // Pink
+      Other: '#9CA3AF', // Light gray
+    };
+    return colorMap[assetClass] ?? '#9CA3AF';
+  }
+
+  /**
    * Get aggregated holdings for user (all portfolios or specific one)
    */
   async getHoldings(
     userId: string,
     portfolioId?: string,
-  ): Promise<HoldingDto[]> {
-    // Check cache first
+    refresh = false,
+  ): Promise<{ data: HoldingDto[]; meta: { staleness: string } }> {
+    // Check cache first (unless refresh requested)
     const cacheKey = portfolioId
       ? `holdings:${userId}:${portfolioId}`
       : `holdings:${userId}`;
-    const cached = await this.cacheService.get<HoldingDto[]>(cacheKey);
-    if (cached) {
-      return cached;
+
+    if (!refresh) {
+      const cached = await this.cacheService.get<{
+        data: HoldingDto[];
+        meta: { staleness: string };
+      }>(cacheKey);
+      if (cached) {
+        return cached;
+      }
     }
 
     // Query transactions
@@ -427,6 +620,9 @@ export class PortfoliosService {
     });
 
     const priceMap = new Map<string, number>();
+    const metaMap = new Map<string, any>(); // To store metadata for holdings
+    const timestamps: string[] = [];
+
     await Promise.all(
       Array.from(uniqueAssets).map(async (symbol) => {
         const txWithAsset = transactions.find(
@@ -435,24 +631,34 @@ export class PortfoliosService {
         const asset = txWithAsset?.assets;
 
         if (asset) {
-          const price = await this.marketDataService.getCurrentPrice(
+          const quote = await this.marketDataService.getQuoteWithMetadata(
             symbol,
             asset.market ?? undefined,
             asset.asset_class,
           );
-          if (price !== null) {
-            priceMap.set(symbol, price);
+          if (quote) {
+            priceMap.set(symbol, quote.price);
+            metaMap.set(symbol + '_meta', quote);
+            timestamps.push(quote.lastUpdated);
           }
         }
       }),
     );
 
-    const holdings = this.calculateHoldings(transactions, priceMap);
+    const holdings = this.calculateHoldings(transactions, priceMap, metaMap);
+    const staleness =
+      (timestamps.length > 0 ? timestamps.sort()[0] : undefined) ||
+      new Date().toISOString();
+
+    const result = {
+      data: holdings,
+      meta: { staleness },
+    };
 
     // Cache result
-    await this.cacheService.set(cacheKey, holdings);
+    await this.cacheService.set(cacheKey, result);
 
-    return holdings;
+    return result;
   }
 
   /**
@@ -461,6 +667,7 @@ export class PortfoliosService {
   private calculateHoldings(
     transactions: TransactionWithAsset[],
     priceMap: Map<string, number> = new Map(),
+    metaMap: Map<string, any> = new Map(),
   ): HoldingDto[] {
     const lotsMap = new Map<
       string,
@@ -566,6 +773,18 @@ export class PortfoliosService {
           realized_pl: entry.realizedPL,
           calculationMethod: CalculationMethod.FIFO,
           dataSource: apiPrice ? 'Market Data' : 'Last Transaction',
+          isStale: apiPrice
+            ? metaMap.get(entry.asset.symbol + '_meta')?.isStale
+            : undefined,
+          lastUpdated: apiPrice
+            ? metaMap.get(entry.asset.symbol + '_meta')?.lastUpdated
+            : undefined,
+          providerStatus: apiPrice
+            ? metaMap.get(entry.asset.symbol + '_meta')?.providerStatus
+            : undefined,
+          provider: apiPrice
+            ? metaMap.get(entry.asset.symbol + '_meta')?.provider
+            : undefined,
         };
       })
       .filter((h) => h.total_quantity > 0.000001);
@@ -614,7 +833,8 @@ export class PortfoliosService {
     userId: string,
     portfolioId: string,
     symbol: string,
-  ): Promise<AssetDetailsResponseDto> {
+    refresh = false,
+  ): Promise<{ data: AssetDetailsResponseDto; meta: { staleness: string } }> {
     // Verify portfolio exists and belongs to user (lightweight check)
     // Avoids calculating entire portfolio performance (O(N) API calls) just for ownership check
     const { count, error } = await this.supabase
@@ -741,42 +961,47 @@ export class PortfoliosService {
       );
     }
 
-    const apiPrice = await this.marketDataService.getCurrentPrice(
+    const quote = await this.marketDataService.getQuoteWithMetadata(
       asset.symbol,
       asset.market ?? undefined,
       asset.asset_class,
     );
-    const currentPrice = apiPrice ?? lastTx.price;
+    const currentPrice = quote?.price ?? lastTx.price;
+    const staleness = quote?.lastUpdated ?? new Date().toISOString();
+
     const currentValue = totalQty * currentPrice;
     const unrealizedPL = currentValue - remainingCostBasis;
 
     return {
-      details: {
-        asset_id: asset.id,
-        symbol: asset.symbol,
-        name: asset.name_en || asset.name_local || asset.symbol,
-        asset_class: asset.asset_class,
-        market: asset.market ?? 'Unknown',
-        currency: asset.currency,
-        total_quantity: totalQty,
-        avg_cost: avgCost,
-        current_price: currentPrice,
-        current_value: currentValue,
-        total_return_abs: unrealizedPL + realizedPL,
-        total_return_pct:
-          remainingCostBasis > 0
-            ? ((unrealizedPL + realizedPL) / remainingCostBasis) * 100
-            : 0,
-        unrealized_pl: unrealizedPL,
-        unrealized_pl_pct:
-          avgCost > 0 ? ((currentPrice - avgCost) / avgCost) * 100 : 0,
-        realized_pl: realizedPL,
-        asset_gain: unrealizedPL,
-        fx_gain: 0,
-        calculation_method: CalculationMethod.FIFO,
-        last_updated: new Date().toISOString(),
+      data: {
+        details: {
+          asset_id: asset.id,
+          symbol: asset.symbol,
+          name: asset.name_en || asset.name_local || asset.symbol,
+          asset_class: asset.asset_class,
+          market: asset.market ?? 'Unknown',
+          currency: asset.currency,
+          total_quantity: totalQty,
+          avg_cost: avgCost,
+          current_price: currentPrice,
+          current_value: currentValue,
+          total_return_abs: unrealizedPL + realizedPL,
+          total_return_pct:
+            remainingCostBasis > 0
+              ? ((unrealizedPL + realizedPL) / remainingCostBasis) * 100
+              : 0,
+          unrealized_pl: unrealizedPL,
+          unrealized_pl_pct:
+            avgCost > 0 ? ((currentPrice - avgCost) / avgCost) * 100 : 0,
+          realized_pl: realizedPL,
+          asset_gain: unrealizedPL,
+          fx_gain: 0,
+          calculation_method: CalculationMethod.FIFO,
+          last_updated: staleness,
+        },
+        transactions: txDtos,
       },
-      transactions: txDtos,
+      meta: { staleness },
     };
   }
 }

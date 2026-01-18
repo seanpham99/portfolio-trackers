@@ -7,6 +7,8 @@ import { usePortfolio } from "@/features/portfolio/hooks/use-portfolios";
 import { UnifiedHoldingsTable } from "@/features/portfolio/unified-holdings-table";
 import { PortfolioHistoryChart } from "@/features/portfolio/portfolio-history-chart";
 import { AllocationDonut } from "@/features/portfolio/allocation-donut";
+import { StalenessBadge } from "@workspace/ui/components/staleness-badge";
+import { useStaleness } from "@/hooks/use-staleness";
 import { AddAssetModal } from "@/features/transactions/add-asset-modal";
 import { PerformanceDashboard } from "@/features/analytics/performance-dashboard";
 import { MetricInfoCard, MetricKeys } from "@/features/metrics";
@@ -42,7 +44,10 @@ import {
 export default function PortfolioDetailPage() {
   const params = useParams<{ id: string }>();
   const id = params.id;
-  const { data: portfolio, isLoading, isError } = usePortfolio(id);
+  const { data: response, isLoading, isError, refresh, isRefetching } = usePortfolio(id);
+  const portfolio = response?.data;
+  const { isStale, label } = useStaleness(response?.meta?.staleness);
+
   const [isAddAssetOpen, setIsAddAssetOpen] = useState(false);
 
   if (isLoading) {
@@ -139,6 +144,13 @@ export default function PortfolioDetailPage() {
                 <p className="text-sm text-muted-foreground">
                   {portfolio.description || "Multi-asset investment portfolio"}
                 </p>
+                <StalenessBadge
+                  isStale={isStale}
+                  label={label}
+                  onRefresh={refresh}
+                  isRefreshing={isRefetching}
+                  className="mt-1"
+                />
               </div>
             </div>
 
@@ -235,7 +247,7 @@ export default function PortfolioDetailPage() {
                     <h3 className="font-medium text-foreground">Allocation</h3>
                   </div>
                   <div className="p-4 flex items-center justify-center">
-                    <AllocationDonut portfolioId={id} />
+                    <AllocationDonut portfolioId={id} allocation={portfolio?.allocation} />
                   </div>
                 </div>
               </div>

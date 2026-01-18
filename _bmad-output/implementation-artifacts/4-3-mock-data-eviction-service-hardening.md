@@ -1,6 +1,6 @@
 # Story 4.3: Mock Data Eviction & Service Hardening
 
-Status: ready-for-dev
+Status: review
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -34,23 +34,23 @@ As a developer, I want to replace all hardcoded price placeholders and empty met
 
 ## Tasks / Subtasks
 
-- [ ] **Task 1: Market Data Provider Hardening**
-  - [ ] Implement `getQuoteWithMetadata(symbol)` to return prices along with `regularMarketChange` and `regularMarketChangePercent`.
-  - [ ] Add `isStale` logic to `MarketDataService`: if external fetch fails, return Redis snapshot with `isStale: true`.
-  - [ ] Implement historical price lookup (24h ago) with mandatory caching (TTL 24h).
+- [x] **Task 1: Market Data Provider Hardening**
+  - [x] Implement `getQuoteWithMetadata(symbol)` to return prices along with `regularMarketChange` and `regularMarketChangePercent`.
+  - [x] Add `isStale` logic to `MarketDataService`: if external fetch fails, return Redis snapshot with `isStale: true`.
+  - [x] Implement historical price lookup (24h ago) with mandatory caching (TTL 24h).
 
-- [ ] **Task 2: Service Calculation Logic**
-  - [ ] Refactor `calculateHoldings` to return `allocation` objects mapped to symbols and market values.
-  - [ ] Update `findAll`/`findOne` to aggregate 24h changes from daily quotes or the "previous close" field in the current quote.
-  - [ ] Ensure all math uses `decimal.js` to prevent floating point drift during aggregation.
+- [x] **Task 2: Service Calculation Logic**
+  - [x] Refactor `calculateHoldings` to return `allocation` objects mapped to symbols and market values.
+  - [x] Update `findAll`/`findOne` to aggregate 24h changes from daily quotes or the "previous close" field in the current quote.
+  - [x] Ensure all math uses `decimal.js` to prevent floating point drift during aggregation.
 
-- [ ] **Task 3: DTO & Boundary Updates**
-  - [ ] Update `@workspace/shared-types` (Portfolio/Holding DTOs) to include staleness and timestamp fields.
-  - [ ] Ensure `PortfoliosService` respects the Redis-first strategy for active dashboard metrics.
+- [x] **Task 3: DTO & Boundary Updates**
+  - [x] Update `@workspace/shared-types` (Portfolio/Holding DTOs) to include staleness and timestamp fields.
+  - [x] Ensure `PortfoliosService` respects the Redis-first strategy for active dashboard metrics.
 
-- [ ] **Task 4: Cleanup & Verification**
-  - [ ] Evict all `// Placeholder` comments and `0` hardcodes.
-  - [ ] Update unit tests to simulate "Provider Down" scenarios and verify stale fallback.
+- [x] **Task 4: Cleanup & Verification**
+  - [x] Evict all `// Placeholder` comments and `0` hardcodes.
+  - [x] Update unit tests to simulate "Provider Down" scenarios and verify stale fallback.
 
 ## Dev Notes
 
@@ -78,11 +78,24 @@ Antigravity (Google Deepmind)
 
 ### Completion Notes List
 
-- Enhanced with validation fixes per BMad Quality Protocol.
-- Added explicit staleness metadata and resiliency tasks.
+- Implemented `getQuoteWithMetadata()` returning price with regularMarketChange, regularMarketChangePercent, and staleness metadata
+- Added `exponentialBackoff()` helper with jitter for NFR8 resiliency compliance
+- Implemented `getHistoricalPrice()` for 24h-ago price lookup with 24h caching TTL
+- Refactored `findAll`/`findOne` to use `getQuoteWithMetadata` and calculate real 24h portfolio changes
+- Added allocation breakdown by asset class with color mapping via `getAssetClassColor()`
+- Updated all financial calculations to use `decimal.js` to prevent floating-point drift
+- Added staleness fields (`isStale`, `lastUpdated`, `providerStatus`) to `PortfolioSummaryDto` and `HoldingDto`
+- Removed all placeholder `change24h: 0` hardcodes
+- Added 5 new unit tests for Provider Down scenarios (NFR3/NFR8)
 
 ### File List
 
-- services/api/src/portfolios/portfolios.service.ts
 - services/api/src/market-data/market-data.service.ts
+- services/api/src/market-data/market-data.service.spec.ts
+- services/api/src/portfolios/portfolios.service.ts
 - packages/shared-types/src/api/portfolio.dto.ts
+- packages/shared-types/src/api/holding.dto.ts
+
+## Change Log
+
+- 2026-01-18: Implemented all 4 tasks for Story 4.3 - Mock Data Eviction & Service Hardening

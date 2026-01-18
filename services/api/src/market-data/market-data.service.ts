@@ -6,11 +6,44 @@ import { Database } from '@workspace/shared-types/database';
 
 const COINGECKO_API_URL = 'https://api.coingecko.com/api/v3';
 
+/**
+ * Quote data with metadata for staleness tracking (NFR3)
+ */
+export interface QuoteWithMetadata {
+  price: number;
+  regularMarketChange: number;
+  regularMarketChangePercent: number;
+  previousClose: number | null;
+  isStale: boolean;
+  lastUpdated: string;
+  providerStatus: 'live' | 'cached' | 'fallback';
+  provider: 'Yahoo' | 'CoinGecko' | 'cached' | 'fallback';
+}
+
+/**
+ * Helper function for exponential backoff with jitter (NFR8)
+ * @param attemptNumber 0-indexed attempt number
+ * @param baseDelayMs Base delay in milliseconds (default 1000ms)
+ * @param maxDelayMs Maximum delay cap (default 30000ms)
+ */
+async function exponentialBackoff(
+  attemptNumber: number,
+  baseDelayMs = 1000,
+  maxDelayMs = 30000,
+): Promise<void> {
+  const exponentialDelay = baseDelayMs * Math.pow(2, attemptNumber);
+  const jitter = Math.random() * baseDelayMs;
+  const delay = Math.min(exponentialDelay + jitter, maxDelayMs);
+  await new Promise((resolve) => setTimeout(resolve, delay));
+}
+
 @Injectable()
 export class MarketDataService {
   private readonly logger = new Logger(MarketDataService.name);
-  private readonly CACHE_TTL = 300; // 5 minutes
-  private readonly COIN_ID_TTL = 86400; // 24 hours
+  private readonly CACHE_TTL = 300; // 5 minutes for live prices
+  private readonly COIN_ID_TTL = 86400; // 24 hours for symbol->ID mapping
+  private readonly HISTORICAL_PRICE_TTL = 86400; // 24h cache for historical prices
+  private readonly MAX_RETRY_ATTEMPTS = 3;
   private yf: any;
 
   constructor(
@@ -61,39 +94,44 @@ export class MarketDataService {
     market?: string,
     assetClass?: string,
   ): Promise<number | null> {
-    try {
-      const coinId = await this.getCoinGeckoId(symbol);
+    // Retry with exponential backoff for CoinGecko
+    for (let attempt = 0; attempt < this.MAX_RETRY_ATTEMPTS; attempt++) {
+      try {
+        const coinId = await this.getCoinGeckoId(symbol);
 
-      if (coinId) {
-        const cacheKey = `price:coingecko:${coinId}`;
-        const cachedPrice = await this.cacheService.get<number>(cacheKey);
+        if (coinId) {
+          const cacheKey = `price:coingecko:${coinId}`;
+          const cachedPrice = await this.cacheService.get<number>(cacheKey);
 
-        if (cachedPrice !== null && cachedPrice !== undefined) {
-          return cachedPrice;
-        }
-
-        const url = `${COINGECKO_API_URL}/simple/price?ids=${coinId}&vs_currencies=usd`;
-        const response = await fetch(url);
-
-        if (response.ok) {
-          const data = await response.json();
-          const price = data[coinId]?.usd;
-
-          if (price) {
-            await this.cacheService.set(cacheKey, price, this.CACHE_TTL);
-            // Optimization: If we have cache hit here, we return early
-            return price;
+          if (cachedPrice !== null && cachedPrice !== undefined) {
+            return cachedPrice;
           }
-        } else {
-          this.logger.warn(
-            `CoinGecko API error for ${symbol}: ${response.statusText}`,
-          );
+
+          const url = `${COINGECKO_API_URL}/simple/price?ids=${coinId}&vs_currencies=usd`;
+          const response = await fetch(url);
+
+          if (response.ok) {
+            const data = await response.json();
+            const price = data[coinId]?.usd;
+
+            if (price) {
+              await this.cacheService.set(cacheKey, price, this.CACHE_TTL);
+              return price;
+            }
+          } else {
+            this.logger.warn(
+              `CoinGecko API error for ${symbol}: ${response.statusText}`,
+            );
+          }
+        }
+      } catch (error) {
+        this.logger.warn(
+          `Attempt ${attempt + 1}/${this.MAX_RETRY_ATTEMPTS} failed for CoinGecko ${symbol}: ${(error as Error).message}`,
+        );
+        if (attempt < this.MAX_RETRY_ATTEMPTS - 1) {
+          await exponentialBackoff(attempt);
         }
       }
-    } catch (error) {
-      this.logger.error(
-        `Failed to fetch CoinGecko price for ${symbol}: ${(error as Error).message}`,
-      );
     }
 
     // Fallback to Yahoo Finance
@@ -148,7 +186,7 @@ export class MarketDataService {
   }
 
   /**
-   * Fetch price from Yahoo Finance
+   * Fetch price from Yahoo Finance with exponential backoff and staleness fallback (NFR8)
    */
   private async getYahooPrice(
     yfSymbol: string,
@@ -161,22 +199,183 @@ export class MarketDataService {
       return cachedPrice;
     }
 
-    try {
-      const quote = await this.yf.quote(yfSymbol);
+    // Retry with exponential backoff
+    for (let attempt = 0; attempt < this.MAX_RETRY_ATTEMPTS; attempt++) {
+      try {
+        const quote = await this.yf.quote(yfSymbol);
+        const price = (quote as any).regularMarketPrice;
 
-      const price = (quote as any).regularMarketPrice;
-
-      if (price) {
-        await this.cacheService.set(cacheKey, price, this.CACHE_TTL);
-        return price;
+        if (price) {
+          await this.cacheService.set(cacheKey, price, this.CACHE_TTL);
+          return price;
+        }
+        return null;
+      } catch (error) {
+        this.logger.warn(
+          `Attempt ${attempt + 1}/${this.MAX_RETRY_ATTEMPTS} failed for ${originalSymbol} (${yfSymbol}): ${(error as Error).message}`,
+        );
+        if (attempt < this.MAX_RETRY_ATTEMPTS - 1) {
+          await exponentialBackoff(attempt);
+        }
       }
-      return null;
-    } catch (error) {
-      this.logger.warn(
-        `Failed to fetch Yahoo price for ${originalSymbol} (${yfSymbol}): ${(error as Error).message}`,
-      );
-      return null;
     }
+
+    // All retries failed - return null (caller handles fallback)
+    this.logger.error(
+      `All ${this.MAX_RETRY_ATTEMPTS} attempts failed for ${originalSymbol}`,
+    );
+    return null;
+  }
+
+  /**
+   * Get quote with full metadata including change values and staleness (NFR3)
+   * This method returns price, 24h change, change percent, and staleness indicators.
+   * @param symbol Ticker symbol
+   * @param market Market code (e.g. US, VN, CRYPTO)
+   * @param assetClass Asset class (e.g. EQUITY, CRYPTO)
+   */
+  async getQuoteWithMetadata(
+    symbol: string,
+    market?: string,
+    assetClass?: string,
+  ): Promise<QuoteWithMetadata | null> {
+    const yfSymbol = this.mapToYahooFinanceSymbol(symbol, market, assetClass);
+    const cacheKey = `quote:metadata:${yfSymbol}`;
+    const staleFallbackKey = `quote:fallback:${yfSymbol}`;
+
+    // Check for fresh cached quote
+    const cachedQuote =
+      await this.cacheService.get<QuoteWithMetadata>(cacheKey);
+    if (cachedQuote) {
+      return cachedQuote;
+    }
+
+    // Retry with exponential backoff
+    for (let attempt = 0; attempt < this.MAX_RETRY_ATTEMPTS; attempt++) {
+      try {
+        const quote = await this.yf.quote(yfSymbol);
+
+        if (quote && (quote as any).regularMarketPrice) {
+          const result: QuoteWithMetadata = {
+            price: (quote as any).regularMarketPrice,
+            regularMarketChange: (quote as any).regularMarketChange ?? 0,
+            regularMarketChangePercent:
+              (quote as any).regularMarketChangePercent ?? 0,
+            previousClose: (quote as any).regularMarketPreviousClose ?? null,
+            isStale: false,
+            lastUpdated: new Date().toISOString(),
+            providerStatus: 'live',
+            provider: 'Yahoo',
+          };
+
+          // Cache the fresh quote for 5 minutes
+          await this.cacheService.set(cacheKey, result, this.CACHE_TTL);
+          // Also store as fallback with longer TTL (1 hour) for stale scenarios
+          await this.cacheService.set(staleFallbackKey, result, 3600);
+
+          return result;
+        }
+        break; // Quote returned but no price - don't retry
+      } catch (error) {
+        this.logger.warn(
+          `getQuoteWithMetadata attempt ${attempt + 1}/${this.MAX_RETRY_ATTEMPTS} failed for ${symbol}: ${(error as Error).message}`,
+        );
+        if (attempt < this.MAX_RETRY_ATTEMPTS - 1) {
+          await exponentialBackoff(attempt);
+        }
+      }
+    }
+
+    // All retries failed - check for stale fallback in Redis
+    const staleQuote =
+      await this.cacheService.get<QuoteWithMetadata>(staleFallbackKey);
+    if (staleQuote) {
+      this.logger.log(
+        `Returning stale fallback for ${symbol} (last updated: ${staleQuote.lastUpdated})`,
+      );
+      return {
+        ...staleQuote,
+        isStale: true,
+        providerStatus: 'fallback',
+        provider: 'cached',
+      };
+    }
+
+    this.logger.error(
+      `No data available for ${symbol} - provider unreachable and no fallback cached`,
+    );
+    return null;
+  }
+
+  /**
+   * Get historical price for a symbol at a specific date
+   * Used for calculating 24h change when current quote doesn't have it
+   * @param symbol Ticker symbol
+   * @param market Market code
+   * @param assetClass Asset class
+   * @param date Target date for historical price
+   */
+  async getHistoricalPrice(
+    symbol: string,
+    market?: string,
+    assetClass?: string,
+    date?: Date,
+  ): Promise<number | null> {
+    const targetDate = date || new Date(Date.now() - 86400000); // Default: 24h ago
+    const dateStr = targetDate.toISOString().split('T')[0];
+    const yfSymbol = this.mapToYahooFinanceSymbol(symbol, market, assetClass);
+    const cacheKey = `price:historical:${yfSymbol}:${dateStr}`;
+
+    // Check cache first (historical prices are immutable)
+    const cachedPrice = await this.cacheService.get<number>(cacheKey);
+    if (cachedPrice !== null && cachedPrice !== undefined) {
+      return cachedPrice;
+    }
+
+    // Retry with exponential backoff
+    for (let attempt = 0; attempt < this.MAX_RETRY_ATTEMPTS; attempt++) {
+      try {
+        const queryOptions = {
+          period1: dateStr,
+          period2: new Date(targetDate.getTime() + 86400000)
+            .toISOString()
+            .split('T')[0],
+        };
+
+        const response = await this.yf.chart(yfSymbol, queryOptions as any);
+        const quotes = response?.quotes;
+
+        if (quotes && quotes.length > 0 && quotes[0]) {
+          const price = quotes[0].close;
+          if (price) {
+            // Cache with 24h TTL (historical data doesn't change)
+            await this.cacheService.set(
+              cacheKey,
+              price,
+              this.HISTORICAL_PRICE_TTL,
+            );
+            return price;
+          }
+        }
+
+        this.logger.warn(
+          `No historical data found for ${symbol} on ${dateStr}`,
+        );
+        return null; // Don't retry if data is missing (not an error)
+      } catch (error) {
+        this.logger.warn(
+          `Attempt ${attempt + 1}/${this.MAX_RETRY_ATTEMPTS} failed to fetch historical price for ${symbol}: ${(error as Error).message}`,
+        );
+        if (attempt < this.MAX_RETRY_ATTEMPTS - 1) {
+          await exponentialBackoff(attempt);
+        }
+      }
+    }
+
+    this.logger.error(
+      `All attempts failed to fetch historical price for ${symbol}`,
+    );
+    return null;
   }
 
   /**
@@ -204,41 +403,50 @@ export class MarketDataService {
     }
 
     // 2. Fetch from Yahoo Finance
+    // 2. Fetch from Yahoo Finance with backoff
     const symbol = `${fromCode}${toCode}=X`;
-    try {
-      this.logger.log(`Fetching FX rate for ${symbol} on ${dateStr}`);
 
-      // We fetch a range to ensure we get a quote if the exact date is a weekend/holiday
-      // Yahoo Historical expects period1 (start) and period2 (end)
-      const queryOptions = {
-        period1: dateStr,
-        period2: new Date(date.getTime() + 86400000)
-          .toISOString()
-          .split('T')[0], // Next day
-      };
+    for (let attempt = 0; attempt < this.MAX_RETRY_ATTEMPTS; attempt++) {
+      try {
+        this.logger.log(`Fetching FX rate for ${symbol} on ${dateStr}`);
 
-      const response = await this.yf.chart(symbol, queryOptions as any);
-      const quotes = response?.quotes;
+        // We fetch a range to ensure we get a quote if the exact date is a weekend/holiday
+        // Yahoo Historical expects period1 (start) and period2 (end)
+        const queryOptions = {
+          period1: dateStr,
+          period2: new Date(date.getTime() + 86400000)
+            .toISOString()
+            .split('T')[0], // Next day
+        };
 
-      if (quotes && quotes.length > 0 && quotes[0]) {
-        // Use the close price of the first result
-        const rate = quotes[0].close;
+        const response = await this.yf.chart(symbol, queryOptions as any);
+        const quotes = response?.quotes;
 
-        if (rate) {
-          // Cache with long TTL (7 days) as historical rates don't change
-          await this.cacheService.set(cacheKey, rate, 604800);
-          return rate;
+        if (quotes && quotes.length > 0 && quotes[0]) {
+          // Use the close price of the first result
+          const rate = quotes[0].close;
+
+          if (rate) {
+            // Cache with long TTL (7 days) as historical rates don't change
+            await this.cacheService.set(cacheKey, rate, 604800);
+            return rate;
+          }
+        }
+
+        this.logger.warn(`No chart data found for ${symbol} on ${dateStr}`);
+        return null;
+      } catch (error) {
+        this.logger.warn(
+          `Attempt ${attempt + 1}/${this.MAX_RETRY_ATTEMPTS} failed to fetch FX rate for ${symbol}: ${(error as Error).message}`,
+        );
+        if (attempt < this.MAX_RETRY_ATTEMPTS - 1) {
+          await exponentialBackoff(attempt);
         }
       }
-
-      this.logger.warn(`No chart data found for ${symbol} on ${dateStr}`);
-      return null;
-    } catch (error) {
-      this.logger.error(
-        `Failed to fetch FX rate for ${symbol}: ${(error as Error).message}`,
-      );
-      return null;
     }
+
+    this.logger.error(`All attempts failed to fetch FX rate for ${symbol}`);
+    return null;
   }
 
   /**

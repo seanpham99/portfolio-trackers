@@ -2,6 +2,9 @@ import { type Database } from "../database/index.js";
 
 export type Portfolio = Database["public"]["Tables"]["portfolios"]["Row"];
 
+/**
+ * Portfolio summary with calculated metrics and staleness metadata (NFR3)
+ */
 export interface PortfolioSummaryDto extends Portfolio {
   netWorth: number;
   totalGain: number;       // Unrealized + Realized P&L
@@ -15,4 +18,9 @@ export interface PortfolioSummaryDto extends Portfolio {
     value: number;
     color: string;
   }[];
+  // NFR3: Staleness Indicators for UI badges
+  isStale?: boolean;
+  lastUpdated?: string;
+  providerStatus?: 'live' | 'cached' | 'fallback';
+  provider?: 'Yahoo' | 'CoinGecko' | 'cached' | 'fallback';
 }

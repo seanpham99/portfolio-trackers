@@ -38,7 +38,8 @@ interface UnifiedHoldingsTableProps {
 }
 
 export function UnifiedHoldingsTable({ portfolioId, onAddAsset }: UnifiedHoldingsTableProps) {
-  const { data: allHoldings = [], isLoading, isError } = useHoldings(portfolioId);
+  const { data: response, isLoading, isError } = useHoldings(portfolioId);
+  const allHoldings = response?.data || [];
   const [sorting, setSorting] = useState<SortingState>([]);
   const [filter, setFilter] = useState<"ALL" | "VN" | "US" | "CRYPTO">("ALL");
 
