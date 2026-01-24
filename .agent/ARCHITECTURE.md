@@ -1,6 +1,6 @@
 # Antigravity Kit Architecture
 
-> **Version 5.0** - Comprehensive AI Agent Capability Expansion Toolkit
+> Comprehensive AI Agent Capability Expansion Toolkit
 
 ---
 
@@ -8,61 +8,63 @@
 
 Antigravity Kit is a modular system consisting of:
 
-- **16 Specialist Agents** - Role-based AI personas
-- **42 Skills** - Domain-specific knowledge modules
+- **19 Specialist Agents** - Role-based AI personas
+- **36 Skills** - Domain-specific knowledge modules
 - **11 Workflows** - Slash command procedures
 
 ---
 
 ## 🏗️ Directory Structure
 
-```
+```plaintext
 .agent/
 ├── ARCHITECTURE.md          # This file
-├── agents/                  # 16 Specialist Agents
-├── skills/                  # 42 Skills (419 files)
+├── agents/                  # 19 Specialist Agents
+├── skills/                  # 36 Skills
 ├── workflows/               # 11 Slash Commands
 ├── rules/                   # Global Rules
-└── .shared/                 # Shared Resources
+└── scripts/                 # Master Validation Scripts
 ```
 
 ---
 
-## 🤖 Agents (16)
+## 🤖 Agents (19)
 
 Specialist AI personas for different domains.
 
-| Agent                   | Focus                    | Skills Used                                          |
-| ----------------------- | ------------------------ | ---------------------------------------------------- |
-| `orchestrator`          | Multi-agent coordination | parallel-agents, behavioral-modes                    |
-| `project-planner`       | Discovery, task planning | brainstorming, plan-writing, architecture            |
-| `frontend-specialist`   | Web UI/UX                | frontend-design, react-patterns, tailwind-patterns   |
-| `backend-specialist`    | API, business logic      | api-patterns, nodejs-best-practices, database-design |
-| `database-architect`    | Schema, SQL              | database-design, prisma-expert                       |
-| `mobile-developer`      | iOS, Android, RN         | mobile-design                                        |
-| `game-developer`        | Game logic, mechanics    | game-development                                     |
-| `devops-engineer`       | CI/CD, Docker            | deployment-procedures, docker-expert                 |
-| `security-auditor`      | Security compliance      | vulnerability-scanner, red-team-tactics              |
-| `penetration-tester`    | Offensive security       | red-team-tactics                                     |
-| `test-engineer`         | Testing strategies       | testing-patterns, tdd-workflow, webapp-testing       |
-| `debugger`              | Root cause analysis      | systematic-debugging                                 |
-| `performance-optimizer` | Speed, Web Vitals        | performance-profiling                                |
-| `seo-specialist`        | Ranking, visibility      | seo-fundamentals, geo-fundamentals                   |
-| `documentation-writer`  | Manuals, docs            | documentation-templates                              |
-| `explorer-agent`        | Codebase analysis        | -                                                    |
+| Agent                    | Focus                      | Skills Used                                          |
+| ------------------------ | -------------------------- | ---------------------------------------------------- |
+| `orchestrator`           | Multi-agent coordination   | parallel-agents, behavioral-modes                    |
+| `project-planner`        | Discovery, task planning   | brainstorming, plan-writing, architecture            |
+| `frontend-specialist`    | Web UI/UX                  | frontend-design, react-patterns, tailwind-patterns   |
+| `backend-specialist`     | API, business logic        | api-patterns, nodejs-best-practices, database-design |
+| `database-architect`     | Schema, SQL                | database-design, prisma-expert                       |
+| `mobile-developer`       | iOS, Android, RN           | mobile-design                                        |
+| `game-developer`         | Game logic, mechanics      | game-development                                     |
+| `devops-engineer`        | CI/CD, Docker              | deployment-procedures, docker-expert                 |
+| `security-auditor`       | Security compliance        | vulnerability-scanner, red-team-tactics              |
+| `penetration-tester`     | Offensive security         | red-team-tactics                                     |
+| `test-engineer`          | Testing strategies         | testing-patterns, tdd-workflow, webapp-testing       |
+| `debugger`               | Root cause analysis        | systematic-debugging                                 |
+| `performance-optimizer`  | Speed, Web Vitals          | performance-profiling                                |
+| `seo-specialist`         | Ranking, visibility        | seo-fundamentals, geo-fundamentals                   |
+| `documentation-writer`   | Manuals, docs              | documentation-templates                              |
+| `product-manager`        | Requirements, user stories | plan-writing, brainstorming                          |
+| `qa-automation-engineer` | E2E testing, CI pipelines  | webapp-testing, testing-patterns                     |
+| `code-archaeologist`     | Legacy code, refactoring   | clean-code, code-review-checklist                    |
+| `explorer-agent`         | Codebase analysis          | -                                                    |
 
 ---
 
-## 🧠 Skills (42)
+## 🧩 Skills (36)
 
-Domain-specific knowledge modules. Skills are loaded on-demand based on task context.
+Modular knowledge domains that agents can load on-demand. based on task context.
 
 ### Frontend & UI
 
 | Skill                   | Description                      |
 | ----------------------- | -------------------------------- |
 | `react-patterns`        | React hooks, state, performance  |
-| `vue-expert`            | Vue 3, Composition API, Pinia    |
 | `nextjs-best-practices` | App Router, Server Components    |
 | `tailwind-patterns`     | Tailwind CSS v4 utilities        |
 | `frontend-design`       | UI/UX patterns, design systems   |
@@ -92,12 +94,11 @@ Domain-specific knowledge modules. Skills are loaded on-demand based on task con
 
 ### Cloud & Infrastructure
 
-| Skill                   | Description                               |
-| ----------------------- | ----------------------------------------- |
-| `cloudflare-expert`     | Workers, Pages, D1, KV, R2, AI (256 refs) |
-| `docker-expert`         | Containerization, Compose                 |
-| `deployment-procedures` | CI/CD, deploy workflows                   |
-| `server-management`     | Infrastructure management                 |
+| Skill                   | Description               |
+| ----------------------- | ------------------------- |
+| `docker-expert`         | Containerization, Compose |
+| `deployment-procedures` | CI/CD, deploy workflows   |
+| `server-management`     | Infrastructure management |
 
 ### Testing & Quality
 
@@ -188,7 +189,7 @@ Slash command procedures. Invoke with `/command`.
 
 ## 🎯 Skill Loading Protocol
 
-```
+```plaintext
 User Request → Skill Description Match → Load SKILL.md
                                             ↓
                                     Read references/
@@ -198,7 +199,7 @@ User Request → Skill Description Match → Load SKILL.md
 
 ### Skill Structure
 
-```
+```plaintext
 skill-name/
 ├── SKILL.md           # (Required) Metadata & instructions
 ├── scripts/           # (Optional) Python/Bash scripts
@@ -210,36 +211,78 @@ skill-name/
 
 | Skill               | Files | Coverage                            |
 | ------------------- | ----- | ----------------------------------- |
-| `cloudflare-expert` | 257   | 60+ Cloudflare products             |
-| `vue-expert`        | 6     | Cheatsheet, templates, diagnostic   |
 | `typescript-expert` | 5     | Utility types, tsconfig, cheatsheet |
 | `ui-ux-pro-max`     | 27    | 50 styles, 21 palettes, 50 fonts    |
 | `app-builder`       | 20    | Full-stack scaffolding              |
 
 ---
 
+## � Scripts (2)
+
+Master validation scripts that orchestrate skill-level scripts.
+
+### Master Scripts
+
+| Script          | Purpose                                 | When to Use              |
+| --------------- | --------------------------------------- | ------------------------ |
+| `checklist.py`  | Priority-based validation (Core checks) | Development, pre-commit  |
+| `verify_all.py` | Comprehensive verification (All checks) | Pre-deployment, releases |
+
+### Usage
+
+```bash
+# Quick validation during development
+python .agent/scripts/checklist.py .
+
+# Full verification before deployment
+python .agent/scripts/verify_all.py . --url http://localhost:3000
+```
+
+### What They Check
+
+**checklist.py** (Core checks):
+
+- Security (vulnerabilities, secrets)
+- Code Quality (lint, types)
+- Schema Validation
+- Test Suite
+- UX Audit
+- SEO Check
+
+**verify_all.py** (Full suite):
+
+- Everything in checklist.py PLUS:
+- Lighthouse (Core Web Vitals)
+- Playwright E2E
+- Bundle Analysis
+- Mobile Audit
+- i18n Check
+
+For details, see [scripts/README.md](scripts/README.md)
+
+---
+
 ## 📊 Statistics
 
-| Metric                | Value                       |
-| --------------------- | --------------------------- |
-| **Total Agents**      | 16                          |
-| **Total Skills**      | 42                          |
-| **Total Skill Files** | 419                         |
-| **Total Workflows**   | 11                          |
-| **Coverage**          | ~90% web/mobile development |
+| Metric              | Value                         |
+| ------------------- | ----------------------------- |
+| **Total Agents**    | 19                            |
+| **Total Skills**    | 36                            |
+| **Total Workflows** | 11                            |
+| **Total Scripts**   | 2 (master) + 18 (skill-level) |
+| **Coverage**        | ~90% web/mobile development   |
 
 ---
 
 ## 🔗 Quick Reference
 
-| Need       | Agent                 | Skills                                |
-| ---------- | --------------------- | ------------------------------------- |
-| Web App    | `frontend-specialist` | react-patterns, nextjs-best-practices |
-| API        | `backend-specialist`  | api-patterns, nodejs-best-practices   |
-| Mobile     | `mobile-developer`    | mobile-design                         |
-| Database   | `database-architect`  | database-design, prisma-expert        |
-| Cloudflare | -                     | cloudflare-expert                     |
-| Security   | `security-auditor`    | vulnerability-scanner                 |
-| Testing    | `test-engineer`       | testing-patterns, webapp-testing      |
-| Debug      | `debugger`            | systematic-debugging                  |
-| Plan       | `project-planner`     | brainstorming, plan-writing           |
+| Need     | Agent                 | Skills                                |
+| -------- | --------------------- | ------------------------------------- |
+| Web App  | `frontend-specialist` | react-patterns, nextjs-best-practices |
+| API      | `backend-specialist`  | api-patterns, nodejs-best-practices   |
+| Mobile   | `mobile-developer`    | mobile-design                         |
+| Database | `database-architect`  | database-design, prisma-expert        |
+| Security | `security-auditor`    | vulnerability-scanner                 |
+| Testing  | `test-engineer`       | testing-patterns, webapp-testing      |
+| Debug    | `debugger`            | systematic-debugging                  |
+| Plan     | `project-planner`     | brainstorming, plan-writing           |
