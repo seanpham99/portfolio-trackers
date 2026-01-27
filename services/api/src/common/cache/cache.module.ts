@@ -1,11 +1,11 @@
-import { Redis } from '@upstash/redis';
 import { Injectable, Global, Module, Inject } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import Redis from 'ioredis';
 
-export const UPSTASH_CLIENT = 'UPSTASH_CLIENT';
+export const REDIS_CLIENT = 'REDIS_CLIENT';
 
 /**
- * Upstash Redis Cache Service
+ * Redis Cache Service (Self-hosted)
  * Implements write-through caching with explicit invalidation per Architecture Decision 1.3
  */
 @Injectable()
@@ -13,7 +13,7 @@ export class CacheService {
   private readonly defaultTtl = 30; // 30 seconds as per PRD
 
   constructor(
-    @Inject(UPSTASH_CLIENT)
+    @Inject(REDIS_CLIENT)
     private readonly redis: Redis | null,
   ) {}
 
@@ -23,7 +23,9 @@ export class CacheService {
   async get<T>(key: string): Promise<T | null> {
     if (!this.redis) return null;
     try {
-      return await this.redis.get<T>(key);
+      const value = await this.redis.get(key);
+      if (!value) return null;
+      return JSON.parse(value) as T;
     } catch (error) {
       console.error('Cache get error:', error);
       return null;
@@ -36,7 +38,12 @@ export class CacheService {
   async set<T>(key: string, value: T, ttlSeconds?: number): Promise<void> {
     if (!this.redis) return;
     try {
-      await this.redis.set(key, value, { ex: ttlSeconds ?? this.defaultTtl });
+      const stringValue = JSON.stringify(value);
+      if (ttlSeconds) {
+        await this.redis.set(key, stringValue, 'EX', ttlSeconds);
+      } else {
+        await this.redis.set(key, stringValue, 'EX', this.defaultTtl);
+      }
     } catch (error) {
       console.error('Cache set error:', error);
     }
@@ -62,8 +69,8 @@ export class CacheService {
   async invalidatePattern(pattern: string): Promise<void> {
     if (!this.redis) return;
     try {
-      // Upstash doesn't support SCAN, so we use a workaround with KEYS
-      // In production, consider using a prefix list approach
+      // Use KEYS for simplicity in this migration, similar to previous logic.
+      // For high-scale production, consider SCAN.
       const keys = await this.redis.keys(pattern);
       if (keys.length > 0) {
         await this.redis.del(...keys);
@@ -94,7 +101,7 @@ export class CacheService {
 }
 
 /**
- * Global module providing Upstash Redis client
+ * Global module providing Redis client
  * Gracefully handles missing configuration (cache disabled)
  */
 @Global()
@@ -102,25 +109,35 @@ export class CacheService {
   imports: [ConfigModule],
   providers: [
     {
-      provide: UPSTASH_CLIENT,
+      provide: REDIS_CLIENT,
       useFactory: (configService: ConfigService): Redis | null => {
-        const url = configService.get<string>('UPSTASH_REDIS_REST_URL');
-        const token = configService.get<string>('UPSTASH_REDIS_REST_TOKEN');
+        const host = configService.get<string>('REDIS_HOST');
+        const port = configService.get<number>('REDIS_PORT');
 
-        if (!url || !token) {
-          console.warn('Upstash Redis not configured - caching disabled');
+        if (!host || !port) {
+          console.warn(
+            'Redis not configured (REDIS_HOST/REDIS_PORT) - caching disabled',
+          );
           return null;
         }
 
-        return new Redis({
-          url,
-          token,
+        const client = new Redis({
+          host,
+          port,
+          lazyConnect: true, // Don't crash if Redis is down on startup
         });
+
+        client.on('error', (err) => {
+          // Suppress errors to allow app to run without Redis
+          console.error('Redis connection error:', err.message);
+        });
+
+        return client;
       },
       inject: [ConfigService],
     },
     CacheService,
   ],
-  exports: [UPSTASH_CLIENT, CacheService],
+  exports: [REDIS_CLIENT, CacheService],
 })
 export class CacheModule {}

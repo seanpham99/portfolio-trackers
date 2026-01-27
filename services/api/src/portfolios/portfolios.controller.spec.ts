@@ -1,14 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { ConfigService } from '@nestjs/config';
 import { NotFoundException } from '@nestjs/common';
 import { PortfoliosController } from './portfolios.controller';
 import { PortfoliosService } from './portfolios.service';
+import { SnapshotService } from './snapshot.service'; // Import SnapshotService
 import { CreatePortfolioDto, UpdatePortfolioDto } from './dto';
 import {
   CreateTransactionDto,
   TransactionType,
 } from '@workspace/shared-types/api';
 import { Portfolio } from './portfolio.entity';
-import { AuthGuard } from './guards';
+import { AuthGuard, ApiKeyGuard } from './guards'; // Import ApiKeyGuard
 
 // Mock portfolio data
 const mockUserId = 'user-123';
@@ -47,6 +49,19 @@ const mockPortfoliosService = {
   getAssetDetails: jest.fn(),
 };
 
+// Mock SnapshotService
+const mockSnapshotService = {
+  getHistory: jest.fn(),
+  captureAll: jest.fn(),
+  shouldCapture: jest.fn().mockResolvedValue(false),
+  captureSnapshot: jest.fn(),
+};
+
+// Mock ConfigService
+const mockConfigService = {
+  get: jest.fn(),
+};
+
 describe('PortfoliosController', () => {
   let controller: PortfoliosController;
 
@@ -59,12 +74,22 @@ describe('PortfoliosController', () => {
           useValue: mockPortfoliosService,
         },
         {
+          provide: SnapshotService,
+          useValue: mockSnapshotService,
+        },
+        {
+          provide: ConfigService,
+          useValue: mockConfigService,
+        },
+        {
           provide: 'SUPABASE_CLIENT',
           useValue: {},
         },
       ],
     })
       .overrideGuard(AuthGuard)
+      .useValue({ canActivate: () => true })
+      .overrideGuard(ApiKeyGuard) // Override ApiKeyGuard too
       .useValue({ canActivate: () => true })
       .compile();
 
@@ -91,7 +116,10 @@ describe('PortfoliosController', () => {
       expect(result).toEqual({
         data: mockPortfolio,
         success: true,
-        meta: {},
+        error: null,
+        meta: {
+          staleness: expect.any(String),
+        },
       });
       expect(mockPortfoliosService.create).toHaveBeenCalledWith(
         mockUserId,
@@ -122,9 +150,13 @@ describe('PortfoliosController', () => {
       expect(result).toEqual({
         data: portfolios,
         success: true,
+        error: null,
         meta: { staleness: '2025-01-01T12:00:00Z' },
       });
-      expect(mockPortfoliosService.findAll).toHaveBeenCalledWith(mockUserId);
+      expect(mockPortfoliosService.findAll).toHaveBeenCalledWith(
+        mockUserId,
+        false,
+      );
     });
 
     it('should return empty array when no portfolios', async () => {
@@ -138,6 +170,7 @@ describe('PortfoliosController', () => {
       expect(result).toEqual({
         data: [],
         success: true,
+        error: null,
         meta: { staleness: '2025-01-01T12:00:00Z' },
       });
     });
@@ -166,10 +199,13 @@ describe('PortfoliosController', () => {
       expect(result).toEqual({
         data: holdings,
         success: true,
+        error: null,
         meta: { staleness: '2025-01-01T12:00:00Z' },
       });
       expect(mockPortfoliosService.getHoldings).toHaveBeenCalledWith(
         mockUserId,
+        undefined,
+        false,
       );
     });
   });
@@ -200,11 +236,13 @@ describe('PortfoliosController', () => {
       expect(result).toEqual({
         data: holdings,
         success: true,
+        error: null,
         meta: { staleness: '2025-01-01T12:00:00Z' },
       });
       expect(mockPortfoliosService.getHoldings).toHaveBeenCalledWith(
         mockUserId,
         mockPortfolio.id,
+        false,
       );
     });
   });
@@ -225,11 +263,13 @@ describe('PortfoliosController', () => {
       expect(result).toEqual({
         data: mockPortfolio,
         success: true,
+        error: null,
         meta: { staleness: '2025-01-01T12:00:00Z' },
       });
       expect(mockPortfoliosService.findOne).toHaveBeenCalledWith(
         mockUserId,
         mockPortfolio.id,
+        false,
       );
     });
 
@@ -262,7 +302,10 @@ describe('PortfoliosController', () => {
       expect(result).toEqual({
         data: updatedPortfolio,
         success: true,
-        meta: {},
+        error: null,
+        meta: {
+          staleness: expect.any(String),
+        },
       });
       expect(mockPortfoliosService.update).toHaveBeenCalledWith(
         mockUserId,
@@ -317,7 +360,10 @@ describe('PortfoliosController', () => {
       expect(result).toEqual({
         data: mockTransaction,
         success: true,
-        meta: {},
+        error: null,
+        meta: {
+          staleness: expect.any(String),
+        },
       });
       expect(mockPortfoliosService.addTransaction).toHaveBeenCalledWith(
         mockUserId,

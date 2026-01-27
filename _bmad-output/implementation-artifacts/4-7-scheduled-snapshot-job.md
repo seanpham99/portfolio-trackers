@@ -1,6 +1,6 @@
 # Story 4.7: Implement Scheduled Snapshot Job (Backlog)
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -47,7 +47,7 @@ so that users have consistent historical performance data and the system adheres
 - New file: `services/data-pipeline/dags/portfolio_daily_snapshot.py`
 - Update: `services/api/src/portfolios/portfolios.controller.ts`
 - Update: `services/api/src/portfolios/snapshot.service.ts`
-- Update: `apps/web/template.env.local` (Updated API URL to port 5000)
+- Update: `apps/web/template.env` (Updated API URL to port 5000)
 - Update: `.github/workflows/test.yml` (Migrated to uv for Python tests)
 
 ### References
