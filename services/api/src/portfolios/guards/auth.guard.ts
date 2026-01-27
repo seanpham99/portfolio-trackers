@@ -48,14 +48,16 @@ export class AuthGuard implements CanActivate {
       } = await this.supabase.auth.getUser(token);
 
       if (error || !user) {
+        console.error('AuthGuard: Token validation failed:', error?.message);
         throw new UnauthorizedException('Invalid or expired token');
       }
 
-      // console.log('AuthGuard: User authenticated:', user.id);
+      // console.debug('AuthGuard: User authenticated:', user.id);
       // Attach user to request for downstream use
       request.user = user;
       return true;
     } catch (error) {
+      console.error('AuthGuard error:', error);
       if (error instanceof UnauthorizedException) {
         throw error;
       }

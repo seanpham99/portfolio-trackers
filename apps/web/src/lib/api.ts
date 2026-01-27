@@ -40,6 +40,13 @@ export async function apiFetch(endpoint: string, options: RequestInit = {}): Pro
   const url = `${getApiUrl()}${endpoint}`;
   const authHeaders = await getAuthHeaders();
 
+  // Debug logging
+  if (!("Authorization" in authHeaders)) {
+    console.warn("[apiFetch] No Authorization header found for request to:", endpoint);
+  } else {
+    // console.log('[apiFetch] Attaching auth token for:', endpoint);
+  }
+
   return fetch(url, {
     ...options,
     headers: {

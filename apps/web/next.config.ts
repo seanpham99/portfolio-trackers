@@ -33,6 +33,16 @@ const nextConfig: NextConfig = {
   // Configure pageExtensions to include md and mdx
   pageExtensions: ["js", "jsx", "md", "mdx", "ts", "tsx"],
 
+  // Proxy API requests to NestJS backend
+  async rewrites() {
+    return [
+      {
+        source: "/api/:path*",
+        destination: `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000"}/:path*`,
+      },
+    ];
+  },
+
   // Allow all hosts for development in Replit
   allowedDevOrigins: [
     "https://*.replit.dev",

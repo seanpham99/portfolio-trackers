@@ -1,5 +1,6 @@
 import { Injectable, Inject, NotFoundException } from '@nestjs/common';
 import { SupabaseClient, PostgrestError } from '@supabase/supabase-js';
+import { BinanceService } from './binance.service';
 import {
   Database,
   UserConnections,
@@ -10,13 +11,14 @@ import {
   ConnectionDto,
   ValidationResultDto,
 } from '@workspace/shared-types/api';
-import { maskApiKey } from './crypto.utils';
+import { maskApiKey, encryptSecret, decryptSecret } from './crypto.utils';
 
 @Injectable()
 export class ConnectionsService {
   constructor(
     @Inject('SUPABASE_CLIENT')
     private readonly supabase: SupabaseClient<Database>,
+    private readonly binanceService: BinanceService,
   ) {}
 
   /**
@@ -51,7 +53,7 @@ export class ConnectionsService {
         user_id: userId,
         exchange_id: exchange as ExchangeId,
         api_key: apiKey,
-        api_secret_encrypted: apiSecret, // In reality, this would be encrypted
+        api_secret_encrypted: encryptSecret(apiSecret),
         status: 'active',
       })
       .select()
@@ -65,27 +67,24 @@ export class ConnectionsService {
   }
 
   /**
-   * Validate exchange credentials (dry-run)
+   * Validate exchange credentials using real exchange API
    */
   async validateConnection(
     exchange: string,
     apiKey: string,
     apiSecret: string,
   ): Promise<ValidationResultDto> {
-    // In a real app, this would call the exchange API to verify keys
-    // For this prototype, if key contains 'invalid', we return failure
-    const isValid = !apiKey.toLowerCase().includes('invalid');
-
-    if (isValid) {
-      return {
-        valid: true,
-      };
-    } else {
+    // Currently only Binance is supported
+    if (exchange !== 'binance') {
       return {
         valid: false,
-        error: 'Invalid API key or secret',
+        error: `Exchange ${exchange} is not supported yet`,
       };
     }
+
+    // Use real CCXT validation
+    const result = await this.binanceService.validateKeys(apiKey, apiSecret);
+    return result;
   }
 
   /**
@@ -101,6 +100,38 @@ export class ConnectionsService {
     if (error) {
       this.handleError(error, id);
     }
+  }
+
+  /**
+   * Get decrypted connection credentials for sync operations
+   * @param userId - User ID for authorization
+   * @param connectionId - Connection UUID
+   * @returns Object with apiKey and decrypted apiSecret
+   */
+  async getDecryptedCredentials(
+    userId: string,
+    connectionId: string,
+  ): Promise<{ apiKey: string; apiSecret: string; exchange: ExchangeId }> {
+    const { data: conn, error } = await this.supabase
+      .from('user_connections')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('id', connectionId)
+      .single();
+
+    if (error || !conn) {
+      throw new NotFoundException(`Connection ${connectionId} not found`);
+    }
+
+    if (!conn.api_key || !conn.api_secret_encrypted) {
+      throw new Error('Connection credentials are incomplete');
+    }
+
+    return {
+      apiKey: conn.api_key,
+      apiSecret: decryptSecret(conn.api_secret_encrypted),
+      exchange: conn.exchange_id as ExchangeId,
+    };
   }
 
   /**

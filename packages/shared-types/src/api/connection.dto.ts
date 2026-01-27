@@ -18,7 +18,7 @@ import { ConnectionStatus, ExchangeId } from "../database";
 export class ConnectionDto {
   id: string;
 
-  exchange: ExchangeId;
+  exchange: `${ExchangeId}`;
 
   apiKeyMasked: string;
 
@@ -34,7 +34,7 @@ export class ConnectionDto {
  */
 export class CreateConnectionDto {
   @IsEnum(ExchangeId)
-  exchange: ExchangeId;
+  exchange: `${ExchangeId}`;
 
   @IsString()
   @IsNotEmpty()
@@ -50,7 +50,7 @@ export class CreateConnectionDto {
  */
 export class ValidateConnectionDto {
   @IsEnum(ExchangeId)
-  exchange: ExchangeId;
+  exchange: `${ExchangeId}`;
 
   @IsString()
   @IsNotEmpty()

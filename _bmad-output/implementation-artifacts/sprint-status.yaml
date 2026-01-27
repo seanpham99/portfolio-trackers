@@ -73,7 +73,7 @@ development_status:
   epic-4-retrospective: done
 
   epic-5: in-progress
-  5-1-binance-api-sync-read-only: ready-for-dev
+  5-1-binance-api-sync-read-only: in-progress
   5-2-okx-api-sync-read-only: backlog
   5-3-connections-management-hub: backlog
   5-4-background-sync-polling-60s: backlog

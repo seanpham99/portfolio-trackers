@@ -73,7 +73,7 @@ export class SnapshotService {
         return null;
       }
 
-      this.logger.log(
+      this.logger.debug(
         `Captured snapshot for portfolio ${portfolioId} (Net Worth: ${portfolio.netWorth})`,
       );
 
@@ -168,7 +168,20 @@ export class SnapshotService {
       throw error;
     }
 
-    const data = (rawData as PortfolioSnapshotDto[]) || [];
+    // Convert numeric strings to numbers and ensure strict ISO timestamps
+    // Supabase returns numeric columns as strings to preserve precision
+    const data =
+      ((rawData as any[])?.map((row) => ({
+        ...row,
+        net_worth: Number(row.net_worth),
+        total_cost: Number(row.total_cost),
+        // Ensure timestamp is strictly ISO 8601 (replace space with T)
+        timestamp: row.timestamp?.replace(' ', 'T'),
+      })) as PortfolioSnapshotDto[]) || [];
+
+    this.logger.debug(
+      `Found ${data.length} snapshots for portfolio ${portfolioId} in range ${range}`,
+    );
 
     return {
       data,

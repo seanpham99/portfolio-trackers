@@ -1,6 +1,4 @@
 import {
-  LineChart,
-  Line,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -96,7 +94,10 @@ export function PortfolioHistoryChart({ portfolioId }: PortfolioHistoryChartProp
                 axisLine={false}
                 tickFormatter={(date) => {
                   if (!date) return "";
-                  const d = new Date(date);
+                  // Handle potential space in date string from DB
+                  const d = new Date(typeof date === "string" ? date.replace(" ", "T") : date);
+                  if (isNaN(d.getTime())) return "";
+
                   if (range === "1D") return format(d, "HH:mm");
                   if (range === "1W" || range === "1M") return format(d, "MMM dd");
                   return format(d, "MMM yyyy");
@@ -126,7 +127,11 @@ export function PortfolioHistoryChart({ portfolioId }: PortfolioHistoryChartProp
                   `$${value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
                   "Net Worth",
                 ]}
-                labelFormatter={(label) => (label ? format(new Date(label), "PPpp") : "")}
+                labelFormatter={(label) => {
+                  if (!label) return "";
+                  const d = new Date(typeof label === "string" ? label.replace(" ", "T") : label);
+                  return isNaN(d.getTime()) ? "" : format(d, "PPpp");
+                }}
               />
               <Area
                 type="monotone"

@@ -23,6 +23,7 @@ import {
   ApiParam,
 } from '@nestjs/swagger';
 import { ConnectionsService } from './connections.service';
+import { BinanceSyncService, SyncResult } from './binance-sync.service';
 import {
   ConnectionDto,
   CreateConnectionDto,
@@ -37,7 +38,10 @@ import { UserId } from '../portfolios/decorators/user-id.decorator';
 @Controller('connections')
 @UseGuards(AuthGuard)
 export class ConnectionsController {
-  constructor(private readonly connectionsService: ConnectionsService) {}
+  constructor(
+    private readonly connectionsService: ConnectionsService,
+    private readonly binanceSyncService: BinanceSyncService,
+  ) {}
 
   @Get()
   @ApiOperation({ summary: 'List all user connections' })
@@ -68,13 +72,48 @@ export class ConnectionsController {
   async create(
     @UserId() userId: string,
     @Body() createDto: CreateConnectionDto,
-  ): Promise<ConnectionDto> {
-    return this.connectionsService.create(
+  ): Promise<{
+    success: boolean;
+    data: ConnectionDto;
+    meta: { assetsSync: number };
+  }> {
+    // Validate credentials first
+    const validationResult = await this.connectionsService.validateConnection(
+      createDto.exchange,
+      createDto.apiKey,
+      createDto.apiSecret,
+    );
+
+    if (!validationResult.valid) {
+      throw new Error(validationResult.error || 'Invalid credentials');
+    }
+
+    // Create connection
+    const connection = await this.connectionsService.create(
       userId,
       createDto.exchange,
       createDto.apiKey,
       createDto.apiSecret,
     );
+
+    // Trigger initial sync
+    let syncResult: SyncResult = {
+      success: true,
+      assetsSync: 0,
+      syncedBalances: [],
+    };
+    if (createDto.exchange === 'binance') {
+      syncResult = await this.binanceSyncService.syncHoldings(
+        userId,
+        connection.id,
+      );
+    }
+
+    return {
+      success: true,
+      data: connection,
+      meta: { assetsSync: syncResult.assetsSync },
+    };
   }
 
   @Post('validate')

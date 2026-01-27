@@ -92,6 +92,21 @@ export async function getAssetDetails(
   }
   return response.json();
 }
+
+/**
+ * Fetch portfolio history
+ */
+export async function getPortfolioHistory(
+  portfolioId: string,
+  range: "1D" | "1W" | "1M" | "3M" | "1Y" | "ALL"
+): Promise<ApiResponse<any[]>> {
+  const response = await apiFetch(`/portfolios/${portfolioId}/history?range=${range}`);
+  if (!response.ok) {
+    throw new Error("Failed to fetch history");
+  }
+  return response.json();
+}
+
 /**
  * Search for assets by symbol or name
  */

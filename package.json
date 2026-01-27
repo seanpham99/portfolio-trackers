@@ -48,7 +48,7 @@
     "prettier": "^3.8.0",
     "supabase": "2.72.8",
     "syncpack": "^13.0.4",
-    "turbo": "^2.7.5"
+    "turbo": "^2.7.6"
   },
   "config": {
     "commitizen": {
