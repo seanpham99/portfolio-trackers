@@ -27,6 +27,7 @@ import {
 } from '@workspace/shared-types';
 import { Portfolio } from './portfolio.entity';
 import { AuthGuard } from './guards/auth.guard';
+import { ApiKeyGuard } from './guards/api-key.guard';
 import { UserId } from './decorators/user-id.decorator';
 import { SnapshotService } from './snapshot.service';
 
@@ -103,6 +104,20 @@ export class PortfoliosController {
       range,
     );
     return createApiResponse(data, meta.staleness || new Date());
+  }
+
+  /**
+   * POST /portfolios/snapshots/batch - Trigger batch snapshot for all portfolios
+   * Protected by API key (for Airflow/service-to-service calls)
+   */
+  @Post('snapshots/batch')
+  @UseGuards(ApiKeyGuard)
+  @HttpCode(HttpStatus.ACCEPTED)
+  async triggerBatchSnapshot(): Promise<
+    ApiResponse<{ started: boolean; portfolioCount: number; message: string }>
+  > {
+    const result = await this.snapshotService.captureAll();
+    return createApiResponse(result, new Date());
   }
 
   /**

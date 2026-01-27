@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { MarketDataService } from './market-data.service';
 import { CacheService } from '../common/cache';
-import { CacheService } from '../common/cache';
 
 // Mock Yahoo Finance with a class constructor
 const mockQuote = jest.fn();

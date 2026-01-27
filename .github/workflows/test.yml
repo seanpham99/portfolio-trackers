@@ -22,27 +22,21 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
         with:
-          python-version: ${{ matrix.python-version }}
+          enable-cache: true
+          cache-dependency-glob: "services/data-pipeline/uv.lock"
 
-      - name: Cache pip packages
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('services/data-pipeline/requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
+      - name: Set up Python ${{ matrix.python-version }}
+        run: uv python install ${{ matrix.python-version }}
 
       - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
+        run: uv sync --all-extras --dev
 
       - name: Run tests with pytest
         run: |
-          pytest tests/ \
+          uv run pytest tests/ \
             --cov=dags \
             --cov-report=xml \
             --cov-report=term-missing \
@@ -60,8 +54,8 @@ jobs:
       - name: Generate coverage badge
         if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
         run: |
-          pip install coverage-badge
-          coverage-badge -o coverage.svg -f
+          uv pip install coverage-badge
+          uv run coverage-badge -o coverage.svg -f
 
       - name: Archive coverage report
         uses: actions/upload-artifact@v4
@@ -89,32 +83,34 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
         with:
-          python-version: "3.10"
+          enable-cache: true
+          cache-dependency-glob: "services/data-pipeline/uv.lock"
+
+      - name: Set up Python
+        run: uv python install 3.12
 
       - name: Install linting tools
-        run: |
-          python -m pip install --upgrade pip
-          pip install flake8 black isort
+        run: uv tool install flake8 && uv tool install black && uv tool install isort
 
       - name: Check code formatting with black
         run: |
-          black --check dags/ tests/ scripts/
+          uv run black --check dags/ tests/ scripts/
         continue-on-error: true
 
       - name: Check import sorting with isort
         run: |
-          isort --check-only dags/ tests/ scripts/
+          uv run isort --check-only dags/ tests/ scripts/
         continue-on-error: true
 
       - name: Lint with flake8
         run: |
           # Stop the build if there are Python syntax errors or undefined names
-          flake8 dags/ tests/ scripts/ --count --select=E9,F63,F7,F82 --show-source --statistics
+          uv run flake8 dags/ tests/ scripts/ --count --select=E9,F63,F7,F82 --show-source --statistics
           # Exit-zero treats all errors as warnings. Max line length 120.
-          flake8 dags/ tests/ scripts/ --count --exit-zero --max-complexity=10 --max-line-length=120 --statistics
+          uv run flake8 dags/ tests/ scripts/ --count --exit-zero --max-complexity=10 --max-line-length=120 --statistics
         continue-on-error: true
 
   web-test:

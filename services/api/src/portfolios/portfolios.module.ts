@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { PortfoliosController } from './portfolios.controller';
 import { PortfoliosService } from './portfolios.service';
-import { AuthGuard } from './guards';
+import { AuthGuard, ApiKeyGuard } from './guards';
 
 import { MarketDataModule } from '../market-data';
 import { SnapshotService } from './snapshot.service';
@@ -12,7 +12,7 @@ import { SnapshotService } from './snapshot.service';
 @Module({
   imports: [MarketDataModule],
   controllers: [PortfoliosController],
-  providers: [PortfoliosService, AuthGuard, SnapshotService],
-  exports: [PortfoliosService, AuthGuard, SnapshotService],
+  providers: [PortfoliosService, AuthGuard, ApiKeyGuard, SnapshotService],
+  exports: [PortfoliosService, AuthGuard, ApiKeyGuard, SnapshotService],
 })
 export class PortfoliosModule {}

@@ -182,4 +182,104 @@ export class SnapshotService {
       },
     };
   }
+
+  /**
+   * Capture snapshots for ALL portfolios (batch operation for scheduled jobs)
+   * Returns immediately after starting the process (fire-and-forget pattern)
+   */
+  async captureAll(): Promise<{
+    started: boolean;
+    portfolioCount: number;
+    message: string;
+  }> {
+    this.logger.log('Starting batch snapshot capture for all portfolios...');
+
+    try {
+      // 1. Get all portfolios (with their user_ids for RLS compliance)
+      const { data: portfolios, error } = await this.supabase
+        .from('portfolios')
+        .select('id, user_id');
+
+      if (error) {
+        this.logger.error(`Failed to fetch portfolios: ${error.message}`);
+        return {
+          started: false,
+          portfolioCount: 0,
+          message: `Database error: ${error.message}`,
+        };
+      }
+
+      if (!portfolios || portfolios.length === 0) {
+        this.logger.log('No portfolios found for batch snapshot');
+        return {
+          started: true,
+          portfolioCount: 0,
+          message: 'No portfolios to snapshot',
+        };
+      }
+
+      const portfolioCount = portfolios.length;
+      this.logger.log(
+        `Found ${portfolioCount} portfolios, starting snapshots...`,
+      );
+
+      // 2. Fire-and-forget: Process all portfolios asynchronously
+      // We don't await to return immediately (avoiding Airflow timeouts)
+      this.processAllSnapshots(portfolios);
+
+      return {
+        started: true,
+        portfolioCount,
+        message: `Batch snapshot started for ${portfolioCount} portfolios`,
+      };
+    } catch (error: any) {
+      this.logger.error(
+        `Error starting batch snapshots: ${error.message}`,
+        error.stack,
+      );
+      return {
+        started: false,
+        portfolioCount: 0,
+        message: `Error: ${error.message}`,
+      };
+    }
+  }
+
+  /**
+   * Internal method to process all portfolio snapshots
+   * Runs in background (fire-and-forget)
+   */
+  private async processAllSnapshots(
+    portfolios: { id: string; user_id: string }[],
+  ): Promise<void> {
+    let successCount = 0;
+    let failCount = 0;
+    const batchSize = 10; // Process 10 portfolios concurrently
+
+    for (let i = 0; i < portfolios.length; i += batchSize) {
+      const batch = portfolios.slice(i, i + batchSize);
+      const promises = batch.map((portfolio) =>
+        this.captureSnapshot(portfolio.user_id, portfolio.id, 'daily_job')
+          .then((result) => {
+            if (result) {
+              successCount++;
+            } else {
+              failCount++;
+            }
+          })
+          .catch((error) => {
+            this.logger.error(
+              `Batch snapshot failed for portfolio ${portfolio.id}: ${error.message}`,
+            );
+            failCount++;
+          }),
+      );
+
+      await Promise.all(promises);
+    }
+
+    this.logger.log(
+      `Batch snapshot complete: ${successCount} succeeded, ${failCount} failed out of ${portfolios.length} total`,
+    );
+  }
 }
