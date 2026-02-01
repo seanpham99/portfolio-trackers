@@ -58,7 +58,8 @@ describe('AssetsController', () => {
 
       const result = await controller.search('AAPL');
 
-      expect(result).toEqual(mockResult);
+      expect(result.data).toEqual(mockResult);
+      expect(result.success).toBe(true);
       expect(mockAssetsService.search).toHaveBeenCalledWith('AAPL');
     });
   });
@@ -76,7 +77,8 @@ describe('AssetsController', () => {
         DiscoverableAssetClass.US_STOCK,
       );
 
-      expect(result).toEqual(mockResults);
+      expect(result.data).toEqual(mockResults);
+      expect(result.success).toBe(true);
       expect(mockDiscoveryService.searchExternal).toHaveBeenCalledWith(
         'AAPL',
         DiscoverableAssetClass.US_STOCK,
@@ -113,7 +115,8 @@ describe('AssetsController', () => {
 
       const result = await controller.submitRequest(validDto, mockRequest);
 
-      expect(result).toEqual({
+      expect(result.success).toBe(true);
+      expect(result.data).toEqual({
         id: 'pending-123',
         symbol: 'VIC',
         status: 'pending',
@@ -144,7 +147,7 @@ describe('AssetsController', () => {
 
       const result = await controller.submitRequest(validDto, mockRequest);
 
-      expect(result.status).toBe('pending'); // Should default to 'pending'
+      expect(result.data.status).toBe('pending'); // Should default to 'pending'
     });
   });
 });

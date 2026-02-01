@@ -1,6 +1,6 @@
 # Story 5.3: Connections Management Hub
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -94,9 +94,9 @@ The `ExchangeSyncService` should update the `last_sync_at` timestamp after every
 ```typescript
 // In ExchangeSyncService.sync()
 await this.supabase
-  .from('user_connections')
+  .from("user_connections")
   .update({ last_sync_at: new Date().toISOString() })
-  .eq('id', connectionId);
+  .eq("id", connectionId);
 ```
 
 #### Rate Limiting & Safety
@@ -123,14 +123,13 @@ The `useConnections` hook should expose a `syncConnection` mutation:
 
 ```typescript
 const syncConnection = useMutation({
-  mutationFn: (connectionId: string) => 
-    api.post(`/connections/${connectionId}/sync`),
+  mutationFn: (connectionId: string) => api.post(`/connections/${connectionId}/sync`),
   onSuccess: () => {
-    queryClient.invalidateQueries(['connections']);
-    toast.success('Sync completed successfully');
+    queryClient.invalidateQueries(["connections"]);
+    toast.success("Sync completed successfully");
   },
   onError: (error) => {
-    toast.error('Sync failed: ' + error.message);
+    toast.error("Sync failed: " + error.message);
   },
 });
 ```
@@ -264,12 +263,22 @@ Gemini 3 Pro
 - Fully implemented `ConnectionCard` with staleness indicator using `useStaleness` hook.
 - All acceptance criteria met and verified with tests.
 
+**Code Review Fixes Applied (2026-02-01):**
+
+- Fixed financial precision violation: Replaced `parseFloat()` with `Decimal.toNumber()` in `ExchangeSyncService.createSyncTransaction()`.
+- Added test coverage for stale badge display in `ConnectionCard.test.tsx`.
+- Removed dead code: Deleted unused `ConnectionsService.sync()` method.
+- Improved type consistency: Updated controller return types to use `ApiResponse<T>` interface.
+- Updated File List with missing files: `exchange-sync.service.ts` and `connection.dto.ts`.
+
 ### File List
 
 - services/api/src/crypto/connections.controller.ts
 - services/api/src/crypto/connections.service.ts
+- services/api/src/crypto/exchange-sync.service.ts
 - services/api/src/crypto/exchange-sync.service.spec.ts
 - services/api/src/crypto/connections.controller.spec.ts
+- packages/shared-types/src/api/connection.dto.ts
 - apps/web/src/features/connections/components/connection-card.tsx
 - apps/web/src/features/connections/hooks/use-connections.ts
 - apps/web/src/features/connections/components/connection-card.test.tsx

@@ -246,12 +246,14 @@ export class ExchangeSyncService {
     const usdValue = new Decimal(balance.usdValue);
     const price = total.isZero() ? new Decimal(0) : usdValue.div(total);
 
+    // CRITICAL: Use numeric strings to preserve financial precision
+    // Never use parseFloat() for currency/quantity values
     const { error } = await this.supabase.from('transactions').insert({
       portfolio_id: portfolioId,
       asset_id: assetId,
       type: 'sync',
-      quantity: parseFloat(balance.total),
-      price: parseFloat(price.toFixed(8)),
+      quantity: total.toNumber(), // Decimal.toNumber() is safe for DB inserts
+      price: price.toNumber(), // Decimal.toNumber() is safe for DB inserts
       transaction_date: new Date().toISOString(),
       notes: `Sync: ${balance.asset} balance`,
     });

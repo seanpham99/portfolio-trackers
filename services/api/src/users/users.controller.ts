@@ -9,6 +9,8 @@ import { UsersService } from './users.service';
 import {
   UserSettingsDto,
   UpdateUserSettingsDto,
+  ApiResponse as SharedApiResponse,
+  createApiResponse,
 } from '@workspace/shared-types/api';
 import { AuthGuard } from '../portfolios/guards/auth.guard';
 import { UserId } from '../portfolios/decorators/user-id.decorator';
@@ -23,8 +25,11 @@ export class UsersController {
   @Get('settings')
   @ApiOperation({ summary: 'Get current user settings' })
   @ApiResponse({ status: 200, type: UserSettingsDto })
-  async getSettings(@UserId() userId: string): Promise<UserSettingsDto> {
-    return this.usersService.getSettings(userId);
+  async getSettings(
+    @UserId() userId: string,
+  ): Promise<SharedApiResponse<UserSettingsDto>> {
+    const settings = await this.usersService.getSettings(userId);
+    return createApiResponse(settings, new Date());
   }
 
   @Patch('settings')
@@ -33,7 +38,8 @@ export class UsersController {
   async updateSettings(
     @UserId() userId: string,
     @Body() updateDto: UpdateUserSettingsDto,
-  ): Promise<UserSettingsDto> {
-    return this.usersService.updateSettings(userId, updateDto);
+  ): Promise<SharedApiResponse<UserSettingsDto>> {
+    const settings = await this.usersService.updateSettings(userId, updateDto);
+    return createApiResponse(settings, new Date());
   }
 }

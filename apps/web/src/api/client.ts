@@ -115,7 +115,8 @@ export async function searchAssets(query: string): Promise<Assets[]> {
   if (!response.ok) {
     throw new Error("Failed to search assets");
   }
-  return response.json();
+  const envelope: ApiResponse<Assets[]> = await response.json();
+  return envelope.data;
 }
 
 // ============ Discovery API ============
@@ -192,7 +193,8 @@ export async function discoverAssets(
   if (!response.ok) {
     throw new Error("Failed to discover assets");
   }
-  return response.json();
+  const envelope: ApiResponse<DiscoveredAsset[]> = await response.json();
+  return envelope.data;
 }
 
 /**
@@ -210,7 +212,8 @@ export async function submitAssetRequest(
     const errorData = await response.json().catch(() => ({}));
     throw new Error(errorData.message || "Failed to submit asset request");
   }
-  return response.json();
+  const envelope: ApiResponse<AssetRequestResponse> = await response.json();
+  return envelope.data;
 }
 
 /**
@@ -229,7 +232,8 @@ export async function getAsset(symbol: string, token?: string): Promise<Assets |
   if (!response.ok) {
     throw new Error(`Failed to fetch asset: ${symbol}`);
   }
-  return response.json();
+  const envelope: ApiResponse<Assets> = await response.json();
+  return envelope.data;
 }
 
 /**
@@ -260,7 +264,8 @@ export async function getConnections(): Promise<ConnectionDto[]> {
   if (!response.ok) {
     throw new Error("Failed to fetch connections");
   }
-  return response.json();
+  const envelope: ApiResponse<ConnectionDto[]> = await response.json();
+  return envelope.data;
 }
 
 /**
@@ -275,7 +280,8 @@ export async function createConnection(data: CreateConnectionDto): Promise<Conne
     const errorData = await response.json().catch(() => ({}));
     throw new Error(errorData.message || "Failed to create connection");
   }
-  return response.json();
+  const envelope: ApiResponse<ConnectionDto> = await response.json();
+  return envelope.data;
 }
 
 /**
@@ -339,7 +345,8 @@ export async function getExchangeRate(
     if (response.status === 404) return { rate: null };
     throw new Error("Failed to fetch exchange rate");
   }
-  return response.json();
+  const envelope: ApiResponse<{ rate: number | null }> = await response.json();
+  return envelope.data;
 }
 
 // ============ User Settings API ============
@@ -352,7 +359,8 @@ export async function getUserSettings(): Promise<UserSettingsDto> {
   if (!response.ok) {
     throw new Error("Failed to fetch user settings");
   }
-  return response.json();
+  const envelope: ApiResponse<UserSettingsDto> = await response.json();
+  return envelope.data;
 }
 
 /**
@@ -366,5 +374,6 @@ export async function updateUserSettings(data: UpdateUserSettingsDto): Promise<U
   if (!response.ok) {
     throw new Error("Failed to update user settings");
   }
-  return response.json();
+  const envelope: ApiResponse<UserSettingsDto> = await response.json();
+  return envelope.data;
 }

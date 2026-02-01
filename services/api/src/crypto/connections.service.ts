@@ -170,36 +170,19 @@ export class ConnectionsService {
   }
 
   /**
-   * Sync a connection
+   * Find all active connections for background sync (System scope)
    */
-  async sync(userId: string, id: string): Promise<string> {
-    // Check if connection exists and belongs to user
-    const { data: conn, error } = await this.supabase
+  async findAllActive(): Promise<Array<{ id: string; user_id: string }>> {
+    const { data, error } = await this.supabase
       .from('user_connections')
-      .select('*')
-      .eq('user_id', userId)
-      .eq('id', id)
-      .single();
+      .select('id, user_id')
+      .eq('status', 'active');
 
-    if (error || !conn) {
-      throw new NotFoundException(`Connection ${id} not found`);
+    if (error) {
+      throw error;
     }
 
-    // Update last_synced_at
-    const { error: updateError } = await this.supabase
-      .from('user_connections')
-      .update({
-        last_synced_at: new Date().toISOString(),
-      })
-      .eq('id', id);
-
-    if (updateError) {
-      this.handleError(updateError, id);
-    }
-
-    // In a real app, this would trigger a background job to fetch exchange data
-    const message = `Successfully triggered sync for ${conn.exchange_id}`;
-    return message;
+    return data || [];
   }
 
   /**

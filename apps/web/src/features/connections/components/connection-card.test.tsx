@@ -75,4 +75,26 @@ describe("ConnectionCard", () => {
 
     expect(mockDeleteMutate).toHaveBeenCalledWith("123", expect.any(Object));
   });
+
+  it("shows stale badge when data is older than 5 minutes", () => {
+    // Mock staleness hook to return stale
+    vi.mock("@/hooks/use-staleness", () => ({
+      useStaleness: () => ({
+        isStale: true,
+        label: "15 minutes ago",
+      }),
+    }));
+
+    const staleConnection: ConnectionDto = {
+      ...mockConnection,
+      lastSyncedAt: new Date(Date.now() - 15 * 60 * 1000).toISOString(), // 15 min ago
+    };
+
+    render(<ConnectionCard connection={staleConnection} />);
+
+    // Check for stale badge
+    expect(screen.getByText("Stale")).toBeDefined();
+    // Check for amber warning styling
+    expect(screen.getByText("Synced 15 minutes ago")).toBeDefined();
+  });
 });

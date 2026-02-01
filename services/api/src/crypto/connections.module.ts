@@ -9,6 +9,7 @@ import { ConnectionsService } from './connections.service';
 import { BinanceService } from './binance.service';
 import { OkxService } from './okx.service';
 import { ExchangeSyncService } from './exchange-sync.service';
+import { SyncSchedulerService } from './sync-scheduler.service';
 import { ExchangeRegistry } from './exchange.registry';
 import { SupabaseModule } from '../common/supabase/supabase.module';
 import { PortfoliosModule } from '../portfolios/portfolios.module';
@@ -21,6 +22,7 @@ import { PortfoliosModule } from '../portfolios/portfolios.module';
     BinanceService,
     OkxService,
     ExchangeSyncService,
+    SyncSchedulerService,
     ExchangeRegistry,
   ],
   exports: [

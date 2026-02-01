@@ -10,6 +10,7 @@ export const usePortfolios = () => {
     queryFn: () => getPortfolios(),
     staleTime: 30 * 1000,
     gcTime: 5 * 60 * 1000,
+    refetchInterval: 60000,
   });
 
   const refresh = async () => {
@@ -31,6 +32,7 @@ export const usePortfolio = (id: string) => {
     enabled: !!id,
     staleTime: 30 * 1000,
     gcTime: 5 * 60 * 1000,
+    refetchInterval: 60000,
   });
 
   const refresh = async () => {

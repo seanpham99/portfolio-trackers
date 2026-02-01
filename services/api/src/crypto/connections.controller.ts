@@ -30,6 +30,8 @@ import {
   CreateConnectionDto,
   ValidateConnectionDto,
   ValidationResultDto,
+  ApiResponse as SharedApiResponse,
+  createApiResponse,
 } from '@workspace/shared-types/api';
 import { AuthGuard } from '../portfolios/guards/auth.guard';
 import { UserId } from '../portfolios/decorators/user-id.decorator';
@@ -51,8 +53,11 @@ export class ConnectionsController {
     description: 'List of connections (API secrets are never returned)',
     type: [ConnectionDto],
   })
-  async findAll(@UserId() userId: string): Promise<ConnectionDto[]> {
-    return this.connectionsService.findAll(userId);
+  async findAll(
+    @UserId() userId: string,
+  ): Promise<SharedApiResponse<ConnectionDto[]>> {
+    const connections = await this.connectionsService.findAll(userId);
+    return createApiResponse(connections, new Date());
   }
 
   @Post(':id/sync')
@@ -73,11 +78,7 @@ export class ConnectionsController {
   async syncOne(
     @UserId() userId: string,
     @Param('id') id: string,
-  ): Promise<{
-    success: boolean;
-    data: ConnectionDto;
-    meta: { assetsSync: number };
-  }> {
+  ): Promise<SharedApiResponse<ConnectionDto>> {
     // 1. Trigger sync
     const result = await this.exchangeSyncService.syncHoldings(userId, id);
 
@@ -90,11 +91,9 @@ export class ConnectionsController {
     // 2. Fetch updated connection to return latest lastSyncedAt
     const connection = await this.connectionsService.findOne(userId, id);
 
-    return {
-      success: true,
-      data: connection,
-      meta: { assetsSync: result.assetsSync },
-    };
+    return createApiResponse(connection, new Date(), {
+      assetsSync: result.assetsSync,
+    });
   }
 
   @Post()
@@ -115,11 +114,7 @@ export class ConnectionsController {
   async create(
     @UserId() userId: string,
     @Body() createDto: CreateConnectionDto,
-  ): Promise<{
-    success: boolean;
-    data: ConnectionDto;
-    meta: { assetsSync: number };
-  }> {
+  ): Promise<SharedApiResponse<ConnectionDto>> {
     // Validate credentials first
     const validationResult = await this.connectionsService.validateConnection(
       createDto.exchange,
@@ -147,11 +142,9 @@ export class ConnectionsController {
       connection.id,
     );
 
-    return {
-      success: true,
-      data: connection,
-      meta: { assetsSync: syncResult.assetsSync },
-    };
+    return createApiResponse(connection, new Date(), {
+      assetsSync: syncResult.assetsSync,
+    });
   }
 
   @Post('validate')

@@ -1,0 +1,167 @@
+# Story 5.4: Background Sync & Polling (60s)
+
+Status: ready-for-dev
+
+<!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
+
+## Story
+
+As a user,
+I want my connected exchange balances to refresh automatically in the background,
+so that my portfolio is always up to date without me having to manually click "Sync".
+
+## Acceptance Criteria
+
+1. **Given** the system is running.
+2. **When** the 60-second interval triggers.
+3. **Then** the backend automatically triggers a sync for all active exchange connections.
+4. **Then** the system respects external API rate limits (Binance/OKX) by processing syncs with concurrency control or delays if necessary.
+5. **Given** I am viewing my portfolio on the frontend.
+6. **When** the background sync completes.
+7. **Then** my UI updates automatically within ~60 seconds (via frontend polling) to show the new balances.
+8. **Then** if the backend sync fails or stops, the "Staleness Badge" (from Story 5.3) appears after 5 minutes of no updates.
+
+## Tasks / Subtasks
+
+- [ ] **Task 1: Setup Backend Scheduling Infrastructure**
+  - [ ] Install `@nestjs/schedule` and `@types/cron` in `services/api`.
+  - [ ] Import `ScheduleModule.forRoot()` in `AppModule` (or a dedicated `SchedulerModule`).
+  - [ ] Create `SyncSchedulerService` in `services/api/src/crypto/`.
+
+- [ ] **Task 2: Implement Background Sync Job**
+  - [ ] Implement `handleCron()` method decorated with `@Cron(CronExpression.EVERY_MINUTE)`.
+  - [ ] Logic: Fetch all _active_ connections from `user_connections`.
+  - [ ] Logic: Iterate and call `ExchangeSyncService.sync()` for each.
+  - [ ] Constraint: Implement concurrency limiting (e.g., using `p-limit` or simple chunks) to avoid spiking memory/CPU or hitting global rate limits if user count grows (Simulate "hundreds of users"). Start with concurrency = 5.
+  - [ ] Error Handling: Ensure one failed sync does not crash the job. Log errors but continue.
+
+- [ ] **Task 3: Enable Frontend Polling**
+  - [ ] Update `useConnections` hook in `apps/web/src/features/connections/hooks/use-connections.ts` to add `refetchInterval: 60000` (60s).
+  - [ ] Update `useUnifiedHoldings` (and/or `usePortfolioSummary`) hook to add `refetchInterval: 60000` so portfolio views update automatically.
+  - [ ] Ensure polling pauses when window is not focused (`refetchOnWindowFocus: true` is default, but verify behavior aligns with "Calm" UX).
+
+- [ ] **Task 4: Testing & Verification**
+  - [ ] Unit Test: `SyncSchedulerService` calls `sync()` for connections.
+  - [ ] Unit Test: Verify concurrency limit (e.g. mock 10 connections, ensure only 5 run in parallel if limit is 5).
+  - [ ] Integration Test: Verify Cron job triggers (can use `jest.useFakeTimers` or similar).
+  - [ ] Manual Verify: Connect an exchange, wait 60s, check logs/DB for update without user interaction.
+
+## Dev Notes
+
+### Architecture Pattern: Smart Polling
+
+This story implements the "Smart Polling" strategy defined in the Architecture:
+
+- **Backend**: Active pulling from exchanges every 60s.
+- **Frontend**: Active polling of our API every 60s.
+
+This creates a "near real-time" experience (max latency ~2 mins) without the complexity of WebSockets for v1.0.
+
+### Key Implementation Details
+
+#### Backend Scheduler
+
+Use NestJS Scheduler:
+
+```typescript
+@Injectable()
+export class SyncSchedulerService {
+  private readonly logger = new Logger(SyncSchedulerService.name);
+
+  constructor(
+    private readonly connectionsService: ConnectionsService,
+    private readonly exchangeSyncService: ExchangeSyncService
+  ) {}
+
+  @Cron(CronExpression.EVERY_MINUTE)
+  async handleCron() {
+    this.logger.debug("Starting background sync...");
+    const connections = await this.connectionsService.findAllActive();
+
+    // Simple concurrency control
+    const results = await Promise.allSettled(
+      connections.map((conn) => this.exchangeSyncService.sync(conn.id))
+    );
+
+    // Log summary
+    const success = results.filter((r) => r.status === "fulfilled").length;
+    this.logger.debug(`Sync complete. Success: ${success}/${connections.length}`);
+  }
+}
+```
+
+**Note**: In a real production scale (thousands of users), we would push these to a Queue (BullMQ) and have workers process them. For v1.0 (hundreds of users), a simple Cron with `Promise.allSettled` is sufficient and reduces complexity (KISS).
+
+#### Frontend Polling
+
+In TanStack Query:
+
+```typescript
+export function useConnections() {
+  return useQuery({
+    queryKey: ["connections"],
+    queryFn: fetchConnections,
+    refetchInterval: 60000, // Poll every 60s
+    // Optional: Only poll if user is active? Default behavior is fine.
+  });
+}
+```
+
+### Project Structure Notes
+
+#### Files to Create
+
+- `services/api/src/crypto/sync-scheduler.service.ts`
+- `services/api/src/crypto/sync-scheduler.service.spec.ts`
+
+#### Files to Modify
+
+- `services/api/package.json` (add dependencies)
+- `services/api/src/app.module.ts` (register ScheduleModule)
+- `services/api/src/crypto/crypto.module.ts` (provide SyncSchedulerService)
+- `services/api/src/crypto/connections.service.ts` (add `findAllActive()` if missing)
+- `apps/web/src/features/connections/hooks/use-connections.ts`
+- `apps/web/src/features/portfolios/hooks/use-portfolios.ts` (or relevant hooks)
+
+### References
+
+- [Source: _bmad-output/architecture.md#Refresh Strategy]
+- [Source: _bmad-output/project-context.md#UX & "Calm" Design Rules]
+- [NestJS Scheduling Docs](https://docs.nestjs.com/techniques/task-scheduling)
+
+### Testing Standards
+
+- **Unit Tests**: Mock `ConnectionsService` and `ExchangeSyncService`. Verify `sync` is called n times.
+- **Resilience**: Ensure `Promise.allSettled` is used so one failure doesn't stop others.
+
+### Previous Story Intelligence
+
+From **Story 5.3: Connections Hub**:
+
+- We established `ExchangeSyncService.sync(connectionId)` which updates `last_sync_at`.
+- We established `useConnections` hook.
+- We have `last_sync_at` in the DB.
+
+**Learnings**:
+
+- Ensure we don't sync "disconnected" or "error" state connections repeatedly if they are permanently broken? (Maybe v1.1 optimization. For now, sync all "active" ones).
+- Rate limiting: 5.3 added rate limiting to the _manual_ endpoint. The background job calls the service directly, bypassing the Controller, so it bypasses the `ThrottlerGuard` (which is good/intended). But we must self-impose concurrency limits if needed.
+
+### Latest Technical Information
+
+- **NestJS Schedule**: `@nestjs/schedule` uses `cron` package under the hood.
+- **TanStack Query**: `refetchInterval` can be a function if we want dynamic polling (e.g. slow down if tab backgrounded), but `60000` constant is fine for MVP.
+
+---
+
+## Dev Agent Record
+
+### Agent Model Used
+
+Gemini 3 Pro
+
+### Debug Log References
+
+### Completion Notes List
+
+### File List

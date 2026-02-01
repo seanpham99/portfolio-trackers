@@ -29,7 +29,11 @@ import {
   SubmitAssetRequestDto,
   AssetRequestResponseDto,
 } from './dto/discovery.dto';
-import { DiscoverableAssetClass } from '@workspace/shared-types';
+import {
+  DiscoverableAssetClass,
+  ApiResponse as SharedApiResponse,
+  createApiResponse,
+} from '@workspace/shared-types';
 
 interface AuthenticatedRequest {
   user: {
@@ -54,8 +58,9 @@ export class AssetsController {
   @Get('search')
   @UseGuards(AuthGuard, ThrottlerGuard)
   @ApiOperation({ summary: 'Search assets by symbol or name' })
-  async search(@Query('q') query: string) {
-    return this.assetsService.search(query);
+  async search(@Query('q') query: string): Promise<SharedApiResponse<any[]>> {
+    const results = await this.assetsService.search(query);
+    return createApiResponse(results, new Date());
   }
 
   /**
@@ -65,8 +70,9 @@ export class AssetsController {
   @UseGuards(AuthGuard)
   @ApiOperation({ summary: 'Get popular assets for quick access' })
   @ApiResponse({ status: 200, type: [PopularAssetDto] })
-  async getPopular(): Promise<PopularAssetDto[]> {
-    return this.assetsService.getPopular();
+  async getPopular(): Promise<SharedApiResponse<PopularAssetDto[]>> {
+    const assets = await this.assetsService.getPopular();
+    return createApiResponse(assets, new Date());
   }
 
   /**
@@ -99,7 +105,7 @@ export class AssetsController {
   async discover(
     @Query('q') query: string,
     @Query('assetClass') assetClass: DiscoverableAssetClass,
-  ): Promise<DiscoveredAssetDto[]> {
+  ): Promise<SharedApiResponse<DiscoveredAssetDto[]>> {
     if (!query || query.length < 1) {
       throw new BadRequestException('Query must be at least 1 character');
     }
@@ -110,7 +116,11 @@ export class AssetsController {
       );
     }
 
-    return this.discoveryService.searchExternal(query, assetClass);
+    const results = await this.discoveryService.searchExternal(
+      query,
+      assetClass,
+    );
+    return createApiResponse(results, new Date());
   }
 
   /**
@@ -135,7 +145,7 @@ export class AssetsController {
   async submitRequest(
     @Body() dto: SubmitAssetRequestDto,
     @Request() req: AuthenticatedRequest,
-  ): Promise<AssetRequestResponseDto> {
+  ): Promise<SharedApiResponse<AssetRequestResponseDto>> {
     const userId = req.user.id;
 
     // Check for existing request
@@ -158,12 +168,13 @@ export class AssetsController {
         userId,
       );
 
-      return {
+      const responseData: AssetRequestResponseDto = {
         id: pendingAsset.id,
         symbol: pendingAsset.symbol,
         status: pendingAsset.status ?? 'pending',
         message: `Asset request submitted successfully. We will review and add ${dto.symbol} to our registry soon.`,
       };
+      return createApiResponse(responseData, new Date());
     } catch (error) {
       if ((error as Error).message.includes('already requested')) {
         throw new ConflictException((error as Error).message);
@@ -184,11 +195,13 @@ export class AssetsController {
   })
   @ApiResponse({ status: 200, description: 'Asset found' })
   @ApiResponse({ status: 404, description: 'Asset not found' })
-  async getBySymbol(@Param('symbol') symbol: string) {
+  async getBySymbol(
+    @Param('symbol') symbol: string,
+  ): Promise<SharedApiResponse<any>> {
     const asset = await this.assetsService.findBySymbol(symbol);
     if (!asset) {
       throw new NotFoundException(`Asset not found: ${symbol}`);
     }
-    return asset;
+    return createApiResponse(asset, new Date());
   }
 }

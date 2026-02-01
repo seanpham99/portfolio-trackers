@@ -13,6 +13,7 @@ export const useConnections = () => {
   return useQuery({
     queryKey: ["connections"],
     queryFn: getConnections,
+    refetchInterval: 60000,
   });
 };
 
