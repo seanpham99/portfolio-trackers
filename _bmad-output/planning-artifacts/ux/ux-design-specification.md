@@ -2,8 +2,8 @@
 stepsCompleted: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
 inputDocuments:
   - "_bmad-output/prd.md"
-  - "_bmad-output/project-planning-artifacts/research/market-us-portfolio-tracking-multi-asset-research-2025-12-26.md"
-  - "_bmad-output/project-planning-artifacts/research/market-vietnam-portfolio-tracking-research-2025-12-26.md"
+  - "_bmad-output/planning-artifacts/research/market-us-portfolio-tracking-multi-asset-research-2025-12-26.md"
+  - "_bmad-output/planning-artifacts/research/market-vietnam-portfolio-tracking-research-2025-12-26.md"
 workflowType: "ux-design"
 lastStep: 15
 project_name: "portfolios-tracker"

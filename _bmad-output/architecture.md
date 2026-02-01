@@ -2,13 +2,13 @@
 stepsCompleted: [1, 2, 3, 4, 5, 6, 7, 8]
 inputDocuments:
   - "_bmad-output/prd.md"
-  - "_bmad-output/project-planning-artifacts/ux/ux-design-specification.md"
-  - "_bmad-output/project-planning-artifacts/research/domain-asset-specific-knowledge-research-2025-12-26.md"
-  - "_bmad-output/project-planning-artifacts/research/domain-market-microstructure-2025-12-26.md"
-  - "_bmad-output/project-planning-artifacts/research/domain-portfolio-calculations-analytics-2025-12-26.md"
-  - "_bmad-output/project-planning-artifacts/research/market-us-portfolio-tracking-multi-asset-research-2025-12-26.md"
-  - "_bmad-output/project-planning-artifacts/research/market-vietnam-portfolio-tracking-research-2025-12-26.md"
-  - "_bmad-output/project-planning-artifacts/research/vietnam-stock-market-mechanics-research-2025-12-26.md"
+  - "_bmad-output/planning-artifacts/ux/ux-design-specification.md"
+  - "_bmad-output/planning-artifacts/research/domain-asset-specific-knowledge-research-2025-12-26.md"
+  - "_bmad-output/planning-artifacts/research/domain-market-microstructure-2025-12-26.md"
+  - "_bmad-output/planning-artifacts/research/domain-portfolio-calculations-analytics-2025-12-26.md"
+  - "_bmad-output/planning-artifacts/research/market-us-portfolio-tracking-multi-asset-research-2025-12-26.md"
+  - "_bmad-output/planning-artifacts/research/market-vietnam-portfolio-tracking-research-2025-12-26.md"
+  - "_bmad-output/planning-artifacts/research/vietnam-stock-market-mechanics-research-2025-12-26.md"
   - "_bmad-output/project-context.md"
 workflowType: "architecture"
 lastStep: 8

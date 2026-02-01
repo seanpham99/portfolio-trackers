@@ -4,7 +4,7 @@ documentsInvolved:
   - "_bmad-output/prd.md"
   - "_bmad-output/architecture.md"
   - "_bmad-output/epics.md"
-  - "_bmad-output/project-planning-artifacts/ux/ux-design-specification.md"
+  - "_bmad-output/planning-artifacts/ux/ux-design-specification.md"
 ---
 
 # Implementation Readiness Assessment Report
@@ -16,7 +16,7 @@ documentsInvolved:
 
 - **PRD:** `_bmad-output/prd.md` (17436 bytes, 2026-01-15)
 - **Architecture:** `_bmad-output/architecture.md` (17904 bytes, 2026-01-15)
-- **UX Design:** `_bmad-output/project-planning-artifacts/ux/ux-design-specification.md` (19510 bytes, 2026-01-15)
+- **UX Design:** `_bmad-output/planning-artifacts/ux/ux-design-specification.md` (19510 bytes, 2026-01-15)
 - **Epics & Stories:** `_bmad-output/epics.md` (13979 bytes, 2026-01-15)
 
 ## Issues Found
@@ -102,7 +102,7 @@ None identified. All 13 Functional Requirements have been successfully mapped to
 
 ### UX Document Status
 
-**Found:** `_bmad-output/project-planning-artifacts/ux/ux-design-specification.md`
+**Found:** `_bmad-output/planning-artifacts/ux/ux-design-specification.md`
 
 ### Alignment Issues
 

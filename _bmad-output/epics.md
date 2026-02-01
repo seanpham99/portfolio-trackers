@@ -3,7 +3,7 @@ stepsCompleted: [1, 2, 3, 4, 5, 6]
 inputDocuments:
   - "_bmad-output/prd.md"
   - "_bmad-output/architecture.md"
-  - "_bmad-output/project-planning-artifacts/ux/ux-design-specification.md"
+  - "_bmad-output/planning-artifacts/ux/ux-design-specification.md"
   - "_bmad-output/project-context.md"
 ---
 

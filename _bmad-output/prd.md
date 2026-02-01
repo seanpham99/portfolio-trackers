@@ -1,12 +1,12 @@
 ---
 stepsCompleted: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 inputDocuments:
-  - "_bmad-output/project-planning-artifacts/research/market-vietnam-portfolio-tracking-research-2025-12-26.md"
-  - "_bmad-output/project-planning-artifacts/research/vietnam-stock-market-mechanics-research-2025-12-26.md"
-  - "_bmad-output/project-planning-artifacts/research/market-us-portfolio-tracking-multi-asset-research-2025-12-26.md"
-  - "_bmad-output/project-planning-artifacts/research/domain-asset-specific-knowledge-research-2025-12-26.md"
-  - "_bmad-output/project-planning-artifacts/research/domain-portfolio-calculations-analytics-2025-12-26.md"
-  - "_bmad-output/project-planning-artifacts/research/domain-market-microstructure-2025-12-26.md"
+  - "_bmad-output/planning-artifacts/research/market-vietnam-portfolio-tracking-research-2025-12-26.md"
+  - "_bmad-output/planning-artifacts/research/vietnam-stock-market-mechanics-research-2025-12-26.md"
+  - "_bmad-output/planning-artifacts/research/market-us-portfolio-tracking-multi-asset-research-2025-12-26.md"
+  - "_bmad-output/planning-artifacts/research/domain-asset-specific-knowledge-research-2025-12-26.md"
+  - "_bmad-output/planning-artifacts/research/domain-portfolio-calculations-analytics-2025-12-26.md"
+  - "_bmad-output/planning-artifacts/research/domain-market-microstructure-2025-12-26.md"
   - "docs/index.md"
   - "_bmad-output/archive/2025-12-26/PRD.md"
 documentCounts:

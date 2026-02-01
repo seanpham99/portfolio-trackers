@@ -281,17 +281,17 @@ This domain research examines the technical infrastructure and protocols require
 
 ### Comparative Analysis: FIX vs REST vs WebSocket
 
-| **Criterion**                | **FIX Protocol**                          | **REST API**                            | **WebSocket**                        |
-| ---------------------------- | ----------------------------------------- | --------------------------------------- | ------------------------------------ |
-| **Latency**                  | Low (binary SBE) to Medium (tagvalue)     | Medium (request-response overhead)      | **Very Low** (persistent connection) |
-| **Complexity**               | **High** (FIX engine, session management) | Low (standard HTTP libraries)           | Medium (reconnection, state sync)    |
-| **Use Case**                 | Order execution, institutional trading    | **Portfolio tracking**, historical data | **Real-time quotes**, live updates   |
-| **Real-time Support**        | Yes (but overkill for portfolio tracking) | No (polling only)                       | **Yes** (server push)                |
-| **Vietnamese Broker Access** | **No** (institutional only)               | **No** (no public APIs)                 | **No** (no public WebSocket APIs)    |
-| **US Broker Access**         | Rare (Interactive Brokers, Bloomberg)     | **Common** (Plaid, Alpaca, Schwab)      | Common (Alpaca, Polygon, IEX)        |
-| **Cost**                     | High (enterprise fees)                    | **Free to moderate** (API tiers)        | Moderate (data provider fees)        |
-| **Maintenance Burden**       | High (session recovery, heartbeats)       | **Low** (stateless)                     | Medium (connection handling)         |
-| **Portfolios Tracker MVP Fit**        | ❌ Overkill, not needed                   | ✅ **Best for MVP**                     | 🟡 Phase 2+ for real-time features   |
+| **Criterion**                  | **FIX Protocol**                          | **REST API**                            | **WebSocket**                        |
+| ------------------------------ | ----------------------------------------- | --------------------------------------- | ------------------------------------ |
+| **Latency**                    | Low (binary SBE) to Medium (tagvalue)     | Medium (request-response overhead)      | **Very Low** (persistent connection) |
+| **Complexity**                 | **High** (FIX engine, session management) | Low (standard HTTP libraries)           | Medium (reconnection, state sync)    |
+| **Use Case**                   | Order execution, institutional trading    | **Portfolio tracking**, historical data | **Real-time quotes**, live updates   |
+| **Real-time Support**          | Yes (but overkill for portfolio tracking) | No (polling only)                       | **Yes** (server push)                |
+| **Vietnamese Broker Access**   | **No** (institutional only)               | **No** (no public APIs)                 | **No** (no public WebSocket APIs)    |
+| **US Broker Access**           | Rare (Interactive Brokers, Bloomberg)     | **Common** (Plaid, Alpaca, Schwab)      | Common (Alpaca, Polygon, IEX)        |
+| **Cost**                       | High (enterprise fees)                    | **Free to moderate** (API tiers)        | Moderate (data provider fees)        |
+| **Maintenance Burden**         | High (session recovery, heartbeats)       | **Low** (stateless)                     | Medium (connection handling)         |
+| **Portfolios Tracker MVP Fit** | ❌ Overkill, not needed                   | ✅ **Best for MVP**                     | 🟡 Phase 2+ for real-time features   |
 
 **Recommendation for Portfolios Tracker MVP:**
 
