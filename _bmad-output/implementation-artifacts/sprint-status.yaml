@@ -76,7 +76,7 @@ development_status:
   5-1-binance-api-sync-read-only: done
   5-2-okx-api-sync-read-only: done
   5-3-connections-management-hub: done
-  5-4-background-sync-polling-60s: ready-for-dev
+  5-4-background-sync-polling-60s: done
   epic-5-retrospective: optional
 
   epic-6: backlog

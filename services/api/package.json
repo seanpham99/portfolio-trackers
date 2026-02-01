@@ -29,7 +29,6 @@
     "@nestjs/swagger": "^11.2.5",
     "@nestjs/throttler": "^6.5.0",
     "@supabase/supabase-js": "^2.93.1",
-    "@types/cron": "^2.4.3",
     "@workspace/shared-types": "workspace:*",
     "ccxt": "^4.5.33",
     "class-transformer": "^0.5.1",
@@ -43,6 +42,7 @@
   },
   "devDependencies": {
     "@nestjs/cli": "^11.0.15",
+    "@types/cron": "^2.4.3",
     "@nestjs/schematics": "^11.0.9",
     "@nestjs/testing": "^11.1.12",
     "@swc/cli": "^0.7.10",

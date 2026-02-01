@@ -10,7 +10,11 @@
 
 import { Injectable, Inject, Logger } from '@nestjs/common';
 import { SupabaseClient } from '@supabase/supabase-js';
-import { Database, InsertAssets } from '@workspace/shared-types/database';
+import {
+  Database,
+  InsertAssets,
+  ConnectionStatus,
+} from '@workspace/shared-types/database';
 import { ExchangeRegistry } from './exchange.registry';
 import { ConnectionsService } from './connections.service';
 import { ExchangeBalance } from './interfaces/exchange-provider.interface';
@@ -121,12 +125,32 @@ export class ExchangeSyncService {
         syncedBalances,
       };
     } catch (error) {
-      this.logger.error(`Sync failed: ${(error as Error).message}`);
+      const errorMessage = (error as Error).message;
+      this.logger.error(`Sync failed: ${errorMessage}`);
+
+      // If credential decryption failed, mark connection as error to stop retries
+      if (
+        errorMessage.includes('Failed to decrypt') ||
+        errorMessage.includes('Unsupported state') ||
+        errorMessage.includes('unable to authenticate data')
+      ) {
+        this.logger.warn(
+          `Marking connection ${connectionId} as 'invalid' due to decryption failure`,
+        );
+        await this.connectionsService
+          .updateStatus(userId, connectionId, ConnectionStatus.invalid)
+          .catch((e) =>
+            this.logger.error(
+              `Failed to update connection status: ${e.message}`,
+            ),
+          );
+      }
+
       return {
         success: false,
         assetsSync: 0,
         syncedBalances: [],
-        error: (error as Error).message,
+        error: errorMessage,
       };
     }
   }

@@ -122,6 +122,25 @@ export class ConnectionsService {
   }
 
   /**
+   * Update connection status
+   */
+  async updateStatus(
+    userId: string,
+    id: string,
+    status: ConnectionStatus,
+  ): Promise<void> {
+    const { error } = await this.supabase
+      .from('user_connections')
+      .update({ status })
+      .eq('user_id', userId)
+      .eq('id', id);
+
+    if (error) {
+      throw error;
+    }
+  }
+
+  /**
    * Get decrypted connection credentials for sync operations
    * @param userId - User ID for authorization
    * @param connectionId - Connection UUID
@@ -151,22 +170,30 @@ export class ConnectionsService {
       throw new Error('Connection credentials are incomplete');
     }
 
-    const credentials: {
-      apiKey: string;
-      apiSecret: string;
-      exchange: ExchangeId;
-      passphrase?: string;
-    } = {
-      apiKey: conn.api_key,
-      apiSecret: decryptSecret(conn.api_secret_encrypted),
-      exchange: conn.exchange_id as ExchangeId,
-    };
+    try {
+      const credentials: {
+        apiKey: string;
+        apiSecret: string;
+        exchange: ExchangeId;
+        passphrase?: string;
+      } = {
+        apiKey: conn.api_key,
+        apiSecret: decryptSecret(conn.api_secret_encrypted),
+        exchange: conn.exchange_id as ExchangeId,
+      };
 
-    if (conn.passphrase_encrypted) {
-      credentials.passphrase = decryptSecret(conn.passphrase_encrypted);
+      if (conn.passphrase_encrypted) {
+        credentials.passphrase = decryptSecret(conn.passphrase_encrypted);
+      }
+
+      return credentials;
+    } catch (error) {
+      throw new Error(
+        `Failed to decrypt credentials for connection ${connectionId}: ${
+          (error as Error).message
+        }`,
+      );
     }
-
-    return credentials;
   }
 
   /**

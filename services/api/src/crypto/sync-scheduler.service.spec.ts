@@ -56,7 +56,7 @@ describe('SyncSchedulerService', () => {
     expect(exchangeSyncService.syncHoldings).toHaveBeenCalledWith('u2', '2');
   });
 
-  it('should handle sync failures gracefully', async () => {
+  it('should handle sync failures gracefully (success: false)', async () => {
     const connections = [{ id: '1', user_id: 'u1' }];
     connectionsService.findAllActive.mockResolvedValue(connections);
     exchangeSyncService.syncHoldings.mockResolvedValue({
@@ -70,6 +70,29 @@ describe('SyncSchedulerService', () => {
 
     expect(exchangeSyncService.syncHoldings).toHaveBeenCalled();
     // Should not throw
+  });
+
+  it('should handle sync exceptions gracefully (thrown errors)', async () => {
+    const connections = [
+      { id: '1', user_id: 'u1' },
+      { id: '2', user_id: 'u2' },
+    ];
+    connectionsService.findAllActive.mockResolvedValue(connections);
+
+    // First call throws, second call succeeds
+    exchangeSyncService.syncHoldings
+      .mockRejectedValueOnce(new Error('Network error'))
+      .mockResolvedValueOnce({
+        success: true,
+        assetsSync: 1,
+        syncedBalances: [],
+      });
+
+    // Should not throw - Promise.allSettled handles errors
+    await expect(service.handleCron()).resolves.not.toThrow();
+
+    // Both connections should have been attempted
+    expect(exchangeSyncService.syncHoldings).toHaveBeenCalledTimes(2);
   });
 
   it('should respect concurrency limit', async () => {
