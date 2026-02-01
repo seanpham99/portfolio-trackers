@@ -127,15 +127,15 @@ Fast HMR, unified linting/formatting (ESLint/Prettier), and centralized dependen
 
 ### Authentication & Security
 
+- **Integration Pattern:** `ExchangeProvider` interface (Strategy Pattern) for standardized crypto exchange integrations.
+- **Sync Strategy:** Asynchronous 'Asset Onboarding' via BullMQ for global assets backfilling.
+
+### Authentication & Security
+
 - **Identity Provider:** Supabase Auth.
 - **Authorization:** PostgreSQL RLS for multi-tenant data isolation + NestJS Guards for feature-level access.
+- **Secrets Management:** Supabase Vault (TDE) for sensitive third-party API keys.
 - **Security Protocol:** TLS 1.3, modern JWT verification (local signing keys and asymmetric cryptography).
-
-### API & Communication Patterns
-
-- **Pattern:** REST API (NestJS).
-- **Documentation:** Swagger / OpenAPI 3.x.
-- **Sync Strategy:** Asynchronous 'Asset Onboarding' via BullMQ for global assets backfilling.
 
 ### Frontend Architecture
 

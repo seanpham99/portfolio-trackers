@@ -312,6 +312,18 @@ As a user, I want my connected exchange balances to refresh automatically in the
 Launch the core SaaS business model, including tier limits, AI-powered personalized insights, and integrated SePay payments for domestic and international users.
 **FRs covered:** FR5, FR12, FR13
 
+#### Story 6.0: Technical Foundation & Security Hardening
+
+As a developer, I want to migrate our secrets management to Supabase Vault and implement shared validation logic, so that our security and tier-enforcement mechanisms are robust enough for payment processing.
+**Acceptance Criteria:**
+
+- **Given** the database setup.
+- **When** I deploy the Supabase Vault extension.
+- **Then** existing encrypted keys are migrated to Vault secrets, and new keys use Vault automatically.
+- **Given** the "Freemium" limits.
+- **When** I define validation rules (e.g., "Max 20 assets").
+- **Then** these rules are enforced identically on both Backend (API) and Frontend (UI) using a shared library/schema.
+
 #### Story 6.1: Freemium Tiers & Asset Limits
 
 As a product owner, I want to restrict free users to 1 portfolio and 20 assets, so that I can encourage conversions to the paid "Pro" tier.

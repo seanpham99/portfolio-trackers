@@ -77,9 +77,10 @@ development_status:
   5-2-okx-api-sync-read-only: done
   5-3-connections-management-hub: done
   5-4-background-sync-polling-60s: done
-  epic-5-retrospective: optional
+  epic-5-retrospective: done
 
   epic-6: backlog
+  6-0-technical-foundation-security-hardening: backlog
   6-1-freemium-tiers-asset-limits: backlog
   6-2-sepay-payment-integration-domestic-international: backlog
   6-3-ai-powered-portfolio-insights-gemini: backlog

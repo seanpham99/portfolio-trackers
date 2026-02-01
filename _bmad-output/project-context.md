@@ -49,10 +49,12 @@ _This file contains critical rules and patterns that AI agents must follow when 
 - **Server State**: Use **TanStack Query** as the single source of truth for external data. Avoid syncing to local state.
 - **UI Architecture**: Build on `@workspace/ui` primitives. Use **Tailwind CSS 4** with mobile-first responsiveness.
 - **NestJS Modules**: Organize by domain (e.g., `src/portfolios/`). Place `dto/`, `guards/`, and `decorators/` in sub-folders.
+- **Shared Validation**: Use `@workspace/shared-types` schemas for BOTH frontend forms and backend DTOs to ensure identical validation logic (especially for Tier limits).
 
 ### Security & Infrastructure Rules
 
 - **Service-to-Service Security**: Use `ApiKeyGuard` for internal communication between Airflow and NestJS API. Check for `x-api-key` header.
+- **Secrets Persistence**: DO NOT store API keys in plain text columns. Use **Supabase Vault** for all user-provided secrets (e.g., Binance/OKX keys).
 - **Airflow DAGs**: Place batch processing logic in `services/data-pipeline/dags/`. Use `SimpleHttpOperator` or `PythonOperator` to trigger API endpoints.
 - **Python Management**: Use `uv` for all Python dependency management and script execution.
 
