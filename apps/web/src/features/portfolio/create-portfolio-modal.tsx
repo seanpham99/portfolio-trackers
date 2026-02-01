@@ -1,5 +1,9 @@
 "use client";
 
+import { usePortfolios } from "@/features/portfolio/hooks/use-portfolios";
+import { useUser } from "@/hooks/use-user";
+import { validatePortfolioCount } from "@workspace/shared-types";
+import { UpgradeModal } from "@/components/upgrade-modal";
 import { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -55,6 +59,9 @@ export function CreatePortfolioModal({ isOpen, onClose }: CreatePortfolioModalPr
   const [error, setError] = useState<string | null>(null);
   const queryClient = useQueryClient();
   const router = useRouter();
+  const { data: user } = useUser();
+  const { data: portfolios } = usePortfolios();
+  const { data: userSettings } = useUserSettings();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -65,7 +72,10 @@ export function CreatePortfolioModal({ isOpen, onClose }: CreatePortfolioModalPr
     },
   });
 
-  const { data: userSettings } = useUserSettings();
+  const validation = validatePortfolioCount(
+    portfolios?.data?.length || 0,
+    user?.subscription_tier || "free"
+  );
 
   // Reset form when modal opens
   useEffect(() => {
@@ -115,6 +125,10 @@ export function CreatePortfolioModal({ isOpen, onClose }: CreatePortfolioModalPr
       onClose();
     }
   };
+
+  if (!validation.valid && validation.error) {
+    return <UpgradeModal isOpen={isOpen} onClose={onClose} error={validation.error} />;
+  }
 
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>

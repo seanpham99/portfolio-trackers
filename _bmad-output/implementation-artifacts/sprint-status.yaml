@@ -80,7 +80,7 @@ development_status:
   epic-5-retrospective: done
 
   epic-6: in-progress
-  6-0-technical-foundation-security-hardening: ready-for-dev
+  6-0-technical-foundation-security-hardening: in-progress
   6-1-freemium-tiers-asset-limits: backlog
   6-2-sepay-payment-integration-domestic-international: backlog
   6-3-ai-powered-portfolio-insights-gemini: backlog

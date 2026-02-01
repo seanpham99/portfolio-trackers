@@ -1,5 +1,9 @@
 "use client";
 
+import { useHoldings } from "@/features/portfolio/hooks/use-holdings";
+import { useUser } from "@/hooks/use-user";
+import { validateAssetCount } from "@workspace/shared-types";
+import { UpgradeModal } from "@/components/upgrade-modal";
 import Image from "next/image";
 
 import { useState, useEffect } from "react";
@@ -111,7 +115,18 @@ export function AddAssetModal({ isOpen, onClose, stageId, portfolioId }: AddAsse
   const [selectedAssetClass, setSelectedAssetClass] = useState<DiscoverableAssetClass | null>(null);
   const [selectedAsset, setSelectedAsset] = useState<DisplayableAsset | null>(null);
 
-  // Forms
+  const { data: user } = useUser();
+  const { data: holdings } = useHoldings(); // Fetches all holdings for the user
+  const { data: searchResults = [], isLoading: isSearching } = useSearchAssets(searchQuery);
+  const { data: popularAssets = [], isLoading: isLoadingPopular } = usePopularAssets();
+  const { data: portfolio } = usePortfolio(portfolioId);
+  const addTransaction = useAddTransaction(portfolioId);
+  const { data: externalResults = [], isLoading: isDiscovering } = useDiscoverAssets(
+    searchQuery,
+    selectedAssetClass
+  );
+  const submitAssetRequest = useSubmitAssetRequest();
+
   const addForm = useForm<AddAssetFormValues>({
     resolver: zodResolver(addAssetSchema),
     defaultValues: {
@@ -120,44 +135,30 @@ export function AddAssetModal({ isOpen, onClose, stageId, portfolioId }: AddAsse
       fee: "0",
       exchangeRate: "1",
       notes: "",
-      transactionDate: new Date().toISOString().slice(0, 16), // datetime-local format
+      transactionDate: new Date().toISOString().slice(0, 16),
     },
     mode: "onChange",
   });
 
-  // Watch for totals calculation
   const qty = useWatch({ control: addForm.control, name: "quantity" });
   const price = useWatch({ control: addForm.control, name: "pricePerUnit" });
-
-  // Safe display check
-  const hasValidValues = !isNaN(Number(qty)) && !isNaN(Number(price));
-  const totalValueDisplay = hasValidValues
-    ? (Number(qty) * Number(price)).toLocaleString("en-US", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      })
-    : "0.00";
-
-  // Hooks
-  const { data: searchResults = [], isLoading: isSearching } = useSearchAssets(searchQuery);
-  const { data: popularAssets = [], isLoading: isLoadingPopular } = usePopularAssets();
-  const { data: portfolio } = usePortfolio(portfolioId); // [NEW] Get portfolio for base currency
-  const addTransaction = useAddTransaction(portfolioId);
-
-  // Exchange Rate Logic [NEW]
   const transactionDate = useWatch({ control: addForm.control, name: "transactionDate" });
-  const assetCurrency = selectedAsset?.currency || "USD"; // Default to USD if missing
-  const portfolioCurrency = portfolio?.data?.base_currency || "VND"; // Default to VND if missing
 
-  // Fetch exchange rate if currencies differ
+  const assetCurrency = selectedAsset?.currency || "USD";
+  const portfolioCurrency = portfolio?.data?.base_currency || "VND";
+
   const { data: automatedRate, isLoading: isLoadingRate } = useExchangeRate(
     assetCurrency,
     portfolioCurrency,
     transactionDate || new Date().toISOString(),
-    !!selectedAsset // Only fetch when asset is selected
+    !!selectedAsset
   );
 
-  // Auto-fill exchange rate when fetched
+  const validation = validateAssetCount(
+    holdings?.data?.length || 0,
+    user?.subscription_tier || "free"
+  );
+
   useEffect(() => {
     if (automatedRate) {
       addForm.setValue("exchangeRate", automatedRate.toString(), {
@@ -167,27 +168,17 @@ export function AddAssetModal({ isOpen, onClose, stageId, portfolioId }: AddAsse
     }
   }, [automatedRate, addForm]);
 
-  // External discovery hooks
-  const { data: externalResults = [], isLoading: isDiscovering } = useDiscoverAssets(
-    searchQuery,
-    selectedAssetClass
-  );
+  if (!validation.valid && validation.error) {
+    return <UpgradeModal isOpen={isOpen} onClose={onClose} error={validation.error} />;
+  }
 
-  const submitAssetRequest = useSubmitAssetRequest();
-
-  // Determine if internal search returned no results
-  const hasSearchQuery = searchQuery.length >= 2;
-  const internalSearchEmpty = hasSearchQuery && !isSearching && searchResults.length === 0;
-
-  // Show external results when in external states
-  const showExternalResults = modalState === "EXTERNAL_RESULTS" || modalState === "EXTERNAL_SEARCH";
-
-  // Select which assets to display
-  const displayAssets = showExternalResults
-    ? externalResults
-    : hasSearchQuery
-      ? searchResults
-      : popularAssets;
+  const hasValidValues = !isNaN(Number(qty)) && !isNaN(Number(price));
+  const totalValueDisplay = hasValidValues
+    ? (Number(qty) * Number(price)).toLocaleString("en-US", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      })
+    : "0.00";
 
   const handleAddAsset = async (values: AddAssetFormValues) => {
     if (!selectedAsset || !portfolioId || !selectedAsset.id) return;
@@ -213,6 +204,19 @@ export function AddAssetModal({ isOpen, onClose, stageId, portfolioId }: AddAsse
       toast.error(err instanceof Error ? err.message : "An error occurred");
     }
   };
+  // Determine if internal search returned no results
+  const hasSearchQuery = searchQuery.length >= 2;
+  const internalSearchEmpty = hasSearchQuery && !isSearching && searchResults.length === 0;
+
+  // Show external results when in external states
+  const showExternalResults = modalState === "EXTERNAL_RESULTS" || modalState === "EXTERNAL_SEARCH";
+
+  // Select which assets to display
+  const displayAssets = showExternalResults
+    ? externalResults
+    : hasSearchQuery
+      ? searchResults
+      : popularAssets;
 
   const handleOpenChange = (open: boolean) => {
     if (!open) {
@@ -274,14 +278,6 @@ export function AddAssetModal({ isOpen, onClose, stageId, portfolioId }: AddAsse
   };
 
   // Auto-fill exchange rate when fetched
-  useEffect(() => {
-    if (automatedRate) {
-      addForm.setValue("exchangeRate", automatedRate.toString(), {
-        shouldValidate: true,
-        shouldDirty: true,
-      });
-    }
-  }, [automatedRate, addForm]);
 
   const handleRequestTracking = async () => {
     if (!selectedAssetClass) return;

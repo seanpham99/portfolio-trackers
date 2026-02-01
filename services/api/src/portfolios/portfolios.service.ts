@@ -1002,4 +1002,25 @@ export class PortfoliosService {
       meta: { staleness },
     };
   }
+
+  /**
+   * Count portfolios for a user (for tier validation)
+   */
+  async countByUser(userId: string): Promise<number> {
+    const { count, error } = await this.supabase
+      .from('portfolios')
+      .select('id', { count: 'exact', head: true })
+      .eq('user_id', userId);
+
+    if (error) throw error;
+    return count || 0;
+  }
+
+  /**
+   * Count total active assets across all portfolios for a user (for tier validation)
+   */
+  async countAssetsByUser(userId: string): Promise<number> {
+    const holdings = await this.getHoldings(userId);
+    return holdings.data.length;
+  }
 }

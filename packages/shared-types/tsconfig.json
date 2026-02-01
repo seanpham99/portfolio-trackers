@@ -13,7 +13,8 @@
     "noEmit": false,
     "allowImportingTsExtensions": false,
     "skipLibCheck": true,
-    "strictPropertyInitialization": false
+    "strictPropertyInitialization": false,
+    "types": ["vitest/globals"]
   },
   "include": ["src"]
 }

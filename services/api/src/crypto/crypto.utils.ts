@@ -16,17 +16,19 @@ const KEY_LENGTH = 32; // 256 bits
  * Get encryption key from environment variable
  * Must be exactly 32 bytes (256 bits) for AES-256
  */
-function getEncryptionKey(): Buffer {
-  const key = process.env.ENCRYPTION_KEY;
-  if (!key) {
-    throw new Error('ENCRYPTION_KEY environment variable is not set');
+function getEncryptionKey(overrideKey?: string): Buffer {
+  const keySource = overrideKey || process.env.ENCRYPTION_KEY;
+  if (!keySource) {
+    throw new Error(
+      'Encryption key is not available. Set ENCRYPTION_KEY in .env or fetch from Vault.',
+    );
   }
 
   // Support both raw 32-byte strings and base64-encoded keys
-  const keyBuffer = Buffer.from(key, 'base64');
+  const keyBuffer = Buffer.from(keySource, 'base64');
   if (keyBuffer.length !== KEY_LENGTH) {
     throw new Error(
-      `ENCRYPTION_KEY must be exactly ${KEY_LENGTH} bytes (base64 encoded). Got ${keyBuffer.length} bytes.`,
+      `Encryption key must be exactly ${KEY_LENGTH} bytes (base64 encoded). Provided key has ${keyBuffer.length} bytes.`,
     );
   }
 
@@ -36,13 +38,14 @@ function getEncryptionKey(): Buffer {
 /**
  * Encrypt a plaintext string using AES-256-GCM
  * @param plaintext - The string to encrypt
+ * @param key - Optional encryption key from Vault
  * @returns Encrypted string in format: base64(iv):base64(authTag):base64(ciphertext)
  */
-export function encryptSecret(plaintext: string): string {
-  const key = getEncryptionKey();
+export function encryptSecret(plaintext: string, key?: string): string {
+  const encryptionKey = getEncryptionKey(key);
   const iv = crypto.randomBytes(IV_LENGTH);
 
-  const cipher = crypto.createCipheriv(ALGORITHM, key, iv);
+  const cipher = crypto.createCipheriv(ALGORITHM, encryptionKey, iv);
   let encrypted = cipher.update(plaintext, 'utf8', 'base64');
   encrypted += cipher.final('base64');
 
@@ -55,10 +58,11 @@ export function encryptSecret(plaintext: string): string {
 /**
  * Decrypt an encrypted string using AES-256-GCM
  * @param ciphertext - Encrypted string in format: base64(iv):base64(authTag):base64(ciphertext)
+ * @param key - Optional encryption key from Vault
  * @returns Decrypted plaintext string
  */
-export function decryptSecret(ciphertext: string): string {
-  const key = getEncryptionKey();
+export function decryptSecret(ciphertext: string, key?: string): string {
+  const encryptionKey = getEncryptionKey(key);
 
   const parts = ciphertext.split(':');
   if (parts.length !== 3) {
@@ -74,7 +78,7 @@ export function decryptSecret(ciphertext: string): string {
   const authTag = Buffer.from(authTagBase64, 'base64');
   const encrypted = Buffer.from(encryptedBase64, 'base64');
 
-  const decipher = crypto.createDecipheriv(ALGORITHM, key, iv);
+  const decipher = crypto.createDecipheriv(ALGORITHM, encryptionKey, iv);
   decipher.setAuthTag(authTag);
 
   let decrypted = decipher.update(encrypted, undefined, 'utf8');

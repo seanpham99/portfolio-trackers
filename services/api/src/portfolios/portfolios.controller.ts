@@ -30,13 +30,14 @@ import { AuthGuard } from './guards/auth.guard';
 import { ApiKeyGuard } from './guards/api-key.guard';
 import { UserId } from './decorators/user-id.decorator';
 import { SnapshotService } from './snapshot.service';
+import { TierValidationGuard } from '../common/guards/tier-validation.guard';
 
 /**
  * Controller for portfolio management endpoints
  * All routes require authentication
  */
 @Controller('portfolios')
-@UseGuards(AuthGuard)
+@UseGuards(AuthGuard, TierValidationGuard)
 export class PortfoliosController {
   constructor(
     private readonly portfoliosService: PortfoliosService,

@@ -247,7 +247,6 @@ export type Database = {
           created_at: string | null;
           exchange_id: Database["public"]["Enums"]["exchange_id"];
           id: string;
-          last_sync_at: string | null;
           last_synced_at: string | null;
           passphrase_encrypted: string | null;
           status: Database["public"]["Enums"]["connection_status"] | null;
@@ -260,7 +259,6 @@ export type Database = {
           created_at?: string | null;
           exchange_id: Database["public"]["Enums"]["exchange_id"];
           id?: string;
-          last_sync_at?: string | null;
           last_synced_at?: string | null;
           passphrase_encrypted?: string | null;
           status?: Database["public"]["Enums"]["connection_status"] | null;
@@ -273,7 +271,6 @@ export type Database = {
           created_at?: string | null;
           exchange_id?: Database["public"]["Enums"]["exchange_id"];
           id?: string;
-          last_sync_at?: string | null;
           last_synced_at?: string | null;
           passphrase_encrypted?: string | null;
           status?: Database["public"]["Enums"]["connection_status"] | null;
@@ -344,6 +341,7 @@ export type Database = {
           email: string;
           full_name: string | null;
           id: string;
+          subscription_tier: string;
           updated_at: string;
         };
         Insert: {
@@ -352,6 +350,7 @@ export type Database = {
           email: string;
           full_name?: string | null;
           id: string;
+          subscription_tier?: string;
           updated_at?: string;
         };
         Update: {
@@ -360,6 +359,7 @@ export type Database = {
           email?: string;
           full_name?: string | null;
           id?: string;
+          subscription_tier?: string;
           updated_at?: string;
         };
         Relationships: [];
@@ -369,6 +369,7 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      fetch_secret_by_name: { Args: { p_secret_name: string }; Returns: string };
       show_limit: { Args: never; Returns: number };
       show_trgm: { Args: { "": string }; Returns: string[] };
     };
@@ -555,6 +556,10 @@ export type InsertUsers = Database["public"]["Tables"]["users"]["Insert"];
 export type UpdateUsers = Database["public"]["Tables"]["users"]["Update"];
 
 // Functions
+export type ArgsFetchSecretByName = Database["public"]["Functions"]["fetch_secret_by_name"]["Args"];
+export type ReturnTypeFetchSecretByName =
+  Database["public"]["Functions"]["fetch_secret_by_name"]["Returns"];
+
 export type ArgsShowLimit = Database["public"]["Functions"]["show_limit"]["Args"];
 export type ReturnTypeShowLimit = Database["public"]["Functions"]["show_limit"]["Returns"];
 

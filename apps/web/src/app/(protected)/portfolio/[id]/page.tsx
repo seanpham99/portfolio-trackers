@@ -1,5 +1,7 @@
 "use client";
 
+import { useHoldings } from "@/features/portfolio/hooks/use-holdings";
+import { useUser } from "@/hooks/use-user";
 import { useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
@@ -45,6 +47,8 @@ export default function PortfolioDetailPage() {
   const params = useParams<{ id: string }>();
   const id = params.id;
   const { data: response, isLoading, isError, refresh, isRefetching } = usePortfolio(id);
+  const { data: user } = useUser();
+  const { data: holdings } = useHoldings();
   const portfolio = response?.data;
   const { isStale, label } = useStaleness(response?.meta?.staleness);
 
@@ -138,9 +142,17 @@ export default function PortfolioDetailPage() {
 
               {/* Portfolio Details */}
               <div className="space-y-1">
-                <h1 className="text-2xl font-bold text-foreground tracking-tight">
-                  {portfolio.name}
-                </h1>
+                <div className="flex items-center gap-2">
+                  <h1 className="text-2xl font-bold text-foreground tracking-tight">
+                    {portfolio.name}
+                  </h1>
+                  {/* TODO: max assets should be fetched from the backend not hardcoded */}
+                  {user?.subscription_tier === "free" && (
+                    <span className="text-sm text-muted-foreground">
+                      ({holdings?.data?.length || 0}/20 assets)
+                    </span>
+                  )}
+                </div>
                 <p className="text-sm text-muted-foreground">
                   {portfolio.description || "Multi-asset investment portfolio"}
                 </p>

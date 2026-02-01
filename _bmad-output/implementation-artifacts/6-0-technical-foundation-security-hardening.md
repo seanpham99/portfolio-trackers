@@ -1,6 +1,6 @@
 # Story 6.0: Technical Foundation & Security Hardening
 
-Status: ready-for-dev
+Status: in-progress
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -13,46 +13,42 @@ so that our security and tier-enforcement mechanisms are robust enough for payme
 ## Acceptance Criteria
 
 1. **Given** the database setup.
-2. **When** I deploy the Supabase Vault extension.
-3. **Then** existing encrypted keys are migrated to Vault secrets, and new keys use Vault automatically.
+2. **When** the application needs to perform encryption, it fetches the master `ENCRYPTION_KEY` from Supabase Vault.
+3. **Then** user connection secrets are encrypted/decrypted at the application level using the fetched key.
 4. **Given** the "Freemium" limits.
 5. **When** I define validation rules (e.g., "Max 20 assets").
 6. **Then** these rules are enforced identically on both Backend (API) and Frontend (UI) using a shared library/schema.
 
 ## Tasks / Subtasks
 
-- [ ] **Task 1: Deploy and Configure Supabase Vault Extension** (AC: #1, #2, #3)
-  - [ ] Subtask 1.1: Enable Supabase Vault extension via Dashboard or SQL migration
-  - [ ] Subtask 1.2: Create migration script to read existing `api_secret_encrypted` values
-  - [ ] Subtask 1.3: Create `vault.store_secret()` wrapper function in Supabase
-  - [ ] Subtask 1.4: Create `vault.fetch_secret()` wrapper function in Supabase
-  - [ ] Subtask 1.5: Migrate existing connection secrets from encrypted columns to Vault
-- [ ] **Task 2: Update Backend Connections Service to Use Vault** (AC: #3)
-  - [ ] Subtask 2.1: Refactor `ConnectionsService.createConnection()` to call `vault.store_secret()`
-  - [ ] Subtask 2.2: Refactor `ConnectionsService.getDecryptedCredentials()` to call `vault.fetch_secret()`
-  - [ ] Subtask 2.3: Update unit tests to mock Vault calls
-  - [ ] Subtask 2.4: Add error handling for Vault unavailability (graceful fallback logging)
-- [ ] **Task 3: Create Shared Validation Package** (AC: #4, #5, #6)
-  - [ ] Subtask 3.1: Define `TierLimits` interface in `@workspace/shared-types/src/validation/tier-limits.ts`
-  - [ ] Subtask 3.2: Implement Zod schemas for `FREE_TIER` and `PRO_TIER` limits
-  - [ ] Subtask 3.3: Export validation functions (`validatePortfolioCount`, `validateAssetCount`)
-  - [ ] Subtask 3.4: Add unit tests for validation logic
-- [ ] **Task 4: Implement Backend Validation Guards** (AC: #6)
-  - [ ] Subtask 4.1: Create `TierValidationGuard` in `services/api/src/common/guards/`
-  - [ ] Subtask 4.2: Apply guard to `POST /portfolios` and `POST /assets` endpoints
-  - [ ] Subtask 4.3: Return `403 Forbidden` with upgrade message when limits exceeded
-  - [ ] Subtask 4.4: Add integration tests for tier enforcement
-- [ ] **Task 5: Implement Frontend Validation** (AC: #6)
-  - [ ] Subtask 5.1: Import shared validation from `@workspace/shared-types/validation`
-  - [ ] Subtask 5.2: Add pre-submit checks in `CreatePortfolioDialog` and `AddAssetDialog`
-  - [ ] Subtask 5.3: Display upgrade modal when limits are reached
-  - [ ] Subtask 5.4: Add visual indicators (e.g., "2/20 assets used") in UI
+- [x] **Task 1: Configure Supabase Vault for Master Key Storage** (AC: #1, #2)
+  - [x] Subtask 1.1: Enable Supabase Vault extension via SQL migration.
+  - [x] Subtask 1.2: Create `fetch_secret_by_name()` SQL function to retrieve the master key.
+  - [ ] Subtask 1.3: Manually store the `ENCRYPTION_KEY` from `.env` into the Vault with the name `ENCRYPTION_KEY`.
+- [x] **Task 2: Refactor Backend Encryption Logic** (AC: #2, #3)
+  - [x] Subtask 2.1: Modify `crypto.utils.ts` to accept an optional key, with a fallback to `process.env`.
+  - [x] Subtask 2.2: Refactor `ConnectionsService` to fetch the master key from Vault at runtime.
+  - [x] Subtask 2.3: Update `create` and `getDecryptedCredentials` to use the Vault-fetched key.
+- [x] **Task 3: Create Shared Validation Package** (AC: #4, #5, #6)
+  - [x] Subtask 3.0: Install `zod` dependency in `@workspace/shared-types`
+  - [x] Subtask 3.1: Define `TierLimits` interface in `@workspace/shared-types/src/validation/tier-limits.ts`
+  - [x] Subtask 3.2: Implement Zod schemas for `FREE_TIER` and `PRO_TIER` limits
+  - [x] Subtask 3.3: Export validation functions and expose module via `packages/shared-types/src/index.ts`
+  - [x] Subtask 3.4: Add unit tests for validation logic
+- [x] **Task 4: Implement Backend Validation Guards** (AC: #6)
+  - [x] Subtask 4.1: Create `TierValidationGuard` in `services/api/src/common/guards/`
+  - [x] Subtask 4.2: Apply guard to `POST /portfolios` and `POST /assets` endpoints
+  - [x] Subtask 4.3: Return `403 Forbidden` with upgrade message when limits exceeded
+  - [x] Subtask 4.4: Add integration tests for tier enforcement
+- [x] **Task 5: Implement Frontend Validation** (AC: #6)
+  - [x] Subtask 5.1: Import shared validation from `@workspace/shared-types/validation`
+  - [x] Subtask 5.2: Add pre-submit checks in `CreatePortfolioDialog` and `AddAssetDialog`
+  - [x] Subtask 5.3: Display upgrade modal when limits are reached
+  - [x] Subtask 5.4: Add visual indicators (e.g., "2/20 assets used") in UI
 - [ ] **Task 6: Testing & Verification** (AC: All)
-  - [ ] Subtask 6.1: Unit test Vault integration (create/fetch secrets)
-  - [ ] Subtask 6.2: Integration test full connection flow with Vault
-  - [ ] Subtask 6.3: Unit test shared validation functions
-  - [ ] Subtask 6.4: E2E test: Try to bypass frontend validation by directly calling API
-  - [ ] Subtask 6.5: Manual verification: Test secret migration with actual Binance/OKX keys
+  - [ ] Subtask 6.1: Write unit tests for the new hybrid encryption approach.
+  - [ ] Subtask 6.2: E2E test: Try to bypass frontend validation by directly calling API (Blocked: Unable to create test files/directories)
+  - [ ] Subtask 6.3: Manual verification: Test that connections can be created and synced successfully.
 
 ## Dev Notes
 

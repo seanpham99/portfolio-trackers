@@ -15,11 +15,43 @@ import { maskApiKey, encryptSecret, decryptSecret } from './crypto.utils';
 
 @Injectable()
 export class ConnectionsService {
+  private encryptionKey: string | null = null;
+
   constructor(
     @Inject('SUPABASE_CLIENT')
     private readonly supabase: SupabaseClient<Database>,
     private readonly registry: ExchangeRegistry,
   ) {}
+
+  /**
+   * Fetches the master encryption key from Supabase Vault, caching it in memory.
+   * @returns The master encryption key.
+   */
+  private async getEncryptionKey(): Promise<string> {
+    if (this.encryptionKey) {
+      return this.encryptionKey;
+    }
+
+    const { data, error } = await this.supabase.rpc('fetch_secret_by_name', {
+      p_secret_name: 'ENCRYPTION_KEY',
+    });
+
+    if (error) {
+      console.warn(
+        'Could not fetch encryption key from Vault, falling back to .env. Error:',
+        error.message,
+      );
+      return ''; // Fallback will be handled by crypto.utils
+    }
+
+    if (!data) {
+      console.warn('ENCRYPTION_KEY not found in Vault, falling back to .env.');
+      return ''; // Fallback will be handled by crypto.utils
+    }
+
+    this.encryptionKey = data;
+    return this.encryptionKey;
+  }
 
   /**
    * Find all exchange connections for a user
@@ -57,7 +89,7 @@ export class ConnectionsService {
   }
 
   /**
-   * Create a new connection
+   * Create a new connection, encrypting secrets with the master key.
    */
   async create(
     userId: string,
@@ -66,14 +98,18 @@ export class ConnectionsService {
     apiSecret: string,
     passphrase?: string,
   ): Promise<ConnectionDto> {
+    const key = await this.getEncryptionKey();
+
     const { data: connection, error } = await this.supabase
       .from('user_connections')
       .insert({
         user_id: userId,
         exchange_id: exchange as ExchangeId,
         api_key: apiKey,
-        api_secret_encrypted: encryptSecret(apiSecret),
-        passphrase_encrypted: passphrase ? encryptSecret(passphrase) : null,
+        api_secret_encrypted: encryptSecret(apiSecret, key),
+        passphrase_encrypted: passphrase
+          ? encryptSecret(passphrase, key)
+          : null,
         status: 'active',
       })
       .select()
@@ -167,26 +203,24 @@ export class ConnectionsService {
     }
 
     if (!conn.api_key || !conn.api_secret_encrypted) {
-      throw new Error('Connection credentials are incomplete');
+      throw new Error(
+        'Connection credentials are incomplete (missing api_key or secret)',
+      );
     }
 
     try {
-      const credentials: {
-        apiKey: string;
-        apiSecret: string;
-        exchange: ExchangeId;
-        passphrase?: string;
-      } = {
+      const key = await this.getEncryptionKey();
+      const apiSecret = decryptSecret(conn.api_secret_encrypted, key);
+      const passphrase = conn.passphrase_encrypted
+        ? decryptSecret(conn.passphrase_encrypted, key)
+        : undefined;
+
+      return {
         apiKey: conn.api_key,
-        apiSecret: decryptSecret(conn.api_secret_encrypted),
+        apiSecret,
         exchange: conn.exchange_id as ExchangeId,
+        passphrase,
       };
-
-      if (conn.passphrase_encrypted) {
-        credentials.passphrase = decryptSecret(conn.passphrase_encrypted);
-      }
-
-      return credentials;
     } catch (error) {
       throw new Error(
         `Failed to decrypt credentials for connection ${connectionId}: ${

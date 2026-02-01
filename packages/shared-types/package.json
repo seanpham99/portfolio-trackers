@@ -21,6 +21,11 @@
       "types": "./dist/database/index.d.ts",
       "import": "./dist/database/index.js",
       "require": "./dist/database/index.cjs"
+    },
+    "./validation": {
+      "types": "./dist/validation/index.d.ts",
+      "import": "./dist/validation/index.js",
+      "require": "./dist/validation/index.cjs"
     }
   },
   "scripts": {
@@ -30,11 +35,14 @@
   },
   "dependencies": {
     "class-transformer": "^0.5.1",
-    "class-validator": "^0.14.3"
+    "class-validator": "^0.14.3",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@workspace/typescript-config": "workspace:*",
+    "@workspace/vitest-config": "workspace:*",
     "tsup": "^8.5.1",
-    "typescript": "~5.9.3"
+    "typescript": "~5.9.3",
+    "vitest": "^4.0.18"
   }
 }
